@@ -21,7 +21,7 @@ export function Header() {
             <Leaf className="h-5 w-5 text-primary-foreground" />
           </div>
           <div className="leading-tight">
-            <div className="font-display text-lg font-bold text-foreground">Aarogya</div>
+            <div className="font-display text-lg font-bold text-foreground">MD's</div>
             <div className="text-[10px] tracking-widest uppercase text-muted-foreground">Homeopathy</div>
           </div>
         </Link>

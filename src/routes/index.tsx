@@ -14,7 +14,7 @@ import { useState } from "react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Aarogya Homeopathy — Natural Treatment for Long-Term Relief" },
+      { title: "MD's Homeopathy — Natural Treatment for Long-Term Relief" },
       { name: "description", content: "Safe, personalized homeopathy for hair fall, PCOD, thyroid, skin & anxiety. Online & clinic consultations. Book today." },
     ],
   }),
@@ -113,7 +113,7 @@ function HomePage() {
           <div className="relative">
             <div className="absolute -inset-6 bg-gradient-leaf opacity-20 blur-3xl rounded-full" />
             <div className="relative aspect-square rounded-[2.5rem] overflow-hidden shadow-glow bg-gradient-card">
-              <img src={doctorImg} alt="Senior homeopathy doctor at Aarogya clinic" className="h-full w-full object-cover" width={1024} height={1024} />
+              <img src={doctorImg} alt="Senior homeopathy doctor at MD's clinic" className="h-full w-full object-cover" width={1024} height={1024} />
             </div>
             <div className="absolute -bottom-6 -left-6 bg-card rounded-2xl shadow-card p-4 flex items-center gap-3 hidden sm:flex">
               <div className="grid h-10 w-10 place-items-center rounded-full bg-success/15"><CheckCircle2 className="h-5 w-5 text-success" /></div>
@@ -167,10 +167,10 @@ function HomePage() {
       <Section className="bg-leaf-soft/40">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <span className="inline-block px-3 py-1 rounded-full bg-card text-primary text-xs font-semibold uppercase tracking-wide">About Aarogya</span>
+            <span className="inline-block px-3 py-1 rounded-full bg-card text-primary text-xs font-semibold uppercase tracking-wide">About MD's</span>
             <h2 className="mt-4 font-display text-3xl md:text-4xl font-bold text-balance">Two decades of healing, one patient at a time.</h2>
             <p className="mt-4 text-muted-foreground text-pretty">
-              At Aarogya Homeopathy, we combine classical homeopathy with modern diagnostics to deliver care that addresses the root cause — not just symptoms. Every treatment plan is built around you.
+              AtMD's HOMOEOPATHY, we combine classical homeopathy with modern diagnostics to deliver care that addresses the root cause — not just symptoms. Every treatment plan is built around you.
             </p>
             <div className="mt-6 grid grid-cols-2 gap-4">
               {["Root-cause approach","Personalized care","Online consultations","Trusted by 1000+"].map(t=>(
@@ -205,7 +205,7 @@ function HomePage() {
       {/* WHY CHOOSE US */}
       <Section className="bg-sky-soft/40">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
-          <SectionHeader eyebrow="Why us" title="Why patients choose Aarogya" subtitle="Care that's personal, science-backed, and side-effect free." center={false} />
+          <SectionHeader eyebrow="Why us" title="Why patients choose MD's" subtitle="Care that's personal, science-backed, and side-effect free." center={false} />
           <ul className="grid sm:grid-cols-2 gap-4">
             {why.map(w => (
               <li key={w} className="flex gap-3 bg-card rounded-2xl p-4 shadow-soft">
@@ -248,7 +248,7 @@ function HomePage() {
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           {[
             { name: "Priya S.", city: "Mumbai", text: "After 6 months of treatment, my hair fall completely stopped. Doctor was patient, kind and explained every step." },
-            { name: "Rahul M.", city: "Pune", text: "My PCOD symptoms reduced dramatically. Cycles are regular now. Highly recommend Aarogya." },
+            { name: "Rahul M.", city: "Pune", text: "My PCOD symptoms reduced dramatically. Cycles are regular now. Highly recommend MD's." },
             { name: "Anita K.", city: "Delhi", text: "I was skeptical about online consultation, but the experience was excellent. Medicines reached on time." },
           ].map((t)=>(
             <div key={t.name} className="bg-card rounded-3xl p-6 shadow-card">

@@ -8,9 +8,9 @@ import { Award, Users, ShieldCheck, Heart, Leaf, Microscope, Stethoscope, Clipbo
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About Aarogya Homeopathy — 20+ Years of Trusted Care" },
+      { title: "AboutMD's HOMOEOPATHY — 20+ Years of Trusted Care" },
       { name: "description", content: "Learn about our clinic, our doctors, and our root-cause approach to homeopathic healing." },
-      { property: "og:title", content: "About Aarogya Homeopathy" },
+      { property: "og:title", content: "AboutMD's HOMOEOPATHY" },
       { property: "og:description", content: "20+ years, 1000+ patients. Personalized homeopathy with a root-cause approach." },
     ],
   }),
@@ -30,10 +30,10 @@ function AboutPage() {
 
       <Section>
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <img src={clinicImg} alt="Aarogya Homeopathy clinic interior" className="rounded-3xl shadow-card object-cover w-full aspect-[5/4]" loading="lazy" />
+          <img src={clinicImg} alt="MD's Homeopathy clinic interior" className="rounded-3xl shadow-card object-cover w-full aspect-[5/4]" loading="lazy" />
           <div>
             <SectionHeader eyebrow="Our clinic" title="A safe, modern space for natural healing" center={false} />
-            <p className="mt-4 text-muted-foreground text-pretty">Founded in 2003, Aarogya Homeopathy is a multi-specialty clinic dedicated to chronic disease management through classical homeopathy. Our team combines 20+ years of clinical experience with continuous research.</p>
+            <p className="mt-4 text-muted-foreground text-pretty">Founded in 2003,MD's HOMOEOPATHY is a multi-specialty clinic dedicated to chronic disease management through classical homeopathy. Our team combines 20+ years of clinical experience with continuous research.</p>
             <div className="mt-6 grid grid-cols-2 gap-4">
               {[{i:Award,t:"BHMS & MD certified"},{i:Heart,t:"Patient-first ethos"},{i:Leaf,t:"100% natural remedies"},{i:ShieldCheck,t:"NABH-aligned protocols"}].map(({i:Ic,t})=>(
                 <div key={t} className="flex gap-3 items-center text-sm"><div className="h-9 w-9 grid place-items-center rounded-xl bg-leaf-soft"><Ic className="h-4 w-4 text-primary" /></div>{t}</div>
@@ -61,9 +61,9 @@ function AboutPage() {
       </Section>
 
       <Section>
-        <SectionHeader eyebrow="Our story" title="Why we started Aarogya" />
+        <SectionHeader eyebrow="Our story" title="Why we started MD's" />
         <div className="mt-10 max-w-3xl mx-auto space-y-6 text-muted-foreground text-pretty">
-          <p>Two decades ago, Dr. Mehta started Aarogya with a single belief: medicine should heal, not mask. After years of seeing patients shuffle from one prescription to another, he set out to build a clinic where time, listening, and personalization came first.</p>
+          <p>Two decades ago, Dr. Mehta started MD's with a single belief: medicine should heal, not mask. After years of seeing patients shuffle from one prescription to another, he set out to build a clinic where time, listening, and personalization came first.</p>
           <p>Today, that belief drives a team of four doctors and a network of patients across India — many of whom we've watched grow from chronic illness to complete recovery.</p>
         </div>
       </Section>

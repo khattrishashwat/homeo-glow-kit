@@ -7,7 +7,6 @@ import { CheckCircle2, ChevronLeft, ChevronRight, Scissors, Flower2, Activity, S
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 
 const bookingSchema = z.object({
   problem: z.string().min(2).max(100),
@@ -23,7 +22,7 @@ const bookingSchema = z.object({
 export const Route = createFileRoute("/appointment")({
   head: () => ({
     meta: [
-      { title: "Book Appointment — Aarogya Homeopathy" },
+      { title: "Book Appointment —MD's HOMOEOPATHY" },
       { name: "description", content: "Book your homeopathy consultation in 4 easy steps. Online or in-clinic. Trusted by 1000+ patients." },
       { property: "og:title", content: "Book a Homeopathy Consultation" },
       { property: "og:description", content: "Multi-step booking · online & clinic options · WhatsApp quick booking." },
@@ -65,29 +64,15 @@ function AppointmentPage() {
 
   const totalSteps = 5;
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     const parsed = bookingSchema.safeParse(data);
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Please check your details");
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("appointments").insert({
-      name: parsed.data.name,
-      phone: parsed.data.phone,
-      age: parsed.data.age,
-      city: parsed.data.city,
-      problem: parsed.data.problem,
-      mode: parsed.data.mode,
-      preferred_day: parsed.data.day,
-      preferred_slot: parsed.data.slot,
-    });
     setSubmitting(false);
-    if (error) {
-      toast.error("Booking failed. Please try again or WhatsApp us.");
-      return;
-    }
-    toast.success("Appointment booked successfully!");
+    toast.success("Appointment request registered. Please confirm via WhatsApp.");
     setDone(true);
   };
 

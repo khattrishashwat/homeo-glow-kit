@@ -25,10 +25,10 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Aarogya Homeopathy — Natural Treatment for Long-Term Relief" },
+      { title: "MD's Homeopathy — Natural Treatment for Long-Term Relief" },
       { name: "description", content: "Personalized homeopathy care for hair fall, PCOD, thyroid, skin and anxiety. 20+ years experience, 1000+ patients treated. Book online consultation." },
-      { name: "author", content: "Aarogya Homeopathy" },
-      { property: "og:title", content: "Aarogya Homeopathy — Natural Treatment for Long-Term Relief" },
+      { name: "author", content: "MD's Homeopathy" },
+      { property: "og:title", content: "MD's Homeopathy — Natural Treatment for Long-Term Relief" },
       { property: "og:description", content: "Safe, side-effect free, root-cause homeopathy treatment. Book online or visit our clinic." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

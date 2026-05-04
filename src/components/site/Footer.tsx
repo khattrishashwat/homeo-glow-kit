@@ -10,7 +10,7 @@ export function Footer() {
             <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-leaf">
               <Leaf className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="font-display text-lg font-bold">Aarogya Homeopathy</span>
+            <span className="font-display text-lg font-bold">MD's HOMOEOPATHY</span>
           </div>
           <p className="text-sm text-muted-foreground text-pretty">
             Personalized homeopathy treatment for chronic and acute conditions. Trusted by 1000+ patients.
@@ -47,14 +47,14 @@ export function Footer() {
         <div>
           <h4 className="text-sm font-semibold mb-4">Reach Us</h4>
           <ul className="space-y-3 text-sm text-muted-foreground">
-            <li className="flex gap-2"><Phone className="h-4 w-4 text-primary mt-0.5" /> +91 98765 43210</li>
-            <li className="flex gap-2"><Mail className="h-4 w-4 text-primary mt-0.5" /> care@aarogya.in</li>
-            <li className="flex gap-2"><MapPin className="h-4 w-4 text-primary mt-0.5" /> 12 Wellness Lane, Mumbai</li>
+            <li className="flex gap-2"><Phone className="h-4 w-4 text-primary mt-0.5" /> +91 7668610031</li>
+            <li className="flex gap-2"><Mail className="h-4 w-4 text-primary mt-0.5" /> mdshomoeopathy13@gmail.com</li>
+            <li className="flex gap-2"><MapPin className="h-4 w-4 text-primary mt-0.5" />1262/3A Deeg Gali ShahganJ Darwaza, Mathura (U.P)</li>
           </ul>
         </div>
       </div>
       <div className="border-t border-border py-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Aarogya Homeopathy. All rights reserved.
+        © {new Date().getFullYear()} MD's HOMOEOPATHY. All rights reserved.
       </div>
     </footer>
   );

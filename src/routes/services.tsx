@@ -6,9 +6,9 @@ import { Scissors, Flower2, Activity, Sparkles, Brain, HeartPulse, Bone, Wind, B
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Our Services — Homeopathic Treatments | Aarogya" },
+      { title: "Our Services — Homeopathic Treatments | MD's" },
       { name: "description", content: "Specialized homeopathy for hair fall, PCOD, thyroid, skin, anxiety, joint pain, asthma & pediatric care." },
-      { property: "og:title", content: "Homeopathic Services — Aarogya" },
+      { property: "og:title", content: "Homeopathic Services — MD's" },
       { property: "og:description", content: "Personalized treatment plans for chronic and acute conditions." },
     ],
   }),

@@ -13,9 +13,9 @@ import { whatsappLink } from "@/components/site/FloatingActions";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact Us — Aarogya Homeopathy Clinic" },
-      { name: "description", content: "Reach Aarogya Homeopathy by phone, WhatsApp, email, or visit our Mumbai clinic. Working hours and Google Map included." },
-      { property: "og:title", content: "Contact Aarogya Homeopathy" },
+      { title: "Contact Us — MD's HOMOEOPATHY Clinic" },
+      { name: "description", content: "Reach MD's HOMOEOPATHY by phone, WhatsApp, email, or visit our Mathura clinic. Working hours and Google Map included." },
+      { property: "og:title", content: "Contact MD's HOMOEOPATHY" },
       { property: "og:description", content: "Talk to us — phone, WhatsApp, email or in-clinic visits available." },
     ],
   }),
@@ -62,9 +62,9 @@ function ContactPage() {
       <Section>
         <div className="grid lg:grid-cols-3 gap-6 mb-10">
           {[
-            { i: Phone, t: "Call us", d: "+91 98765 43210", a: "tel:+919876543210" },
+            { i: Phone, t: "Call us", d: "+91 7668610031", a: "tel:+917668610031" },
             { i: MessageCircle, t: "WhatsApp", d: "Quick reply, 9am–9pm", a: whatsappLink() },
-            { i: Mail, t: "Email", d: "care@aarogya.in", a: "mailto:care@aarogya.in" },
+            { i: Mail, t: "Email", d: "mdshomoeopathy13@gmail.com", a: "mailto:mdshomoeopathy13@gmail.com" },
           ].map(c => (
             <a key={c.t} href={c.a} target={c.a.startsWith("http") ? "_blank" : undefined} rel="noreferrer" className="group bg-card rounded-3xl p-6 shadow-soft hover:shadow-card transition hover:-translate-y-1">
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-leaf text-primary-foreground"><c.i className="h-5 w-5" /></div>
@@ -109,7 +109,10 @@ function ContactPage() {
                 <div className="grid h-12 w-12 place-items-center rounded-2xl bg-leaf-soft shrink-0"><MapPin className="h-5 w-5 text-primary" /></div>
                 <div>
                   <h3 className="font-semibold">Visit our clinic</h3>
-                  <p className="text-sm text-muted-foreground mt-1">12 Wellness Lane, Bandra West, Mumbai 400050, India</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    1262/3A, Deeg Gali, Shahganj Darwaza,<br />
+                    Mathura, Uttar Pradesh – 281001, India
+                  </p>
                 </div>
               </div>
             </div>
@@ -125,14 +128,15 @@ function ContactPage() {
                 </div>
               </div>
             </div>
-            <div className="rounded-3xl overflow-hidden shadow-card aspect-[4/3]">
-              <iframe
-                title="Aarogya Homeopathy Clinic Location"
-                src="https://www.openstreetmap.org/export/embed.html?bbox=72.82%2C19.05%2C72.85%2C19.07&layer=mapnik"
-                className="w-full h-full border-0"
-                loading="lazy"
-              />
-            </div>
+           <div className="rounded-3xl overflow-hidden shadow-card aspect-[4/3]">
+  <iframe
+    title="MD's Homeopathy Clinic - Mathura Location"
+    src="https://www.google.com/maps?q=MD%27s+HOMOEOPATHY%2C+1262%2F3A+Deeg+Gali+Shahganj+Darwaza+Mathura+Uttar+Pradesh+281001+India&output=embed&entry=ttu&g_ep=EgoyMDI0MDgyMS4wIKXMDSoASAFQAw%3D%3D"
+    className="w-full h-full border-0"
+    loading="lazy"
+    referrerPolicy="no-referrer-when-downgrade"
+  />
+</div>
           </div>
         </div>
       </Section>
