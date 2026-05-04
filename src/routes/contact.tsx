@@ -14,9 +14,16 @@ export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
       { title: "Contact Us — MD's HOMOEOPATHY Clinic" },
-      { name: "description", content: "Reach MD's HOMOEOPATHY by phone, WhatsApp, email, or visit our Mathura clinic. Working hours and Google Map included." },
+      {
+        name: "description",
+        content:
+          "Reach MD's HOMOEOPATHY by phone, WhatsApp, email, or visit our Mathura clinic. Working hours and Google Map included.",
+      },
       { property: "og:title", content: "Contact MD's HOMOEOPATHY" },
-      { property: "og:description", content: "Talk to us — phone, WhatsApp, email or in-clinic visits available." },
+      {
+        property: "og:description",
+        content: "Talk to us — phone, WhatsApp, email or in-clinic visits available.",
+      },
     ],
   }),
   component: ContactPage,
@@ -32,7 +39,7 @@ const contactSchema = z.object({
 function ContactPage() {
   const [form, setForm] = useState({ name: "", phone: "", email: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
-  const upd = (k: keyof typeof form, v: string) => setForm(f => ({ ...f, [k]: v }));
+  const upd = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,9 +60,15 @@ function ContactPage() {
     <>
       <section className="bg-gradient-hero">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-20 text-center">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-card shadow-soft text-xs font-semibold text-primary uppercase tracking-wide">Contact</span>
-          <h1 className="mt-5 font-display text-4xl md:text-5xl font-bold">We're here to help you heal</h1>
-          <p className="mt-4 text-muted-foreground">Reach us anytime — we usually reply in under an hour.</p>
+          <span className="inline-block px-4 py-1.5 rounded-full bg-card shadow-soft text-xs font-semibold text-primary uppercase tracking-wide">
+            Contact
+          </span>
+          <h1 className="mt-5 font-display text-4xl md:text-5xl font-bold">
+            We're here to help you heal
+          </h1>
+          <p className="mt-4 text-muted-foreground">
+            Reach us anytime — we usually reply in under an hour.
+          </p>
         </div>
       </section>
 
@@ -64,12 +77,29 @@ function ContactPage() {
           {[
             { i: Phone, t: "Call us", d: "+91 7668610031", a: "tel:+917668610031" },
             { i: MessageCircle, t: "WhatsApp", d: "Quick reply, 9am–9pm", a: whatsappLink() },
-            { i: Mail, t: "Email", d: "mdshomoeopathy13@gmail.com", a: "mailto:mdshomoeopathy13@gmail.com" },
-          ].map(c => (
-            <a key={c.t} href={c.a} target={c.a.startsWith("http") ? "_blank" : undefined} rel="noreferrer" className="group bg-card rounded-3xl p-6 shadow-soft hover:shadow-card transition hover:-translate-y-1">
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-leaf text-primary-foreground"><c.i className="h-5 w-5" /></div>
-              <div className="mt-4 text-xs font-semibold uppercase text-muted-foreground tracking-wide">{c.t}</div>
-              <div className="mt-1 font-display text-xl font-bold group-hover:text-primary transition">{c.d}</div>
+            {
+              i: Mail,
+              t: "Email",
+              d: "mdshomoeopathy13@gmail.com",
+              a: "mailto:mdshomoeopathy13@gmail.com",
+            },
+          ].map((c) => (
+            <a
+              key={c.t}
+              href={c.a}
+              target={c.a.startsWith("http") ? "_blank" : undefined}
+              rel="noreferrer"
+              className="group bg-card rounded-3xl p-6 shadow-soft hover:shadow-card transition hover:-translate-y-1"
+            >
+              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-leaf text-primary-foreground">
+                <c.i className="h-5 w-5" />
+              </div>
+              <div className="mt-4 text-xs font-semibold uppercase text-muted-foreground tracking-wide">
+                {c.t}
+              </div>
+              <div className="mt-1 font-display text-xl font-bold group-hover:text-primary transition">
+                {c.d}
+              </div>
             </a>
           ))}
         </div>
@@ -77,28 +107,71 @@ function ContactPage() {
         <div className="grid lg:grid-cols-2 gap-6">
           <div className="bg-card rounded-3xl p-6 md:p-8 shadow-card">
             <h2 className="font-display text-2xl font-bold">Send us a message</h2>
-            <p className="text-sm text-muted-foreground mt-1">We'll get back within 1 business hour.</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              We'll get back within 1 business hour.
+            </p>
             <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <Label className="text-xs font-semibold uppercase tracking-wide">Name</Label>
-                  <Input value={form.name} onChange={e=>upd("name",e.target.value)} placeholder="Your name" className="mt-1.5 h-11 rounded-xl" maxLength={100} />
+                  <Input
+                    value={form.name}
+                    onChange={(e) => upd("name", e.target.value)}
+                    placeholder="Your name"
+                    className="mt-1.5 h-11 rounded-xl"
+                    maxLength={100}
+                  />
                 </div>
                 <div>
                   <Label className="text-xs font-semibold uppercase tracking-wide">Phone</Label>
-                  <Input value={form.phone} onChange={e=>upd("phone",e.target.value.replace(/\D/g,"").slice(0,10))} placeholder="9876543210" className="mt-1.5 h-11 rounded-xl" inputMode="numeric" />
+                  <Input
+                    value={form.phone}
+                    onChange={(e) => upd("phone", e.target.value.replace(/\D/g, "").slice(0, 10))}
+                    placeholder="9876543210"
+                    className="mt-1.5 h-11 rounded-xl"
+                    inputMode="numeric"
+                  />
                 </div>
               </div>
               <div>
-                <Label className="text-xs font-semibold uppercase tracking-wide">Email (optional)</Label>
-                <Input value={form.email} onChange={e=>upd("email",e.target.value)} type="email" placeholder="you@example.com" className="mt-1.5 h-11 rounded-xl" maxLength={255} />
+                <Label className="text-xs font-semibold uppercase tracking-wide">
+                  Email (optional)
+                </Label>
+                <Input
+                  value={form.email}
+                  onChange={(e) => upd("email", e.target.value)}
+                  type="email"
+                  placeholder="you@example.com"
+                  className="mt-1.5 h-11 rounded-xl"
+                  maxLength={255}
+                />
               </div>
               <div>
                 <Label className="text-xs font-semibold uppercase tracking-wide">Message</Label>
-                <Textarea value={form.message} onChange={e=>upd("message",e.target.value)} placeholder="How can we help?" className="mt-1.5 rounded-xl min-h-[120px]" maxLength={1000} />
+                <Textarea
+                  value={form.message}
+                  onChange={(e) => upd("message", e.target.value)}
+                  placeholder="How can we help?"
+                  className="mt-1.5 rounded-xl min-h-[120px]"
+                  maxLength={1000}
+                />
               </div>
-              <Button variant="hero" size="lg" type="submit" className="w-full" disabled={submitting}>
-                {submitting ? <><Loader2 className="animate-spin" /> Sending...</> : <>Send via WhatsApp <Send /></>}
+              <Button
+                variant="hero"
+                size="lg"
+                type="submit"
+                className="w-full"
+                disabled={submitting}
+              >
+                {submitting ? (
+                  <>
+                    <Loader2 className="animate-spin" /> Sending...
+                  </>
+                ) : (
+                  <>
+                    Send via WhatsApp <Send />
+                  </>
+                )}
               </Button>
             </form>
           </div>
@@ -106,11 +179,14 @@ function ContactPage() {
           <div className="space-y-4">
             <div className="bg-card rounded-3xl p-6 shadow-soft">
               <div className="flex items-start gap-4">
-                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-leaf-soft shrink-0"><MapPin className="h-5 w-5 text-primary" /></div>
+                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-leaf-soft shrink-0">
+                  <MapPin className="h-5 w-5 text-primary" />
+                </div>
                 <div>
                   <h3 className="font-semibold">Visit our clinic</h3>
                   <p className="text-sm text-muted-foreground mt-1">
-                    1262/3A, Deeg Gali, Shahganj Darwaza,<br />
+                    1262/3A, Deeg Gali, Shahganj Darwaza,
+                    <br />
                     Mathura, Uttar Pradesh – 281001, India
                   </p>
                 </div>
@@ -118,7 +194,9 @@ function ContactPage() {
             </div>
             <div className="bg-card rounded-3xl p-6 shadow-soft">
               <div className="flex items-start gap-4">
-                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-leaf-soft shrink-0"><Clock className="h-5 w-5 text-primary" /></div>
+                <div className="grid h-12 w-12 place-items-center rounded-2xl bg-leaf-soft shrink-0">
+                  <Clock className="h-5 w-5 text-primary" />
+                </div>
                 <div>
                   <h3 className="font-semibold">Working hours</h3>
                   <ul className="text-sm text-muted-foreground mt-1 space-y-0.5">
@@ -128,15 +206,15 @@ function ContactPage() {
                 </div>
               </div>
             </div>
-           <div className="rounded-3xl overflow-hidden shadow-card aspect-[4/3]">
-  <iframe
-    title="MD's Homeopathy Clinic - Mathura Location"
-    src="https://www.google.com/maps?q=MD%27s+HOMOEOPATHY%2C+1262%2F3A+Deeg+Gali+Shahganj+Darwaza+Mathura+Uttar+Pradesh+281001+India&output=embed&entry=ttu&g_ep=EgoyMDI0MDgyMS4wIKXMDSoASAFQAw%3D%3D"
-    className="w-full h-full border-0"
-    loading="lazy"
-    referrerPolicy="no-referrer-when-downgrade"
-  />
-</div>
+            <div className="rounded-3xl overflow-hidden shadow-card aspect-[4/3]">
+              <iframe
+                title="MD's Homeopathy Clinic - Mathura Location"
+                src="https://www.google.com/maps?q=MD%27s+HOMOEOPATHY%2C+1262%2F3A+Deeg+Gali+Shahganj+Darwaza+Mathura+Uttar+Pradesh+281001+India&output=embed&entry=ttu&g_ep=EgoyMDI0MDgyMS4wIKXMDSoASAFQAw%3D%3D"
+                className="w-full h-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
           </div>
         </div>
       </Section>
