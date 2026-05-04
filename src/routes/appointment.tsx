@@ -3,8 +3,22 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, ChevronLeft, ChevronRight, Scissors, Flower2, Activity, Sparkles, Video, Building2, ShieldCheck, MessageCircle, Calendar, Clock, Phone, User, MapPin } from "lucide-react";
+import { CheckCircle2, ChevronLeft, ChevronRight, Scissors, Flower2, Activity, Sparkles, Video, Building2, ShieldCheck, MessageCircle, Calendar, Clock, Phone, User, MapPin, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { z } from "zod";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+
+const bookingSchema = z.object({
+  problem: z.string().min(2).max(100),
+  name: z.string().trim().min(2, "Name is too short").max(100),
+  phone: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number"),
+  age: z.coerce.number().int().min(1).max(120),
+  city: z.string().trim().min(2).max(100),
+  mode: z.enum(["Online", "Clinic Visit"]),
+  day: z.string().min(1),
+  slot: z.string().min(1),
+});
 
 export const Route = createFileRoute("/appointment")({
   head: () => ({
