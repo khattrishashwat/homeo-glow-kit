@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,6 +48,42 @@ function AppointmentPage() {
     problem: "", name: "", phone: "", age: "", city: "", mode: "", day: "", slot: "",
   });
   const [done, setDone] = useState(false);
+  const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set());
+  const [loadingSlots, setLoadingSlots] = useState(false);
+
+  const slotKey = (day: string, slot: string, mode: string) => `${day}|${slot}|${mode}`;
+
+  // Fetch booked slots for chosen mode in real time
+  useEffect(() => {
+    if (!data.mode) return;
+    let active = true;
+    const fetchBooked = async () => {
+      setLoadingSlots(true);
+      const { data: rows, error } = await supabase
+        .from("appointments")
+        .select("preferred_day, preferred_slot, mode")
+        .eq("mode", data.mode)
+        .neq("status", "cancelled");
+      if (!active) return;
+      if (!error && rows) {
+        setBookedSlots(new Set(rows.map(r => slotKey(r.preferred_day, r.preferred_slot, r.mode))));
+      }
+      setLoadingSlots(false);
+    };
+    fetchBooked();
+
+    const channel = supabase
+      .channel("appointments-availability")
+      .on("postgres_changes", { event: "*", schema: "public", table: "appointments" }, fetchBooked)
+      .subscribe();
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
+  }, [data.mode]);
+
+  const isSlotTaken = (day: string, slot: string) =>
+    !!data.mode && bookedSlots.has(slotKey(day, slot, data.mode));
 
   const update = (k: string, v: string) => setData(d => ({ ...d, [k]: v }));
   const canNext = () => {
@@ -58,21 +95,48 @@ function AppointmentPage() {
         data.city.trim().length >= 2;
     }
     if (step === 3) return data.mode === "Online" || data.mode === "Clinic Visit";
-    if (step === 4) return !!data.day && !!data.slot;
+    if (step === 4) return !!data.day && !!data.slot && !isSlotTaken(data.day, data.slot);
     return true;
   };
 
   const totalSteps = 5;
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const parsed = bookingSchema.safeParse(data);
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Please check your details");
       return;
     }
+    if (isSlotTaken(data.day, data.slot)) {
+      toast.error("That slot was just taken. Please pick another.");
+      setStep(4);
+      return;
+    }
     setSubmitting(true);
+    const { error } = await supabase.from("appointments").insert({
+      name: parsed.data.name,
+      phone: parsed.data.phone,
+      age: parsed.data.age,
+      city: parsed.data.city,
+      problem: parsed.data.problem,
+      mode: parsed.data.mode,
+      preferred_day: parsed.data.day,
+      preferred_slot: parsed.data.slot,
+    });
     setSubmitting(false);
-    toast.success("Appointment request registered. Please confirm via WhatsApp.");
+    if (error) {
+      // 23505 = unique_violation (double-booking caught by DB)
+      if ((error as { code?: string }).code === "23505") {
+        toast.error("That slot was just booked by someone else. Please pick another.");
+        setBookedSlots(prev => new Set(prev).add(slotKey(data.day, data.slot, data.mode)));
+        update("slot", "");
+        setStep(4);
+        return;
+      }
+      toast.error(error.message || "Could not save your booking. Please try WhatsApp.");
+      return;
+    }
+    toast.success("Appointment confirmed!");
     setDone(true);
   };
 
@@ -187,16 +251,26 @@ function AppointmentPage() {
                     </div>
                   </div>
                   <div className="mt-6">
-                    <Label className="text-xs uppercase tracking-wide text-muted-foreground">Available slots</Label>
+                    <Label className="text-xs uppercase tracking-wide text-muted-foreground flex items-center gap-2">
+                      Available slots {loadingSlots && <Loader2 className="h-3 w-3 animate-spin" />}
+                    </Label>
                     <div className="mt-2 grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {slots.map(s=>(
-                        <button key={s} onClick={()=>update("slot",s)}
-                          className={cn("py-3 rounded-xl border-2 text-sm font-medium transition flex items-center justify-center gap-1.5",
-                            data.slot===s ? "border-primary bg-leaf-soft text-primary" : "border-border hover:border-primary/40")}>
-                          <Clock className="h-3.5 w-3.5" />{s}
-                        </button>
-                      ))}
+                      {slots.map(s=>{
+                        const taken = !!data.day && isSlotTaken(data.day, s);
+                        return (
+                          <button key={s} disabled={taken || !data.day} onClick={()=>update("slot",s)}
+                            className={cn("py-3 rounded-xl border-2 text-sm font-medium transition flex items-center justify-center gap-1.5",
+                              taken ? "border-border bg-muted text-muted-foreground line-through cursor-not-allowed opacity-60" :
+                              data.slot===s ? "border-primary bg-leaf-soft text-primary" : "border-border hover:border-primary/40",
+                              !data.day && "opacity-50 cursor-not-allowed")}>
+                            <Clock className="h-3.5 w-3.5" />{s}{taken && <span className="text-[10px] ml-1">(booked)</span>}
+                          </button>
+                        );
+                      })}
                     </div>
+                    {data.day && slots.every(s => isSlotTaken(data.day, s)) && (
+                      <p className="mt-3 text-xs text-destructive">All slots booked for {data.day}. Please pick another date.</p>
+                    )}
                   </div>
                 </div>
               )}
