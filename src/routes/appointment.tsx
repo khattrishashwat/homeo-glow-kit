@@ -129,6 +129,16 @@ function AppointmentPage() {
                 <div><b>{data.problem}</b> · {data.mode}</div>
                 <div className="text-muted-foreground">{data.day} at {data.slot}</div>
               </div>
+              <div className="mt-6 flex flex-wrap gap-3 justify-center">
+                <Button asChild variant="hero">
+                  <a href={`https://wa.me/919876543210?text=${waMessage}`} target="_blank" rel="noreferrer">
+                    <MessageCircle /> Confirm on WhatsApp
+                  </a>
+                </Button>
+                <Button asChild variant="outline">
+                  <a href="tel:+919876543210"><Phone /> Call clinic</a>
+                </Button>
+              </div>
             </div>
           ) : (
             <>
