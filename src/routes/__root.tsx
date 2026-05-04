@@ -1,24 +1,19 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
-
 import appCss from "../styles.css?url";
+import { Header } from "@/components/site/Header";
+import { Footer } from "@/components/site/Footer";
+import { FloatingWhatsapp, StickyMobileBar } from "@/components/site/FloatingActions";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-hero px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
-          </Link>
-        </div>
+        <h1 className="font-display text-7xl font-bold text-primary">404</h1>
+        <h2 className="mt-4 text-xl font-semibold">Page not found</h2>
+        <p className="mt-2 text-sm text-muted-foreground">This page doesn't exist or was moved.</p>
+        <Link to="/" className="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-soft hover:shadow-glow">
+          Go home
+        </Link>
       </div>
     </div>
   );
@@ -29,21 +24,15 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Aarogya Homeopathy — Natural Treatment for Long-Term Relief" },
+      { name: "description", content: "Personalized homeopathy care for hair fall, PCOD, thyroid, skin and anxiety. 20+ years experience, 1000+ patients treated. Book online consultation." },
+      { name: "author", content: "Aarogya Homeopathy" },
+      { property: "og:title", content: "Aarogya Homeopathy — Natural Treatment for Long-Term Relief" },
+      { property: "og:description", content: "Safe, side-effect free, root-cause homeopathy treatment. Book online or visit our clinic." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
+    links: [{ rel: "stylesheet", href: appCss }],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -53,17 +42,22 @@ export const Route = createRootRoute({
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
+      <head><HeadContent /></head>
+      <body>{children}<Scripts /></body>
     </html>
   );
 }
 
 function RootComponent() {
-  return <Outlet />;
+  return (
+    <>
+      <Header />
+      <main className="pb-24 md:pb-0">
+        <Outlet />
+      </main>
+      <Footer />
+      <FloatingWhatsapp />
+      <StickyMobileBar />
+    </>
+  );
 }
