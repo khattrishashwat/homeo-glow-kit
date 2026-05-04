@@ -103,14 +103,14 @@ function AppointmentPage() {
             <ShieldCheck className="h-3.5 w-3.5" /> Trusted by 1000+ patients
           </span>
           <h1 className="mt-4 font-display text-3xl md:text-5xl font-bold text-balance">Book Your Consultation</h1>
-          <p className="mt-3 text-muted-foreground">Just 4 quick steps. No payment required.</p>
+          <p className="mt-3 text-muted-foreground">Just 5 quick steps. No payment required.</p>
         </div>
 
         {/* Progress */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-primary">Step {Math.min(step, totalSteps)} of {totalSteps}</span>
-            <a href="https://wa.me/919876543210" className="text-xs font-semibold text-whatsapp inline-flex items-center gap-1.5"><MessageCircle className="h-3.5 w-3.5" /> Quick book on WhatsApp</a>
+            <a href={`https://wa.me/919876543210?text=${waMessage}`} target="_blank" rel="noreferrer" className="text-xs font-semibold text-whatsapp inline-flex items-center gap-1.5"><MessageCircle className="h-3.5 w-3.5" /> Quick book on WhatsApp</a>
           </div>
           <div className="h-2 rounded-full bg-card shadow-soft overflow-hidden">
             <div className="h-full bg-gradient-leaf transition-all duration-500" style={{ width: `${(Math.min(step, totalSteps)/totalSteps)*100}%` }} />
@@ -222,11 +222,13 @@ function AppointmentPage() {
               )}
 
               <div className="mt-8 flex justify-between gap-3">
-                <Button variant="ghost" disabled={step===1} onClick={()=>setStep(s=>s-1)}><ChevronLeft /> Back</Button>
+                <Button variant="ghost" disabled={step===1 || submitting} onClick={()=>setStep(s=>s-1)}><ChevronLeft /> Back</Button>
                 {step < totalSteps ? (
                   <Button variant="hero" disabled={!canNext()} onClick={()=>setStep(s=>s+1)}>Continue <ChevronRight /></Button>
                 ) : (
-                  <Button variant="hero" onClick={()=>setDone(true)}>Confirm Booking <CheckCircle2 /></Button>
+                  <Button variant="hero" disabled={submitting} onClick={handleConfirm}>
+                    {submitting ? <><Loader2 className="animate-spin" /> Booking...</> : <>Confirm Booking <CheckCircle2 /></>}
+                  </Button>
                 )}
               </div>
             </>
