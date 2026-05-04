@@ -43,6 +43,7 @@ const days = ["Today", "Tomorrow", "Wed", "Thu", "Fri"];
 
 function AppointmentPage() {
   const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
   const [data, setData] = useState({
     problem: "", name: "", phone: "", age: "", city: "", mode: "", day: "", slot: "",
   });
@@ -51,13 +52,48 @@ function AppointmentPage() {
   const update = (k: string, v: string) => setData(d => ({ ...d, [k]: v }));
   const canNext = () => {
     if (step === 1) return !!data.problem;
-    if (step === 2) return data.name && data.phone.length >= 10 && data.age && data.city;
-    if (step === 3) return !!data.mode;
-    if (step === 4) return data.day && data.slot;
+    if (step === 2) {
+      return data.name.trim().length >= 2 &&
+        /^[6-9]\d{9}$/.test(data.phone) &&
+        Number(data.age) >= 1 && Number(data.age) <= 120 &&
+        data.city.trim().length >= 2;
+    }
+    if (step === 3) return data.mode === "Online" || data.mode === "Clinic Visit";
+    if (step === 4) return !!data.day && !!data.slot;
     return true;
   };
 
   const totalSteps = 5;
+
+  const handleConfirm = async () => {
+    const parsed = bookingSchema.safeParse(data);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Please check your details");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from("appointments").insert({
+      name: parsed.data.name,
+      phone: parsed.data.phone,
+      age: parsed.data.age,
+      city: parsed.data.city,
+      problem: parsed.data.problem,
+      mode: parsed.data.mode,
+      preferred_day: parsed.data.day,
+      preferred_slot: parsed.data.slot,
+    });
+    setSubmitting(false);
+    if (error) {
+      toast.error("Booking failed. Please try again or WhatsApp us.");
+      return;
+    }
+    toast.success("Appointment booked successfully!");
+    setDone(true);
+  };
+
+  const waMessage = encodeURIComponent(
+    `Hi, I want to book a homeopathy consultation.\nName: ${data.name || "-"}\nPhone: ${data.phone || "-"}\nConcern: ${data.problem || "-"}\nMode: ${data.mode || "-"}\nWhen: ${data.day || "-"} ${data.slot || ""}`.trim()
+  );
 
   return (
     <section className="bg-gradient-hero min-h-screen">
