@@ -1,10 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Section } from "@/components/site/Section";
-import { Phone, Mail, MapPin, Clock, MessageCircle, Send } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, MessageCircle, Send, Loader2 } from "lucide-react";
+import { z } from "zod";
+import { toast } from "sonner";
+import { whatsappLink } from "@/components/site/FloatingActions";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -18,7 +22,33 @@ export const Route = createFileRoute("/contact")({
   component: ContactPage,
 });
 
+const contactSchema = z.object({
+  name: z.string().trim().min(2, "Please enter your name").max(100),
+  phone: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number"),
+  email: z.string().trim().email("Enter a valid email").max(255).or(z.literal("")),
+  message: z.string().trim().min(5, "Message is too short").max(1000),
+});
+
 function ContactPage() {
+  const [form, setForm] = useState({ name: "", phone: "", email: "", message: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const upd = (k: keyof typeof form, v: string) => setForm(f => ({ ...f, [k]: v }));
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const parsed = contactSchema.safeParse(form);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Please check your details");
+      return;
+    }
+    setSubmitting(true);
+    const msg = `Hi, I'd like to get in touch.\nName: ${parsed.data.name}\nPhone: ${parsed.data.phone}${parsed.data.email ? `\nEmail: ${parsed.data.email}` : ""}\nMessage: ${parsed.data.message}`;
+    window.open(whatsappLink(msg), "_blank");
+    toast.success("Opening WhatsApp — we'll reply shortly!");
+    setForm({ name: "", phone: "", email: "", message: "" });
+    setSubmitting(false);
+  };
+
   return (
     <>
       <section className="bg-gradient-hero">
@@ -33,10 +63,10 @@ function ContactPage() {
         <div className="grid lg:grid-cols-3 gap-6 mb-10">
           {[
             { i: Phone, t: "Call us", d: "+91 98765 43210", a: "tel:+919876543210" },
-            { i: MessageCircle, t: "WhatsApp", d: "Quick reply, 9am–9pm", a: "https://wa.me/919876543210" },
+            { i: MessageCircle, t: "WhatsApp", d: "Quick reply, 9am–9pm", a: whatsappLink() },
             { i: Mail, t: "Email", d: "care@aarogya.in", a: "mailto:care@aarogya.in" },
           ].map(c => (
-            <a key={c.t} href={c.a} className="group bg-card rounded-3xl p-6 shadow-soft hover:shadow-card transition hover:-translate-y-1">
+            <a key={c.t} href={c.a} target={c.a.startsWith("http") ? "_blank" : undefined} rel="noreferrer" className="group bg-card rounded-3xl p-6 shadow-soft hover:shadow-card transition hover:-translate-y-1">
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-leaf text-primary-foreground"><c.i className="h-5 w-5" /></div>
               <div className="mt-4 text-xs font-semibold uppercase text-muted-foreground tracking-wide">{c.t}</div>
               <div className="mt-1 font-display text-xl font-bold group-hover:text-primary transition">{c.d}</div>
@@ -45,22 +75,34 @@ function ContactPage() {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">
-          {/* Form */}
           <div className="bg-card rounded-3xl p-6 md:p-8 shadow-card">
             <h2 className="font-display text-2xl font-bold">Send us a message</h2>
             <p className="text-sm text-muted-foreground mt-1">We'll get back within 1 business hour.</p>
-            <form className="mt-6 space-y-4" onSubmit={(e)=>e.preventDefault()}>
+            <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
               <div className="grid sm:grid-cols-2 gap-4">
-                <div><Label className="text-xs font-semibold uppercase tracking-wide">Name</Label><Input placeholder="Your name" className="mt-1.5 h-11 rounded-xl" /></div>
-                <div><Label className="text-xs font-semibold uppercase tracking-wide">Phone</Label><Input placeholder="9876543210" className="mt-1.5 h-11 rounded-xl" /></div>
+                <div>
+                  <Label className="text-xs font-semibold uppercase tracking-wide">Name</Label>
+                  <Input value={form.name} onChange={e=>upd("name",e.target.value)} placeholder="Your name" className="mt-1.5 h-11 rounded-xl" maxLength={100} />
+                </div>
+                <div>
+                  <Label className="text-xs font-semibold uppercase tracking-wide">Phone</Label>
+                  <Input value={form.phone} onChange={e=>upd("phone",e.target.value.replace(/\D/g,"").slice(0,10))} placeholder="9876543210" className="mt-1.5 h-11 rounded-xl" inputMode="numeric" />
+                </div>
               </div>
-              <div><Label className="text-xs font-semibold uppercase tracking-wide">Email</Label><Input type="email" placeholder="you@example.com" className="mt-1.5 h-11 rounded-xl" /></div>
-              <div><Label className="text-xs font-semibold uppercase tracking-wide">Message</Label><Textarea placeholder="How can we help?" className="mt-1.5 rounded-xl min-h-[120px]" /></div>
-              <Button variant="hero" size="lg" type="submit" className="w-full">Send Message <Send /></Button>
+              <div>
+                <Label className="text-xs font-semibold uppercase tracking-wide">Email (optional)</Label>
+                <Input value={form.email} onChange={e=>upd("email",e.target.value)} type="email" placeholder="you@example.com" className="mt-1.5 h-11 rounded-xl" maxLength={255} />
+              </div>
+              <div>
+                <Label className="text-xs font-semibold uppercase tracking-wide">Message</Label>
+                <Textarea value={form.message} onChange={e=>upd("message",e.target.value)} placeholder="How can we help?" className="mt-1.5 rounded-xl min-h-[120px]" maxLength={1000} />
+              </div>
+              <Button variant="hero" size="lg" type="submit" className="w-full" disabled={submitting}>
+                {submitting ? <><Loader2 className="animate-spin" /> Sending...</> : <>Send via WhatsApp <Send /></>}
+              </Button>
             </form>
           </div>
 
-          {/* Info */}
           <div className="space-y-4">
             <div className="bg-card rounded-3xl p-6 shadow-soft">
               <div className="flex items-start gap-4">

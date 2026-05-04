@@ -3,8 +3,22 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, ChevronLeft, ChevronRight, Scissors, Flower2, Activity, Sparkles, Video, Building2, ShieldCheck, MessageCircle, Calendar, Clock, Phone, User, MapPin } from "lucide-react";
+import { CheckCircle2, ChevronLeft, ChevronRight, Scissors, Flower2, Activity, Sparkles, Video, Building2, ShieldCheck, MessageCircle, Calendar, Clock, Phone, User, MapPin, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { z } from "zod";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+
+const bookingSchema = z.object({
+  problem: z.string().min(2).max(100),
+  name: z.string().trim().min(2, "Name is too short").max(100),
+  phone: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number"),
+  age: z.coerce.number().int().min(1).max(120),
+  city: z.string().trim().min(2).max(100),
+  mode: z.enum(["Online", "Clinic Visit"]),
+  day: z.string().min(1),
+  slot: z.string().min(1),
+});
 
 export const Route = createFileRoute("/appointment")({
   head: () => ({
@@ -29,6 +43,7 @@ const days = ["Today", "Tomorrow", "Wed", "Thu", "Fri"];
 
 function AppointmentPage() {
   const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
   const [data, setData] = useState({
     problem: "", name: "", phone: "", age: "", city: "", mode: "", day: "", slot: "",
   });
@@ -37,13 +52,48 @@ function AppointmentPage() {
   const update = (k: string, v: string) => setData(d => ({ ...d, [k]: v }));
   const canNext = () => {
     if (step === 1) return !!data.problem;
-    if (step === 2) return data.name && data.phone.length >= 10 && data.age && data.city;
-    if (step === 3) return !!data.mode;
-    if (step === 4) return data.day && data.slot;
+    if (step === 2) {
+      return data.name.trim().length >= 2 &&
+        /^[6-9]\d{9}$/.test(data.phone) &&
+        Number(data.age) >= 1 && Number(data.age) <= 120 &&
+        data.city.trim().length >= 2;
+    }
+    if (step === 3) return data.mode === "Online" || data.mode === "Clinic Visit";
+    if (step === 4) return !!data.day && !!data.slot;
     return true;
   };
 
   const totalSteps = 5;
+
+  const handleConfirm = async () => {
+    const parsed = bookingSchema.safeParse(data);
+    if (!parsed.success) {
+      toast.error(parsed.error.issues[0]?.message ?? "Please check your details");
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from("appointments").insert({
+      name: parsed.data.name,
+      phone: parsed.data.phone,
+      age: parsed.data.age,
+      city: parsed.data.city,
+      problem: parsed.data.problem,
+      mode: parsed.data.mode,
+      preferred_day: parsed.data.day,
+      preferred_slot: parsed.data.slot,
+    });
+    setSubmitting(false);
+    if (error) {
+      toast.error("Booking failed. Please try again or WhatsApp us.");
+      return;
+    }
+    toast.success("Appointment booked successfully!");
+    setDone(true);
+  };
+
+  const waMessage = encodeURIComponent(
+    `Hi, I want to book a homeopathy consultation.\nName: ${data.name || "-"}\nPhone: ${data.phone || "-"}\nConcern: ${data.problem || "-"}\nMode: ${data.mode || "-"}\nWhen: ${data.day || "-"} ${data.slot || ""}`.trim()
+  );
 
   return (
     <section className="bg-gradient-hero min-h-screen">
@@ -53,14 +103,14 @@ function AppointmentPage() {
             <ShieldCheck className="h-3.5 w-3.5" /> Trusted by 1000+ patients
           </span>
           <h1 className="mt-4 font-display text-3xl md:text-5xl font-bold text-balance">Book Your Consultation</h1>
-          <p className="mt-3 text-muted-foreground">Just 4 quick steps. No payment required.</p>
+          <p className="mt-3 text-muted-foreground">Just 5 quick steps. No payment required.</p>
         </div>
 
         {/* Progress */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-primary">Step {Math.min(step, totalSteps)} of {totalSteps}</span>
-            <a href="https://wa.me/919876543210" className="text-xs font-semibold text-whatsapp inline-flex items-center gap-1.5"><MessageCircle className="h-3.5 w-3.5" /> Quick book on WhatsApp</a>
+            <a href={`https://wa.me/919876543210?text=${waMessage}`} target="_blank" rel="noreferrer" className="text-xs font-semibold text-whatsapp inline-flex items-center gap-1.5"><MessageCircle className="h-3.5 w-3.5" /> Quick book on WhatsApp</a>
           </div>
           <div className="h-2 rounded-full bg-card shadow-soft overflow-hidden">
             <div className="h-full bg-gradient-leaf transition-all duration-500" style={{ width: `${(Math.min(step, totalSteps)/totalSteps)*100}%` }} />
@@ -78,6 +128,16 @@ function AppointmentPage() {
               <div className="mt-6 inline-block bg-leaf-soft/60 rounded-2xl p-5 text-left text-sm">
                 <div><b>{data.problem}</b> · {data.mode}</div>
                 <div className="text-muted-foreground">{data.day} at {data.slot}</div>
+              </div>
+              <div className="mt-6 flex flex-wrap gap-3 justify-center">
+                <Button asChild variant="hero">
+                  <a href={`https://wa.me/919876543210?text=${waMessage}`} target="_blank" rel="noreferrer">
+                    <MessageCircle /> Confirm on WhatsApp
+                  </a>
+                </Button>
+                <Button asChild variant="outline">
+                  <a href="tel:+919876543210"><Phone /> Call clinic</a>
+                </Button>
               </div>
             </div>
           ) : (
@@ -172,11 +232,13 @@ function AppointmentPage() {
               )}
 
               <div className="mt-8 flex justify-between gap-3">
-                <Button variant="ghost" disabled={step===1} onClick={()=>setStep(s=>s-1)}><ChevronLeft /> Back</Button>
+                <Button variant="ghost" disabled={step===1 || submitting} onClick={()=>setStep(s=>s-1)}><ChevronLeft /> Back</Button>
                 {step < totalSteps ? (
                   <Button variant="hero" disabled={!canNext()} onClick={()=>setStep(s=>s+1)}>Continue <ChevronRight /></Button>
                 ) : (
-                  <Button variant="hero" onClick={()=>setDone(true)}>Confirm Booking <CheckCircle2 /></Button>
+                  <Button variant="hero" disabled={submitting} onClick={handleConfirm}>
+                    {submitting ? <><Loader2 className="animate-spin" /> Booking...</> : <>Confirm Booking <CheckCircle2 /></>}
+                  </Button>
                 )}
               </div>
             </>
