@@ -251,16 +251,26 @@ function AppointmentPage() {
                     </div>
                   </div>
                   <div className="mt-6">
-                    <Label className="text-xs uppercase tracking-wide text-muted-foreground">Available slots</Label>
+                    <Label className="text-xs uppercase tracking-wide text-muted-foreground flex items-center gap-2">
+                      Available slots {loadingSlots && <Loader2 className="h-3 w-3 animate-spin" />}
+                    </Label>
                     <div className="mt-2 grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {slots.map(s=>(
-                        <button key={s} onClick={()=>update("slot",s)}
-                          className={cn("py-3 rounded-xl border-2 text-sm font-medium transition flex items-center justify-center gap-1.5",
-                            data.slot===s ? "border-primary bg-leaf-soft text-primary" : "border-border hover:border-primary/40")}>
-                          <Clock className="h-3.5 w-3.5" />{s}
-                        </button>
-                      ))}
+                      {slots.map(s=>{
+                        const taken = !!data.day && isSlotTaken(data.day, s);
+                        return (
+                          <button key={s} disabled={taken || !data.day} onClick={()=>update("slot",s)}
+                            className={cn("py-3 rounded-xl border-2 text-sm font-medium transition flex items-center justify-center gap-1.5",
+                              taken ? "border-border bg-muted text-muted-foreground line-through cursor-not-allowed opacity-60" :
+                              data.slot===s ? "border-primary bg-leaf-soft text-primary" : "border-border hover:border-primary/40",
+                              !data.day && "opacity-50 cursor-not-allowed")}>
+                            <Clock className="h-3.5 w-3.5" />{s}{taken && <span className="text-[10px] ml-1">(booked)</span>}
+                          </button>
+                        );
+                      })}
                     </div>
+                    {data.day && slots.every(s => isSlotTaken(data.day, s)) && (
+                      <p className="mt-3 text-xs text-destructive">All slots booked for {data.day}. Please pick another date.</p>
+                    )}
                   </div>
                 </div>
               )}
