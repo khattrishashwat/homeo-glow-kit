@@ -42,8 +42,8 @@ export function Header() {
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
-          <Button asChild variant="hero" size="sm">
-            <Link to="/appointment">Book Appointment</Link>
+          <Button asChild variant="hero" size="lg" className="rounded-full">
+            <Link to="/appointment"><Phone className="h-4 w-4" /> Book Appointment</Link>
           </Button>
         </div>
 
