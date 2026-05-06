@@ -58,7 +58,24 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      slot_availability: {
+        Row: {
+          mode: string | null
+          preferred_day: string | null
+          preferred_slot: string | null
+        }
+        Insert: {
+          mode?: string | null
+          preferred_day?: string | null
+          preferred_slot?: string | null
+        }
+        Update: {
+          mode?: string | null
+          preferred_day?: string | null
+          preferred_slot?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
