@@ -60,25 +60,21 @@ function AppointmentPage() {
     const fetchBooked = async () => {
       setLoadingSlots(true);
       const { data: rows, error } = await supabase
-        .from("appointments")
+        .from("slot_availability" as never)
         .select("preferred_day, preferred_slot, mode")
-        .eq("mode", data.mode)
-        .neq("status", "cancelled");
+        .eq("mode", data.mode);
       if (!active) return;
       if (!error && rows) {
-        setBookedSlots(new Set(rows.map(r => slotKey(r.preferred_day, r.preferred_slot, r.mode))));
+        setBookedSlots(new Set((rows as Array<{ preferred_day: string; preferred_slot: string; mode: string }>).map(r => slotKey(r.preferred_day, r.preferred_slot, r.mode))));
       }
       setLoadingSlots(false);
     };
     fetchBooked();
-
-    const channel = supabase
-      .channel("appointments-availability")
-      .on("postgres_changes", { event: "*", schema: "public", table: "appointments" }, fetchBooked)
-      .subscribe();
+    // Poll periodically to keep availability fresh without exposing PII via realtime
+    const interval = setInterval(fetchBooked, 15000);
     return () => {
       active = false;
-      supabase.removeChannel(channel);
+      clearInterval(interval);
     };
   }, [data.mode]);
 
