@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Public can read own order by id" ON public.orders;

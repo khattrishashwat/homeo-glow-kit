@@ -56,6 +56,78 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          address_line: string
+          city: string
+          consultation_mode: string
+          coupon_code: string | null
+          created_at: string
+          delivery_charge: number
+          discount: number
+          email: string
+          id: string
+          name: string
+          order_status: string
+          payment_method: string
+          payment_status: string
+          phone: string
+          pincode: string
+          product_name: string
+          product_slug: string
+          quantity: number
+          state: string
+          subtotal: number
+          total: number
+        }
+        Insert: {
+          address_line: string
+          city: string
+          consultation_mode?: string
+          coupon_code?: string | null
+          created_at?: string
+          delivery_charge?: number
+          discount?: number
+          email: string
+          id?: string
+          name: string
+          order_status?: string
+          payment_method: string
+          payment_status?: string
+          phone: string
+          pincode: string
+          product_name: string
+          product_slug: string
+          quantity?: number
+          state: string
+          subtotal: number
+          total: number
+        }
+        Update: {
+          address_line?: string
+          city?: string
+          consultation_mode?: string
+          coupon_code?: string | null
+          created_at?: string
+          delivery_charge?: number
+          discount?: number
+          email?: string
+          id?: string
+          name?: string
+          order_status?: string
+          payment_method?: string
+          payment_status?: string
+          phone?: string
+          pincode?: string
+          product_name?: string
+          product_slug?: string
+          quantity?: number
+          state?: string
+          subtotal?: number
+          total?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       slot_availability: {
