@@ -72,78 +72,91 @@ function HomePage() {
     <>
       {/* HERO */}
       <section className="relative bg-gradient-hero overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-12 pb-16 md:pt-20 md:pb-28 grid lg:grid-cols-2 gap-12 items-center">
-          <div className="animate-fade-up">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-card shadow-soft text-xs font-semibold text-primary">
-              <Sparkles className="h-3.5 w-3.5" /> 20+ Years of Trusted Care
-            </span>
-            <h1 className="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] text-balance text-foreground">
-              Natural Homeopathy Treatment for{" "}
-              <span className="bg-gradient-leaf bg-clip-text text-transparent">Long-Term Relief</span>
-            </h1>
-            <p className="mt-5 text-base md:text-lg text-muted-foreground max-w-xl text-pretty">
-              Personalized, safe, and effective treatment for chronic and acute conditions — backed by two decades of clinical experience.
-            </p>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 pb-10 md:pt-16 md:pb-16">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-4 items-center">
+            {/* LEFT */}
+            <div className="animate-fade-up relative z-10">
+              <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-leaf-soft/80 text-xs sm:text-sm font-bold uppercase tracking-wide text-primary shadow-soft">
+                <Leaf className="h-4 w-4" /> Natural Healing. Lasting Results.
+              </span>
+              <h1 className="mt-6 font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.02] tracking-tight text-primary text-balance">
+                MD's<br />Homeopathy
+              </h1>
+              <p className="mt-4 font-display text-xl sm:text-2xl text-foreground/80 font-medium">
+                Natural Healing with Trusted Care
+              </p>
+              <p className="mt-5 text-base text-muted-foreground max-w-md text-pretty">
+                Safe, natural and effective homeopathic treatment for you and your loved ones. Personalized care for a healthier tomorrow.
+              </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild variant="hero" size="xl">
-                <Link to="/appointment"><Calendar /> Book Appointment</Link>
-              </Button>
-              <Button asChild variant="whatsapp" size="xl">
-                <a href="https://wa.me/919876543210"><MessageCircle /> WhatsApp Now</a>
-              </Button>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button asChild variant="hero" size="xl" className="rounded-full">
+                  <Link to="/appointment"><Calendar /> Book Appointment</Link>
+                </Button>
+                <Button asChild variant="outline" size="xl" className="rounded-full bg-card hover:bg-card text-whatsapp border-card shadow-soft hover:shadow-glow">
+                  <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer"><MessageCircle /> Chat on WhatsApp</a>
+                </Button>
+              </div>
             </div>
 
-            <div className="mt-10 flex items-center gap-6">
-              <div className="flex -space-x-3">
-                {[1,2,3,4].map(i => (
-                  <div key={i} className="h-10 w-10 rounded-full border-2 border-background bg-gradient-to-br from-leaf-soft to-sky-soft" />
+            {/* RIGHT — Doctor */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-leaf opacity-15 blur-3xl rounded-full" />
+              <div className="relative">
+                <img
+                  src={doctorImg}
+                  alt="MD's Homeopathy doctor holding a homeopathic remedy"
+                  className="relative w-full h-auto object-contain max-h-[560px] mx-auto drop-shadow-2xl"
+                  width={1024}
+                  height={1024}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* FEATURE CARDS ROW */}
+          <div className="mt-10 md:mt-12 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {[
+              { icon: Leaf, title: "Natural Treatment", desc: "Side-effect free homeopathic care" },
+              { icon: User, title: "Expert Doctor", desc: "Experienced and trusted homeopath" },
+              { icon: Users, title: "All Age Care", desc: "Treatment for kids, adults & seniors" },
+              { icon: ShieldCheck, title: "Safe & Effective", desc: "Holistic approach for long lasting results" },
+            ].map((f) => (
+              <div key={f.title} className="bg-card/80 backdrop-blur rounded-2xl p-4 sm:p-5 shadow-soft hover:shadow-card transition flex items-start gap-3">
+                <div className="grid h-11 w-11 place-items-center rounded-full border-2 border-primary/30 bg-leaf-soft/60 shrink-0">
+                  <f.icon className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <div className="font-bold text-sm sm:text-base text-foreground leading-tight">{f.title}</div>
+                  <div className="mt-1 text-xs sm:text-sm text-muted-foreground leading-snug">{f.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* TRUST STRIP */}
+          <div className="mt-4 sm:mt-5 bg-leaf-soft/70 rounded-2xl px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-soft">
+            <div className="flex items-center gap-3">
+              <div className="grid h-11 w-11 place-items-center rounded-full bg-card shadow-soft">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <div className="font-bold text-sm sm:text-base">Trusted Homeopathy Clinic</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Thousands of patients healed with care and compassion.</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex -space-x-2">
+                {[1,2,3,4,5,6].map(i => (
+                  <div key={i} className="h-9 w-9 rounded-full border-2 border-background bg-gradient-to-br from-leaf-soft to-sky-soft" />
                 ))}
               </div>
               <div>
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_,i)=> <Star key={i} className="h-4 w-4 fill-warning text-warning" />)}
-                  <span className="ml-1 text-sm font-semibold">4.9/5</span>
-                </div>
-                <p className="text-xs text-muted-foreground">from 1000+ happy patients</p>
+                <div className="font-display font-extrabold text-xl text-primary leading-none">5000+</div>
+                <div className="text-xs text-muted-foreground">Happy Patients</div>
               </div>
             </div>
           </div>
-
-          <div className="relative">
-            <div className="absolute -inset-6 bg-gradient-leaf opacity-20 blur-3xl rounded-full" />
-            <div className="relative aspect-square rounded-[2.5rem] overflow-hidden shadow-glow bg-gradient-card">
-              <img src={doctorImg} alt="Senior homeopathy doctor at MD's clinic" className="h-full w-full object-cover" width={1024} height={1024} />
-            </div>
-            <div className="absolute -bottom-6 -left-6 bg-card rounded-2xl shadow-card p-4 flex items-center gap-3 hidden sm:flex">
-              <div className="grid h-10 w-10 place-items-center rounded-full bg-success/15"><CheckCircle2 className="h-5 w-5 text-success" /></div>
-              <div>
-                <div className="text-sm font-semibold">Verified Doctor</div>
-                <div className="text-xs text-muted-foreground">BHMS, MD (Hom.)</div>
-              </div>
-            </div>
-            <div className="absolute -top-4 -right-4 bg-card rounded-2xl shadow-card p-4 hidden sm:block">
-              <div className="text-2xl font-display font-bold text-primary">1000+</div>
-              <div className="text-xs text-muted-foreground">Patients Healed</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* TRUST BAR */}
-      <section className="border-y border-border bg-card">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
-          {trust.map((t) => (
-            <div key={t.label} className="flex items-center gap-3">
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-leaf-soft">
-                <t.icon className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <div className="font-display text-xl font-bold">{t.value}</div>
-                <div className="text-xs text-muted-foreground">{t.label}</div>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 
