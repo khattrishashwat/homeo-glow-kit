@@ -59,22 +59,22 @@ function PaymentPage() {
     }
     const payment_status = method === "COD" || method === "PayLater" ? "pending" : "paid";
 
-    const { data, error } = await supabase
-      .from("orders")
-      .insert({
-        ...draft.customer,
-        product_slug: product.slug,
-        product_name: product.name,
-        quantity: draft.quantity,
-        subtotal: totals.subtotal,
-        discount: totals.discount,
-        delivery_charge: totals.delivery,
-        total: totals.total,
-        coupon_code: draft.coupon || null,
-        payment_method: method,
-        payment_status,
-        order_status: "placed",
-      })
+    const payload = {
+      ...draft.customer,
+      product_slug: product.slug,
+      product_name: product.name,
+      quantity: draft.quantity,
+      subtotal: totals.subtotal,
+      discount: totals.discount,
+      delivery_charge: totals.delivery,
+      total: totals.total,
+      coupon_code: draft.coupon || null,
+      payment_method: method,
+      payment_status,
+      order_status: "placed",
+    };
+    const { data, error } = await (supabase.from as any)("orders")
+      .insert(payload)
       .select("id")
       .single();
 
