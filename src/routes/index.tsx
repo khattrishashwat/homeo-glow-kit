@@ -5,7 +5,7 @@ import doctorImg from "@/assets/doctor-hero.png";
 import productHair from "@/assets/product-hair.jpg";
 import productPcod from "@/assets/product-pcod.jpg";
 import {
-  Calendar, MessageCircle, ShieldCheck, Award, Users, Globe, Sparkles,
+  Calendar, MessageCircle, ShieldCheck, Award, Users, Globe, Sparkles, Leaf, User,
   HeartPulse, Activity, Brain, Flower2, Scissors, Stethoscope,
   ClipboardList, Microscope, Pill, Repeat, Star, ArrowRight, CheckCircle2, ChevronDown, Phone
 } from "lucide-react";
