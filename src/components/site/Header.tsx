@@ -1,14 +1,15 @@
 import { Link } from "@tanstack/react-router";
-import { Leaf, Menu, X } from "lucide-react";
+import { Leaf, Menu, X, Phone } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const nav = [
   { to: "/", label: "Home" },
-  { to: "/about", label: "About" },
-  { to: "/services", label: "Services" },
-  { to: "/appointment", label: "Book" },
-  { to: "/contact", label: "Contact" },
+  { to: "/about", label: "About Us" },
+  { to: "/services", label: "Treatment" },
+  { to: "/services", label: "Diseases" },
+  { to: "/about", label: "Blogs" },
+  { to: "/contact", label: "Contact Us" },
 ];
 
 export function Header() {
