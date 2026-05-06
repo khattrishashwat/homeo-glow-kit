@@ -18,12 +18,12 @@ export function Header() {
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-2 group">
-          <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-leaf shadow-soft group-hover:shadow-glow transition-shadow">
-            <Leaf className="h-5 w-5 text-primary-foreground" />
+          <div className="grid h-10 w-10 place-items-center rounded-xl bg-leaf-soft shadow-soft group-hover:shadow-glow transition-shadow">
+            <Leaf className="h-5 w-5 text-primary" />
           </div>
           <div className="leading-tight">
-            <div className="font-display text-lg font-bold text-foreground">MD's</div>
-            <div className="text-[10px] tracking-widest uppercase text-muted-foreground">Homeopathy</div>
+            <div className="font-display text-lg font-extrabold text-foreground">MD's</div>
+            <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-foreground/80">Homeopathy</div>
           </div>
         </Link>
 
