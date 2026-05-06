@@ -31,7 +31,7 @@ export const Route = createFileRoute("/shop/$slug")({
 });
 
 function ProductDetailPage() {
-  const { product: p } = Route.useLoaderData();
+  const { product: p } = Route.useLoaderData() as { product: import("@/lib/products").Product };
   const [qty, setQty] = useState(1);
   const off = discountPercent(p.mrp, p.price);
   const related = products.filter((x) => x.slug !== p.slug).slice(0, 3);
