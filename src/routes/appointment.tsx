@@ -129,7 +129,8 @@ function AppointmentPage() {
         setStep(4);
         return;
       }
-      toast.error(error.message || "Could not save your booking. Please try WhatsApp.");
+      console.error("[booking] insert error:", error);
+      toast.error("Could not save your booking. Please try again or contact us on WhatsApp.");
       return;
     }
     toast.success("Appointment confirmed!");
