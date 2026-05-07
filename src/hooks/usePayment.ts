@@ -5,7 +5,7 @@ const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 export function useCreatePaymentOrder() {
   return useMutation({
     mutationFn: async (data) => {
-      const response = await fetch(`${API_URL}/api/user/payments/create-order`, {
+      const response = await fetch(`${API_URL}/api/web/payments/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -23,7 +23,7 @@ export function useCreatePaymentOrder() {
 export function useVerifyPayment() {
   return useMutation({
     mutationFn: async (data) => {
-      const response = await fetch(`${API_URL}/api/user/payments/verify`, {
+      const response = await fetch(`${API_URL}/api/web/payments/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ export function usePaymentHistory(filters = {}) {
     queryKey: ['paymentHistory', filters],
     queryFn: async () => {
       const params = new URLSearchParams(filters);
-      const response = await fetch(`${API_URL}/api/user/payments/history?${params}`, {
+      const response = await fetch(`${API_URL}/api/web/payments/history?${params}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
