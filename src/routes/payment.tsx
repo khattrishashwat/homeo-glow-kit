@@ -3,10 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import { ShieldCheck, Loader2, CreditCard, Smartphone, Building2, Wallet, Banknote } from "lucide-react";
 import { Section } from "@/components/site/Section";
 import { Button } from "@/components/ui/button";
-import { getProduct, formatINR } from "@/lib/products";
-import { loadDraft, clearDraft, saveLastOrder } from "@/lib/order-store";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 export const Route = createFileRoute("/payment")({
   head: () => ({ meta: [{ title: "Payment | MD's Homeopathy" }, { name: "robots", content: "noindex" }] }),
@@ -73,32 +69,39 @@ function PaymentPage() {
       payment_status,
       order_status: "placed",
     };
-    const { data, error } = await (supabase.from as any)("orders")
-      .insert(payload)
-      .select("id")
-      .single();
 
-    setProcessing(false);
-    if (error || !data) {
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      setProcessing(false);
+      if (!response.ok) {
+        throw new Error("Failed to create order");
+      }
+
+      const data = await response.json();
+      saveLastOrder({
+        id: data.id,
+        product_name: product.name,
+        quantity: draft.quantity,
+        total: totals.total,
+        payment_method: method,
+        payment_status,
+        consultation_mode: draft.customer!.consultation_mode,
+        name: draft.customer!.name,
+        phone: draft.customer!.phone,
+      });
+      clearDraft();
+      setDraft(null);
+      navigate({ to: "/order-success" });
+    } catch (error) {
+      setProcessing(false);
       console.error(error);
       toast.error("Payment failed. Please try again.");
-      return;
     }
-
-    saveLastOrder({
-      id: data.id,
-      product_name: product.name,
-      quantity: draft.quantity,
-      total: totals.total,
-      payment_method: method,
-      payment_status,
-      consultation_mode: draft.customer!.consultation_mode,
-      name: draft.customer!.name,
-      phone: draft.customer!.phone,
-    });
-    clearDraft();
-    setDraft(null);
-    navigate({ to: "/order-success" });
   };
 
   return (

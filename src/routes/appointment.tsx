@@ -1,6 +1,6 @@
+
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,7 +23,7 @@ const bookingSchema = z.object({
 export const Route = createFileRoute("/appointment")({
   head: () => ({
     meta: [
-      { title: "Book Appointment —MD's HOMOEOPATHY" },
+      { title: "Book Appointment — MD's HOMOEOPATHY" },
       { name: "description", content: "Book your homeopathy consultation in 4 easy steps. Online or in-clinic. Trusted by 1000+ patients." },
       { property: "og:title", content: "Book a Homeopathy Consultation" },
       { property: "og:description", content: "Multi-step booking · online & clinic options · WhatsApp quick booking." },
@@ -40,6 +40,30 @@ const problems = [
 ];
 const slots = ["10:00 AM", "11:30 AM", "1:00 PM", "3:00 PM", "4:30 PM", "6:00 PM"];
 const days = ["Today", "Tomorrow", "Wed", "Thu", "Fri"];
+
+// Move Field and Row components outside of AppointmentPage
+function Field({ icon: Ic, label, value, onChange, placeholder }: {
+  icon: any; label: string; value: string; onChange: (v: string) => void; placeholder: string;
+}) {
+  return (
+    <div>
+      <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</Label>
+      <div className="relative mt-1.5">
+        <Ic className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} className="pl-10 h-11 rounded-xl" />
+      </div>
+    </div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-4">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-semibold text-right">{value}</span>
+    </div>
+  );
+}
 
 function AppointmentPage() {
   const [step, setStep] = useState(1);
@@ -59,13 +83,15 @@ function AppointmentPage() {
     let active = true;
     const fetchBooked = async () => {
       setLoadingSlots(true);
-      const { data: rows, error } = await supabase
-        .from("slot_availability" as never)
-        .select("preferred_day, preferred_slot, mode")
-        .eq("mode", data.mode);
-      if (!active) return;
-      if (!error && rows) {
-        setBookedSlots(new Set((rows as Array<{ preferred_day: string; preferred_slot: string; mode: string }>).map(r => slotKey(r.preferred_day, r.preferred_slot, r.mode))));
+      try {
+        const response = await fetch(`/api/slots/availability?mode=${encodeURIComponent(data.mode)}`);
+        if (!active) return;
+        if (response.ok) {
+          const rows = await response.json();
+          setBookedSlots(new Set((rows as Array<{ preferred_day: string; preferred_slot: string; mode: string }>).map(r => slotKey(r.preferred_day, r.preferred_slot, r.mode))));
+        }
+      } catch (error) {
+        console.error("Failed to fetch booked slots:", error);
       }
       setLoadingSlots(false);
     };
@@ -82,6 +108,7 @@ function AppointmentPage() {
     !!data.mode && bookedSlots.has(slotKey(day, slot, data.mode));
 
   const update = (k: string, v: string) => setData(d => ({ ...d, [k]: v }));
+  
   const canNext = () => {
     if (step === 1) return !!data.problem;
     if (step === 2) {
@@ -108,33 +135,43 @@ function AppointmentPage() {
       setStep(4);
       return;
     }
+    
     setSubmitting(true);
-    const { error } = await supabase.from("appointments").insert({
-      name: parsed.data.name,
-      phone: parsed.data.phone,
-      age: parsed.data.age,
-      city: parsed.data.city,
-      problem: parsed.data.problem,
-      mode: parsed.data.mode,
-      preferred_day: parsed.data.day,
-      preferred_slot: parsed.data.slot,
-    });
-    setSubmitting(false);
-    if (error) {
-      // 23505 = unique_violation (double-booking caught by DB)
-      if ((error as { code?: string }).code === "23505") {
-        toast.error("That slot was just booked by someone else. Please pick another.");
-        setBookedSlots(prev => new Set(prev).add(slotKey(data.day, data.slot, data.mode)));
-        update("slot", "");
-        setStep(4);
-        return;
+    try {
+      const response = await fetch("/api/appointments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: parsed.data.name,
+          phone: parsed.data.phone,
+          age: parsed.data.age,
+          city: parsed.data.city,
+          problem: parsed.data.problem,
+          mode: parsed.data.mode,
+          preferred_day: parsed.data.day,
+          preferred_slot: parsed.data.slot,
+        }),
+      });
+      
+      if (!response.ok) {
+        if (response.status === 409) {
+          toast.error("That slot was just booked by someone else. Please pick another.");
+          setBookedSlots(prev => new Set(prev).add(slotKey(data.day, data.slot, data.mode)));
+          update("slot", "");
+          setStep(4);
+          return;
+        }
+        throw new Error("Failed to book appointment");
       }
-      console.error("[booking] insert error:", error);
-      toast.error("Could not save your booking. Please try again or contact us on WhatsApp.");
-      return;
+      
+      toast.success("Appointment confirmed!");
+      setDone(true);
+    } catch (error) {
+      console.error("[booking] error:", error);
+      toast.error("Could not save your booking. Please contact us on WhatsApp.");
+    } finally {
+      setSubmitting(false);
     }
-    toast.success("Appointment confirmed!");
-    setDone(true);
   };
 
   const waMessage = encodeURIComponent(
@@ -306,28 +343,5 @@ function AppointmentPage() {
         </div>
       </div>
     </section>
-  );
-}
-
-function Field({ icon: Ic, label, value, onChange, placeholder }: {
-  icon: any; label: string; value: string; onChange: (v: string) => void; placeholder: string;
-}) {
-  return (
-    <div>
-      <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</Label>
-      <div className="relative mt-1.5">
-        <Ic className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} className="pl-10 h-11 rounded-xl" />
-      </div>
-    </div>
-  );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between gap-4">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-semibold text-right">{value}</span>
-    </div>
   );
 }
