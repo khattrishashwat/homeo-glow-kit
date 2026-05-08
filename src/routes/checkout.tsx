@@ -10,7 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { products, getProduct, formatINR } from "@/lib/products";
+import { useProductBySlug, useProducts } from "@/hooks/useProducts";
+import { assetUrl, formatINR, productMrp, productSummary } from "@/services/api";
 import { saveDraft, loadDraft } from "@/lib/order-store";
 import { whatsappLink } from "@/components/site/FloatingActions";
 import { toast } from "sonner";
@@ -42,8 +43,10 @@ function CheckoutPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
   const draft = loadDraft();
-  const slug = search.slug || draft?.productSlug || products[0].slug;
-  const product = getProduct(slug)!;
+  const { data: productsData } = useProducts({ limit: 1 });
+  const slug = search.slug || draft?.productSlug || productsData?.data?.[0]?.slug || "";
+  const { data: productData, isLoading, error } = useProductBySlug(slug);
+  const product = productData?.data;
   const [qty, setQty] = useState(search.qty || draft?.quantity || 1);
   const [coupon, setCoupon] = useState(draft?.coupon || "");
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(draft?.coupon || null);
@@ -57,8 +60,9 @@ function CheckoutPage() {
   });
 
   const totals = useMemo(() => {
+    if (!product) return null;
     const subtotal = product.price * qty;
-    const mrpTotal = product.mrp * qty;
+    const mrpTotal = productMrp(product) * qty;
     let discount = mrpTotal - subtotal;
     if (appliedCoupon?.toUpperCase() === "MDH10") discount += Math.round(subtotal * 0.1);
     const delivery = subtotal >= 999 ? 0 : 49;
@@ -77,9 +81,18 @@ function CheckoutPage() {
   };
 
   const onSubmit = (values: CustomerForm) => {
+    if (!product) return;
     saveDraft({ productSlug: product.slug, quantity: qty, coupon: appliedCoupon || undefined, customer: values });
     navigate({ to: "/payment" });
   };
+
+  if (isLoading) {
+    return <Section className="py-20 text-center text-muted-foreground">Loading checkout...</Section>;
+  }
+
+  if (error || !product || !totals) {
+    return <Section className="py-20 text-center text-destructive">Product unavailable. Please return to the shop.</Section>;
+  }
 
   return (
     <Section className="py-10">
@@ -92,10 +105,10 @@ function CheckoutPage() {
           <div className="rounded-3xl bg-card border border-border shadow-card p-6">
             <h2 className="font-display text-xl font-bold mb-4">Order Summary</h2>
             <div className="flex gap-4 items-center">
-              <img src={product.image} alt={product.name} className="h-20 w-20 rounded-xl object-cover bg-leaf-soft" />
+              <img src={assetUrl(product.image || product.images?.[0])} alt={product.name} className="h-20 w-20 rounded-xl object-cover bg-leaf-soft" />
               <div className="flex-1">
                 <div className="font-semibold">{product.name}</div>
-                <div className="text-sm text-muted-foreground">{product.shortDescription}</div>
+                <div className="text-sm text-muted-foreground">{productSummary(product)}</div>
                 <div className="mt-1 text-primary font-bold">{formatINR(product.price)}</div>
               </div>
               <div className="flex items-center rounded-full border border-border">

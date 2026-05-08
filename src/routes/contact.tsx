@@ -9,6 +9,8 @@ import { Phone, Mail, MapPin, Clock, MessageCircle, Send, Loader2 } from "lucide
 import { z } from "zod";
 import { toast } from "sonner";
 import { whatsappLink } from "@/components/site/FloatingActions";
+import { contactApi } from "@/services/api";
+import { useSettings } from "@/hooks/useSettings";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -39,9 +41,13 @@ const contactSchema = z.object({
 function ContactPage() {
   const [form, setForm] = useState({ name: "", phone: "", email: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
+  const { data: settings } = useSettings();
   const upd = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
+  const phone = settings?.phone || "+91 7668610031";
+  const email = settings?.email || "mdshomoeopathy13@gmail.com";
+  const address = settings?.address || "1262/3A, Deeg Gali, Shahganj Darwaza, Mathura, Uttar Pradesh - 281001, India";
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = contactSchema.safeParse(form);
     if (!parsed.success) {
@@ -49,11 +55,18 @@ function ContactPage() {
       return;
     }
     setSubmitting(true);
-    const msg = `Hi, I'd like to get in touch.\nName: ${parsed.data.name}\nPhone: ${parsed.data.phone}${parsed.data.email ? `\nEmail: ${parsed.data.email}` : ""}\nMessage: ${parsed.data.message}`;
-    window.open(whatsappLink(msg), "_blank");
-    toast.success("Opening WhatsApp — we'll reply shortly!");
-    setForm({ name: "", phone: "", email: "", message: "" });
-    setSubmitting(false);
+    try {
+      await contactApi.create(parsed.data);
+      const msg = `Hi, I'd like to get in touch.\nName: ${parsed.data.name}\nPhone: ${parsed.data.phone}${parsed.data.email ? `\nEmail: ${parsed.data.email}` : ""}\nMessage: ${parsed.data.message}`;
+      window.open(whatsappLink(msg), "_blank");
+      toast.success("Message submitted. Opening WhatsApp for quick follow-up.");
+      setForm({ name: "", phone: "", email: "", message: "" });
+    } catch (error) {
+      console.error(error);
+      toast.error("Could not submit your message. Please try WhatsApp or phone.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -75,13 +88,13 @@ function ContactPage() {
       <Section>
         <div className="grid lg:grid-cols-3 gap-6 mb-10">
           {[
-            { i: Phone, t: "Call us", d: "+91 7668610031", a: "tel:+917668610031" },
+            { i: Phone, t: "Call us", d: phone, a: `tel:${phone}` },
             { i: MessageCircle, t: "WhatsApp", d: "Quick reply, 9am–9pm", a: whatsappLink() },
             {
               i: Mail,
               t: "Email",
-              d: "mdshomoeopathy13@gmail.com",
-              a: "mailto:mdshomoeopathy13@gmail.com",
+              d: email,
+              a: `mailto:${email}`,
             },
           ].map((c) => (
             <a
@@ -185,8 +198,7 @@ function ContactPage() {
                 <div>
                   <h3 className="font-semibold">Visit our clinic</h3>
                   <p className="text-sm text-muted-foreground mt-1">
-                    1262/3A, Deeg Gali, Shahganj Darwaza,
-                    <br />
+                    {address}
                     Mathura, Uttar Pradesh – 281001, India
                   </p>
                 </div>

@@ -1,26 +1,22 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { API_URL, blogsApi } from '@/services/api';
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
-
-export function useBlogs(filters = {}) {
+export function useBlogs(filters: Record<string, string | number | boolean | undefined> = {}) {
   return useQuery({
     queryKey: ['blogs', filters],
     queryFn: async () => {
-      const params = new URLSearchParams(filters);
-      const response = await fetch(`${API_URL}/api/blog?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch blogs');
-      return response.json();
+      const response = await blogsApi.list(filters);
+      return response;
     },
   });
 }
 
-export function useBlogBySlug(slug) {
+export function useBlogBySlug(slug?: string) {
   return useQuery({
     queryKey: ['blog', slug],
     queryFn: async () => {
-      const response = await fetch(`${API_URL}/api/blog/${slug}`);
-      if (!response.ok) throw new Error('Failed to fetch blog');
-      return response.json();
+      const response = await blogsApi.bySlug(slug!);
+      return response;
     },
     enabled: !!slug,
   });
@@ -28,7 +24,17 @@ export function useBlogBySlug(slug) {
 
 export function useCreateBlog() {
   return useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (data: {
+      title: string;
+      excerpt: string;
+      content: string;
+      category: string;
+      author: string;
+      meta_description: string;
+      meta_keywords: string;
+      published: string;
+      featured_image?: File;
+    }) => {
       const formData = new FormData();
       formData.append('title', data.title);
       formData.append('excerpt', data.excerpt);

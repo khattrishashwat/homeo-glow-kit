@@ -3,6 +3,10 @@ import { useEffect, useMemo, useState } from "react";
 import { ShieldCheck, Loader2, CreditCard, Smartphone, Building2, Wallet, Banknote } from "lucide-react";
 import { Section } from "@/components/site/Section";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { assetUrl, formatINR, ordersApi, productMrp } from "@/services/api";
+import { clearDraft, loadDraft, saveLastOrder } from "@/lib/order-store";
+import { useProductBySlug } from "@/hooks/useProducts";
 
 export const Route = createFileRoute("/payment")({
   head: () => ({ meta: [{ title: "Payment | MD's Homeopathy" }, { name: "robots", content: "noindex" }] }),
@@ -23,6 +27,7 @@ function PaymentPage() {
   const [method, setMethod] = useState<typeof METHODS[number]["id"]>("UPI");
   const [processing, setProcessing] = useState(false);
   const [orderId] = useState(() => "MDH-" + Math.random().toString(36).slice(2, 8).toUpperCase());
+  const { data: productData } = useProductBySlug(draft?.productSlug);
 
   useEffect(() => {
     if (!draft || !draft.customer) {
@@ -31,13 +36,13 @@ function PaymentPage() {
     }
   }, [draft, navigate]);
 
-  const product = draft ? getProduct(draft.productSlug) : undefined;
+  const product = productData?.data;
 
   const totals = useMemo(() => {
     if (!product || !draft) return null;
     const qty = draft.quantity;
     const subtotal = product.price * qty;
-    const mrpTotal = product.mrp * qty;
+    const mrpTotal = productMrp(product) * qty;
     let discount = mrpTotal - subtotal;
     if (draft.coupon?.toUpperCase() === "MDH10") discount += Math.round(subtotal * 0.1);
     const delivery = subtotal >= 999 ? 0 : 49;
@@ -54,37 +59,33 @@ function PaymentPage() {
       await new Promise((r) => setTimeout(r, 1500));
     }
     const payment_status = method === "COD" || method === "PayLater" ? "pending" : "paid";
+    const backendPaymentStatus = payment_status === "paid" ? "completed" : "pending";
 
     const payload = {
-      ...draft.customer,
-      product_slug: product.slug,
-      product_name: product.name,
-      quantity: draft.quantity,
-      subtotal: totals.subtotal,
+      items: [{ productId: product._id, productSlug: product.slug, quantity: draft.quantity }],
       discount: totals.discount,
-      delivery_charge: totals.delivery,
-      total: totals.total,
-      coupon_code: draft.coupon || null,
-      payment_method: method,
-      payment_status,
-      order_status: "placed",
+      shipping_cost: totals.delivery,
+      customer_name: draft.customer!.name,
+      customer_email: draft.customer!.email,
+      customer_phone: draft.customer!.phone,
+      shipping_address: {
+        street: draft.customer!.address_line,
+        city: draft.customer!.city,
+        state: draft.customer!.state,
+        postal_code: draft.customer!.pincode,
+        country: "India",
+      },
+      notes: `Payment method: ${method}; consultation mode: ${draft.customer!.consultation_mode}; coupon: ${draft.coupon || "none"}`,
+      payment_status: backendPaymentStatus as "pending" | "completed",
+      order_status: "pending" as const,
     };
 
     try {
-      const response = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
+      const data = await ordersApi.create(payload);
       setProcessing(false);
-      if (!response.ok) {
-        throw new Error("Failed to create order");
-      }
-
-      const data = await response.json();
       saveLastOrder({
-        id: data.id,
+        id: data.data._id,
+        order_number: data.data.order_number,
         product_name: product.name,
         quantity: draft.quantity,
         total: totals.total,
@@ -151,7 +152,7 @@ function PaymentPage() {
           <div className="text-xs text-muted-foreground mb-2">Order ID</div>
           <div className="font-mono text-sm font-bold mb-4">{orderId}</div>
           <div className="flex gap-3 items-center">
-            <img src={product.image} alt={product.name} className="h-16 w-16 rounded-xl object-cover bg-leaf-soft" />
+            <img src={assetUrl(product.image || product.images?.[0])} alt={product.name} className="h-16 w-16 rounded-xl object-cover bg-leaf-soft" />
             <div className="flex-1">
               <div className="font-semibold text-sm">{product.name}</div>
               <div className="text-xs text-muted-foreground">Qty {draft.quantity}</div>

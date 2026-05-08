@@ -1,29 +1,15 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Check, ShieldCheck, Truck, Award, MessageCircle, Minus, Plus, Star } from "lucide-react";
+import { Check, ShieldCheck, Truck, Award, MessageCircle, Minus, Plus, Star, Loader2 } from "lucide-react";
 import { Section } from "@/components/site/Section";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { products, getProduct, formatINR, discountPercent } from "@/lib/products";
+import { useProductBySlug, useProducts } from "@/hooks/useProducts";
+import { assetUrl, discountPercent, formatINR, productMrp, productSummary } from "@/services/api";
 import { whatsappLink } from "@/components/site/FloatingActions";
 
 export const Route = createFileRoute("/shop/$slug")({
-  loader: ({ params }) => {
-    const product = getProduct(params.slug);
-    if (!product) throw notFound();
-    return { product };
-  },
-  head: ({ loaderData }) => ({
-    meta: loaderData?.product
-      ? [
-          { title: `${loaderData.product.name} | MD's Homeopathy` },
-          { name: "description", content: loaderData.product.shortDescription },
-          { property: "og:title", content: loaderData.product.name },
-          { property: "og:description", content: loaderData.product.shortDescription },
-          { property: "og:image", content: loaderData.product.image },
-        ]
-      : [],
-  }),
+  head: () => ({ meta: [{ title: "Treatment Kit | MD's Homeopathy" }] }),
   component: ProductDetailPage,
   notFoundComponent: () => (
     <Section><p className="text-center">Product not found. <Link to="/shop" className="text-primary underline">Back to shop</Link></p></Section>
@@ -31,10 +17,28 @@ export const Route = createFileRoute("/shop/$slug")({
 });
 
 function ProductDetailPage() {
-  const { product: p } = Route.useLoaderData() as { product: import("@/lib/products").Product };
+  const { slug } = Route.useParams();
+  const { data, isLoading, error } = useProductBySlug(slug);
+  const { data: relatedData } = useProducts({ limit: 4 });
   const [qty, setQty] = useState(1);
-  const off = discountPercent(p.mrp, p.price);
-  const related = products.filter((x) => x.slug !== p.slug).slice(0, 3);
+  const p = data?.data;
+
+  if (isLoading) {
+    return <Section className="py-20 text-center text-muted-foreground"><Loader2 className="mx-auto mb-3 h-5 w-5 animate-spin" />Loading product...</Section>;
+  }
+
+  if (error || !p) {
+    return <Section><p className="text-center">Product not found. <Link to="/shop" className="text-primary underline">Back to shop</Link></p></Section>;
+  }
+
+  const mrp = productMrp(p);
+  const off = discountPercent(mrp, p.price);
+  const image = assetUrl(p.image || p.images?.[0]);
+  const gallery = [p.image, ...(p.images || [])].filter(Boolean).map((src) => assetUrl(src));
+  const related = (relatedData?.data || []).filter((x) => x.slug !== p.slug).slice(0, 3);
+  const benefits = p.attributes?.benefits || [];
+  const ingredients = p.attributes?.ingredients || [];
+  const faqs = p.attributes?.faqs || [];
 
   return (
     <>
@@ -48,10 +52,10 @@ function ProductDetailPage() {
         <div className="grid lg:grid-cols-2 gap-10">
           <div>
             <div className="aspect-square overflow-hidden rounded-3xl bg-leaf-soft shadow-card">
-              <img src={p.image} alt={p.name} className="h-full w-full object-cover" />
+              {image ? <img src={image} alt={p.name} className="h-full w-full object-cover" /> : null}
             </div>
             <div className="mt-4 grid grid-cols-4 gap-3">
-              {[p.image, p.image, p.image, p.image].map((src, i) => (
+              {(gallery.length ? gallery : [image]).slice(0, 4).map((src, i) => (
                 <div key={i} className="aspect-square overflow-hidden rounded-xl bg-leaf-soft border border-border">
                   <img src={src} alt="" className="h-full w-full object-cover opacity-80" />
                 </div>
@@ -60,7 +64,7 @@ function ProductDetailPage() {
           </div>
 
           <div>
-            {p.recommended && (
+            {p.attributes?.recommended && (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-leaf-soft text-primary text-xs font-bold px-3 py-1.5 mb-4">
                 <ShieldCheck className="h-3.5 w-3.5" /> Doctor Recommended
               </span>
@@ -72,13 +76,13 @@ function ProductDetailPage() {
               </div>
               <span className="text-sm text-muted-foreground">4.9 (1,240 reviews)</span>
             </div>
-            <p className="mt-4 text-muted-foreground">{p.description}</p>
+            <p className="mt-4 text-muted-foreground">{p.description || productSummary(p)}</p>
 
             <div className="mt-6 flex items-baseline gap-3">
               <span className="text-3xl font-bold text-primary">{formatINR(p.price)}</span>
-              {p.mrp > p.price && (
+              {mrp > p.price && (
                 <>
-                  <span className="text-lg text-muted-foreground line-through">{formatINR(p.mrp)}</span>
+                  <span className="text-lg text-muted-foreground line-through">{formatINR(mrp)}</span>
                   <span className="rounded-full bg-destructive text-destructive-foreground text-xs font-bold px-2.5 py-1">{off}% OFF</span>
                 </>
               )}
@@ -88,7 +92,7 @@ function ProductDetailPage() {
               {[
                 { icon: ShieldCheck, label: "Safe & Natural" },
                 { icon: Truck, label: "Free Delivery" },
-                { icon: Award, label: `${p.durationWeeks}wk Course` },
+                { icon: Award, label: `${p.attributes?.durationWeeks || 8}wk Course` },
               ].map((b) => (
                 <div key={b.label} className="rounded-2xl bg-card border border-border p-3 text-center shadow-soft">
                   <b.icon className="mx-auto h-5 w-5 text-primary" />
@@ -125,7 +129,7 @@ function ProductDetailPage() {
           <div className="rounded-3xl bg-card shadow-card border border-border p-7">
             <h2 className="font-display text-2xl font-bold">Benefits</h2>
             <ul className="mt-5 space-y-3">
-              {p.benefits.map((b) => (
+              {benefits.map((b) => (
                 <li key={b} className="flex items-start gap-3">
                   <span className="mt-0.5 grid h-6 w-6 place-items-center rounded-full bg-leaf-soft text-primary"><Check className="h-3.5 w-3.5" /></span>
                   <span className="text-sm">{b}</span>
@@ -136,12 +140,12 @@ function ProductDetailPage() {
           <div className="rounded-3xl bg-card shadow-card border border-border p-7">
             <h2 className="font-display text-2xl font-bold">Ingredients</h2>
             <ul className="mt-5 grid grid-cols-2 gap-3">
-              {p.ingredients.map((i) => (
+              {ingredients.map((i) => (
                 <li key={i} className="rounded-xl bg-leaf-soft/60 px-3 py-2 text-sm font-medium text-foreground">{i}</li>
               ))}
             </ul>
             <h3 className="mt-6 font-display text-lg font-bold">Usage Instructions</h3>
-            <p className="mt-2 text-sm text-muted-foreground">{p.usage}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{p.attributes?.usage || "Use as directed by the doctor after consultation."}</p>
           </div>
         </div>
       </Section>
@@ -149,7 +153,7 @@ function ProductDetailPage() {
       <Section className="py-10">
         <h2 className="font-display text-2xl font-bold mb-6">Frequently Asked Questions</h2>
         <Accordion type="single" collapsible className="rounded-3xl bg-card border border-border shadow-card px-6">
-          {p.faqs.map((f, i) => (
+          {faqs.map((f, i) => (
             <AccordionItem key={i} value={`q-${i}`}>
               <AccordionTrigger className="text-left">{f.q}</AccordionTrigger>
               <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
@@ -181,7 +185,7 @@ function ProductDetailPage() {
           {related.map((r) => (
             <Link key={r.slug} to="/shop/$slug" params={{ slug: r.slug }} className="group rounded-2xl overflow-hidden bg-card border border-border shadow-soft hover:shadow-glow transition">
               <div className="aspect-[4/3] bg-leaf-soft overflow-hidden">
-                <img src={r.image} alt={r.name} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+                {assetUrl(r.image || r.images?.[0]) ? <img src={assetUrl(r.image || r.images?.[0])} alt={r.name} className="h-full w-full object-cover transition-transform group-hover:scale-105" /> : null}
               </div>
               <div className="p-4">
                 <div className="font-semibold">{r.name}</div>

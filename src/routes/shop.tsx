@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Star, ShieldCheck, Sparkles } from "lucide-react";
+import { Loader2, Search, Star, ShieldCheck, Sparkles } from "lucide-react";
 import { Section, SectionHeader } from "@/components/site/Section";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { products, categories, formatINR, discountPercent, type Product } from "@/lib/products";
+import { useProducts } from "@/hooks/useProducts";
+import { assetUrl, discountPercent, formatINR, productMrp, productSummary, type Product } from "@/services/api";
 
 export const Route = createFileRoute("/shop")({
   head: () => ({
@@ -19,17 +20,21 @@ export const Route = createFileRoute("/shop")({
 });
 
 function ProductCard({ p }: { p: Product }) {
-  const off = discountPercent(p.mrp, p.price);
+  const mrp = productMrp(p);
+  const off = discountPercent(mrp, p.price);
+  const image = assetUrl(p.image || p.images?.[0]);
   return (
     <article className="group flex flex-col overflow-hidden rounded-3xl bg-card shadow-card border border-border/60 transition-all hover:-translate-y-1 hover:shadow-glow">
       <div className="relative aspect-[4/3] overflow-hidden bg-leaf-soft">
-        <img src={p.image} alt={p.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        {image ? (
+          <img src={image} alt={p.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+        ) : null}
         {off > 0 && (
           <span className="absolute top-3 left-3 rounded-full bg-destructive text-destructive-foreground text-xs font-bold px-3 py-1 shadow-soft">
             {off}% OFF
           </span>
         )}
-        {p.recommended && (
+        {p.attributes?.recommended && (
           <span className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-card/95 backdrop-blur text-primary text-[10px] font-bold px-2.5 py-1 shadow-soft">
             <ShieldCheck className="h-3 w-3" /> Doctor Recommended
           </span>
@@ -41,10 +46,10 @@ function ProductCard({ p }: { p: Product }) {
           <span className="ml-1 text-muted-foreground font-medium">(4.9)</span>
         </div>
         <h3 className="mt-2 font-display text-lg font-bold text-foreground">{p.name}</h3>
-        <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{p.shortDescription}</p>
+        <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{productSummary(p)}</p>
         <div className="mt-3 flex items-baseline gap-2">
           <span className="text-xl font-bold text-foreground">{formatINR(p.price)}</span>
-          {p.mrp > p.price && <span className="text-sm text-muted-foreground line-through">{formatINR(p.mrp)}</span>}
+          {mrp > p.price && <span className="text-sm text-muted-foreground line-through">{formatINR(mrp)}</span>}
         </div>
         <div className="mt-4 flex flex-col sm:flex-row gap-2">
           <Button asChild variant="outline" size="sm" className="flex-1">
@@ -61,17 +66,24 @@ function ProductCard({ p }: { p: Product }) {
 
 function ShopPage() {
   const [q, setQ] = useState("");
-  const [cat, setCat] = useState<(typeof categories)[number]>("All");
+  const [cat, setCat] = useState("All");
+  const { data, isLoading, error } = useProducts({ limit: 50 });
+  const products = data?.data || [];
+  const categories = useMemo(() => {
+    const values = Array.from(new Set(products.map((p) => p.category).filter(Boolean))) as string[];
+    return ["All", ...values];
+  }, [products]);
 
   const filtered = useMemo(() => {
     return products.filter((p) => {
       const matchCat = cat === "All" || p.category === cat;
-      const matchQ = !q || p.name.toLowerCase().includes(q.toLowerCase()) || p.shortDescription.toLowerCase().includes(q.toLowerCase());
+      const summary = productSummary(p);
+      const matchQ = !q || p.name.toLowerCase().includes(q.toLowerCase()) || summary.toLowerCase().includes(q.toLowerCase());
       return matchCat && matchQ;
     });
-  }, [q, cat]);
+  }, [products, q, cat]);
 
-  const featured = products.filter((p) => p.featured);
+  const featured = products.filter((p) => p.attributes?.featured);
 
   return (
     <>
@@ -103,7 +115,13 @@ function ShopPage() {
             ))}
           </div>
         </div>
-        {filtered.length === 0 ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center gap-2 py-12 text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" /> Loading products...
+          </div>
+        ) : error ? (
+          <p className="text-center text-destructive py-12">Failed to load products. Please try again later.</p>
+        ) : filtered.length === 0 ? (
           <p className="text-center text-muted-foreground py-12">No products match your search.</p>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

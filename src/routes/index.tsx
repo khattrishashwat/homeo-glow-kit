@@ -1,15 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Section, SectionHeader } from "@/components/site/Section";
+import { GoogleReviews } from "@/components/site/GoogleReviews";
 import doctorImg from "@/assets/doctor-heros.png";
 import productHair from "@/assets/product-hair.jpg";
-import productPcod from "@/assets/product-pcod.jpg";
 import {
   Calendar, MessageCircle, ShieldCheck, Award, Users, Globe, Sparkles, Leaf, User,
   HeartPulse, Activity, Brain, Flower2, Scissors, Stethoscope,
-  ClipboardList, Microscope, Pill, Repeat, Star, ArrowRight, CheckCircle2, ChevronDown, Phone
+  ClipboardList, Microscope, Pill, Repeat, ArrowRight, CheckCircle2, ChevronDown, Phone
 } from "lucide-react";
 import { useState } from "react";
+import { useProducts } from "@/hooks/useProducts";
+import { useBlogs } from "@/hooks/useBlogs";
+import { assetUrl, formatINR, productMrp, productSummary } from "@/services/api";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -54,12 +57,6 @@ const why = [
   "Doorstep medicine delivery",
 ];  
 
-const blogs = [
-  { title: "Understanding PCOD: A Homeopathic Perspective", tag: "Women's Health", min: "5 min read" },
-  { title: "How to Stop Hair Fall Naturally — Doctor's Guide", tag: "Hair Care", min: "4 min read" },
-  { title: "Managing Anxiety Without Side Effects", tag: "Mental Health", min: "6 min read" },
-];
-
 const faqs = [
   { q: "How long does homeopathic treatment take?", a: "Duration depends on the condition — chronic issues typically need 3–6 months, acute conditions resolve faster. We share a personalized timeline after consultation." },
   { q: "Are there any side effects?", a: "Homeopathy is 100% natural and free of side effects when prescribed by a qualified doctor. Safe for all ages, including children and pregnant women." },
@@ -68,6 +65,11 @@ const faqs = [
 ];
 
 function HomePage() {
+  const { data: productResponse, isLoading: loadingProducts } = useProducts({ limit: 2 });
+  const { data: blogResponse, isLoading: loadingBlogs } = useBlogs({ limit: 3 });
+  const homeProducts = productResponse?.data || [];
+  const homeBlogs = blogResponse?.data?.data || [];
+
   return (
     <>
       {/* HERO */}
@@ -239,72 +241,56 @@ function HomePage() {
   />
 
   <div className="mt-12 grid md:grid-cols-2 gap-6">
-
-    <ProductCard
-      img={productHair}
-      tag="Doctor Recommended"
-      name="Hair Fall Control Kit"
-      desc="Reduces hair fall and supports natural regrowth with a 90-day protocol."
-      price="₹1,499"
-      ctaLabel="Buy Now"
-      secondaryLabel="Consult First"
-      slug="hair-fall-control-kit"
-    />
-
-    <ProductCard
-      img={productPcod}
-      tag="Doctor Recommended"
-      name="PCOD Balance Kit"
-      desc="Supports hormonal balance naturally, reduces cramps, regulates cycle."
-      price="₹1,899"
-      ctaLabel="Buy Now"
-      secondaryLabel="Consult First"
-      slug="pcod-balance-kit"
-    />
-
+    {loadingProducts ? (
+      <p className="md:col-span-2 text-center text-sm text-muted-foreground">Loading products...</p>
+    ) : homeProducts.length ? (
+      homeProducts.map((product) => (
+        <ProductCard
+          key={product.slug}
+          img={assetUrl(product.image || product.images?.[0]) || productHair}
+          tag={product.attributes?.recommended ? "Doctor Recommended" : "Treatment Kit"}
+          name={product.name}
+          desc={productSummary(product)}
+          price={formatINR(product.price)}
+          mrp={formatINR(productMrp(product))}
+          ctaLabel="Buy Now"
+          secondaryLabel="Consult First"
+          slug={product.slug}
+        />
+      ))
+    ) : (
+      <p className="md:col-span-2 text-center text-sm text-muted-foreground">Products will be available shortly.</p>
+    )}
   </div>
 </Section>
 
       {/* TESTIMONIALS */}
       <Section className="bg-gradient-hero">
         <SectionHeader eyebrow="Testimonials" title="Real Patients. Real Results." />
-        <div className="mt-12 grid md:grid-cols-3 gap-6">
-          {[
-            { name: "Priya S.", city: "Mumbai", text: "After 6 months of treatment, my hair fall completely stopped. Doctor was patient, kind and explained every step." },
-            { name: "Rahul M.", city: "Pune", text: "My PCOD symptoms reduced dramatically. Cycles are regular now. Highly recommend MD's." },
-            { name: "Anita K.", city: "Delhi", text: "I was skeptical about online consultation, but the experience was excellent. Medicines reached on time." },
-          ].map((t)=>(
-            <div key={t.name} className="bg-card rounded-3xl p-6 shadow-card">
-              <div className="flex gap-1 mb-3">{[...Array(5)].map((_,i)=><Star key={i} className="h-4 w-4 fill-warning text-warning" />)}</div>
-              <p className="text-sm text-pretty text-foreground/90">"{t.text}"</p>
-              <div className="mt-5 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-gradient-leaf grid place-items-center text-primary-foreground font-bold">{t.name[0]}</div>
-                <div>
-                  <div className="text-sm font-semibold">{t.name}</div>
-                  <div className="text-xs text-muted-foreground">{t.city}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <GoogleReviews />
       </Section>
 
       {/* BLOG PREVIEW */}
       <Section>
         <SectionHeader eyebrow="Learn" title="From Our Health Journal" subtitle="Insights from our doctors on healing, naturally." />
         <div className="mt-12 grid md:grid-cols-3 gap-6">
-          {blogs.map((b)=>(
-            <article key={b.title} className="group bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition">
+          {loadingBlogs ? (
+            <p className="md:col-span-3 text-center text-sm text-muted-foreground">Loading articles...</p>
+          ) : homeBlogs.length ? homeBlogs.map((b)=>(
+            <Link key={b._id} to="/blog/$slug" params={{ slug: b.slug }} className="group bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition">
               <div className="aspect-[16/10] bg-gradient-to-br from-leaf-soft to-sky-soft relative">
-                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-card text-xs font-semibold text-primary shadow-soft">{b.tag}</span>
+                {b.featured_image ? <img src={assetUrl(b.featured_image)} alt={b.title} className="h-full w-full object-cover" loading="lazy" /> : null}
+                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-card text-xs font-semibold text-primary shadow-soft">{b.category}</span>
               </div>
               <div className="p-5">
-                <div className="text-xs text-muted-foreground">{b.min}</div>
+                <div className="text-xs text-muted-foreground">{b.author}</div>
                 <h3 className="mt-2 font-semibold text-base group-hover:text-primary transition">{b.title}</h3>
                 <div className="mt-3 text-xs font-semibold text-primary inline-flex items-center gap-1">Read article <ArrowRight className="h-3 w-3" /></div>
               </div>
-            </article>
-          ))}
+            </Link>
+          )) : (
+            <p className="md:col-span-3 text-center text-sm text-muted-foreground">Articles will be available shortly.</p>
+          )}
         </div>
       </Section>
 
@@ -338,8 +324,8 @@ function HomePage() {
   );
 }
 
-function ProductCard({ img, tag, name, desc, price, ctaLabel, secondaryLabel, slug }: {
-  img: string; tag: string; name: string; desc: string; price: string; ctaLabel: string; secondaryLabel: string; slug: string;
+function ProductCard({ img, tag, name, desc, price, mrp, ctaLabel, secondaryLabel, slug }: {
+  img: string; tag: string; name: string; desc: string; price: string; mrp: string; ctaLabel: string; secondaryLabel: string; slug: string;
 }) {
   return (
     <div className="group bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition grid md:grid-cols-2">
@@ -352,7 +338,7 @@ function ProductCard({ img, tag, name, desc, price, ctaLabel, secondaryLabel, sl
         <p className="mt-2 text-sm text-muted-foreground flex-1">{desc}</p>
         <div className="mt-4 flex items-baseline gap-2">
           <span className="font-display text-2xl font-bold text-primary">{price}</span>
-          <span className="text-xs text-muted-foreground line-through">₹2,499</span>
+          <span className="text-xs text-muted-foreground line-through">{mrp}</span>
         </div>
         <div className="mt-4 flex flex-col sm:flex-row gap-2">
           <Button asChild variant="hero" className="flex-1">

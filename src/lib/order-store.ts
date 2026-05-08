@@ -34,6 +34,7 @@ export const clearDraft = () => {
 
 export type SavedOrder = {
   id: string;
+  order_number?: string;
   product_name: string;
   quantity: number;
   total: number;

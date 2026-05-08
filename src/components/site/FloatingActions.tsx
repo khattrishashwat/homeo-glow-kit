@@ -1,15 +1,18 @@
 import { MessageCircle, Phone, Calendar } from "lucide-react";
 import { Link } from "@tanstack/react-router";
+import { useSettings } from "@/hooks/useSettings";
 
 const WHATSAPP_NUMBER = "919876543210";
 const DEFAULT_MESSAGE = "Hi, I want to book a homeopathy consultation.";
-export const whatsappLink = (msg: string = DEFAULT_MESSAGE) =>
-  `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+const normalizePhone = (value?: string) => (value || WHATSAPP_NUMBER).replace(/\D/g, "");
+export const whatsappLink = (msg: string = DEFAULT_MESSAGE, phone?: string) =>
+  `https://wa.me/${normalizePhone(phone)}?text=${encodeURIComponent(msg)}`;
 
 export function FloatingWhatsapp() {
+  const { data: settings } = useSettings();
   return (
     <a
-      href={whatsappLink()}
+      href={whatsappLink(DEFAULT_MESSAGE, settings?.social_links?.whatsapp || settings?.phone)}
       target="_blank"
       rel="noreferrer"
       aria-label="Chat on WhatsApp"
@@ -22,12 +25,14 @@ export function FloatingWhatsapp() {
 }
 
 export function StickyMobileBar() {
+  const { data: settings } = useSettings();
+  const phone = settings?.phone || "+919876543210";
   return (
     <div className="md:hidden fixed bottom-0 inset-x-0 z-40 grid grid-cols-3 bg-card/95 backdrop-blur-xl border-t border-border shadow-card">
-      <a href="tel:+919876543210" className="flex flex-col items-center gap-0.5 py-3 text-xs font-medium text-foreground">
+      <a href={`tel:${phone}`} className="flex flex-col items-center gap-0.5 py-3 text-xs font-medium text-foreground">
         <Phone className="h-4 w-4 text-primary" /> Call
       </a>
-      <a href={whatsappLink()} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-0.5 py-3 text-xs font-medium text-foreground border-x border-border">
+      <a href={whatsappLink(DEFAULT_MESSAGE, settings?.social_links?.whatsapp || phone)} target="_blank" rel="noreferrer" className="flex flex-col items-center gap-0.5 py-3 text-xs font-medium text-foreground border-x border-border">
         <MessageCircle className="h-4 w-4 text-whatsapp" /> WhatsApp
       </a>
       <Link to="/appointment" className="flex flex-col items-center gap-0.5 py-3 text-xs font-semibold bg-gradient-leaf text-primary-foreground">

@@ -2,9 +2,32 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
+type PaymentOrderPayload = Record<string, unknown>;
+type VerifyPaymentPayload = {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+};
+type RazorpayOrderData = {
+  key: string;
+  orderId: string;
+  amount: number;
+  paymentId?: string;
+};
+type RazorpayResponse = {
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+};
+
+declare global {
+  interface Window {
+    Razorpay: new (options: Record<string, unknown>) => { open: () => void };
+  }
+}
+
 export function useCreatePaymentOrder() {
   return useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (data: PaymentOrderPayload) => {
       const response = await fetch(`${API_URL}/api/web/payments/create-order`, {
         method: 'POST',
         headers: {
@@ -21,7 +44,7 @@ export function useCreatePaymentOrder() {
 }
 
 export function useVerifyPayment() {
-  return useMutation({
+  return useMutation<unknown, Error, VerifyPaymentPayload>({
     mutationFn: async (data) => {
       const response = await fetch(`${API_URL}/api/web/payments/verify`, {
         method: 'POST',
@@ -38,7 +61,7 @@ export function useVerifyPayment() {
   });
 }
 
-export function usePaymentHistory(filters = {}) {
+export function usePaymentHistory(filters: Record<string, string> = {}) {
   return useQuery({
     queryKey: ['paymentHistory', filters],
     queryFn: async () => {
@@ -57,8 +80,9 @@ export function usePaymentHistory(filters = {}) {
 }
 
 export function useInitiateRazorpay() {
+  const verified = useVerifyPayment();
   return {
-    initiatePayment: async (orderData) => {
+    initiatePayment: async (orderData: RazorpayOrderData) => {
       const { key, orderId, amount, paymentId } = orderData;
 
       return new Promise((resolve, reject) => {
@@ -69,9 +93,8 @@ export function useInitiateRazorpay() {
           name: 'Homeopathy Clinic',
           description: 'Appointment Payment',
           theme: { color: '#667eea' },
-          handler: async (response) => {
+          handler: async (response: RazorpayResponse) => {
             try {
-              const verified = await useVerifyPayment();
               const result = await verified.mutateAsync({
                 razorpay_order_id: options.order_id,
                 razorpay_payment_id: response.razorpay_payment_id,

@@ -1,25 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Link } from '@tanstack/react-router';
+import { assetUrl, blogsApi } from '@/services/api';
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
-
-export const Route = {
+export const Route = createFileRoute('/blog/$slug')({
   component: BlogDetailPage,
-};
+});
 
 export default function BlogDetailPage() {
-  const { slug } = useParams({ from: '/blog/$slug' });
+  const { slug } = Route.useParams();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['blog', slug],
     queryFn: async () => {
-      const response = await fetch(`${API_URL}/api/blog/${slug}`);
-      if (!response.ok) throw new Error('Blog not found');
-      return response.json();
+      return blogsApi.bySlug(slug);
     },
   });
 
@@ -69,7 +65,7 @@ export default function BlogDetailPage() {
           <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
             <span>By {blog.author}</span>
             <span>•</span>
-            <span>{new Date(blog.published_at).toLocaleDateString()}</span>
+            <span>{blog.published_at ? new Date(blog.published_at).toLocaleDateString() : "Draft"}</span>
             <span>•</span>
             <Badge variant="secondary" className="capitalize">
               {blog.category}
@@ -85,7 +81,7 @@ export default function BlogDetailPage() {
         <section className="border-b px-4 py-8">
           <div className="mx-auto max-w-3xl">
             <img
-              src={`${API_URL}${blog.featured_image}`}
+              src={assetUrl(blog.featured_image)}
               alt={blog.title}
               className="w-full rounded-lg object-cover"
             />
@@ -104,7 +100,7 @@ export default function BlogDetailPage() {
           {/* Body Content */}
           <div
             className="prose dark:prose-invert max-w-none"
-            dangerouslySetInnerHTML={{ __html: blog.content }}
+            dangerouslySetInnerHTML={{ __html: blog.content || "" }}
           />
         </div>
       </section>

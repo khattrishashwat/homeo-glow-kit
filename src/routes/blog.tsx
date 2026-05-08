@@ -1,30 +1,24 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link, useSearch } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+import { assetUrl, blogsApi } from '@/services/api';
 
-export const Route = {
+export const Route = createFileRoute('/blog')({
   component: BlogPage,
-};
+});
 
 export default function BlogPage() {
-  const searchParams = useSearch({ from: '/blog' });
-  const [page, setPage] = useState(searchParams?.page || 1);
-  const [category, setCategory] = useState(searchParams?.category || 'all');
+  const [page, setPage] = useState(1);
+  const [category, setCategory] = useState('all');
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['blogs', page, category],
     queryFn: async () => {
-      const params = new URLSearchParams({ page, limit: 10 });
-      if (category !== 'all') params.append('category', category);
-
-      const response = await fetch(`${API_URL}/api/blog?${params}`);
-      if (!response.ok) throw new Error('Failed to fetch blogs');
-      return response.json();
+      return blogsApi.list({ page, limit: 10, category: category === 'all' ? undefined : category });
     },
   });
 
@@ -91,8 +85,8 @@ export default function BlogPage() {
                   <Link key={blog._id} to={`/blog/${blog.slug}`}>
                     <Card className="group h-full overflow-hidden transition-all hover:shadow-lg">
                       {blog.featured_image && (
-                        <img
-                          src={`${API_URL}${blog.featured_image}`}
+                    <img
+                          src={assetUrl(blog.featured_image)}
                           alt={blog.title}
                           className="h-48 w-full object-cover transition-transform group-hover:scale-105"
                         />
