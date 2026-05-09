@@ -231,29 +231,39 @@ function HomePage() {
       </Section>
 
       {/* PRODUCTS */}
-      <Section>
-        <SectionHeader eyebrow="Shop" title="Recommended Homeopathy Products" subtitle="Doctor-formulated kits for common conditions." />
-        <div className="mt-12 grid md:grid-cols-2 gap-6">
-          <ProductCard
-            img={productHair}
-            tag="Doctor Recommended"
-            name="Hair Fall Control Kit"
-            desc="Reduces hair fall and supports natural regrowth with a 90-day protocol."
-            price="₹1,499"
-            ctaLabel="Buy Now"
-            secondaryLabel="Consult First"
-          />
-          <ProductCard
-            img={productPcod}
-            tag="Doctor Recommended"
-            name="PCOD Balance Kit"
-            desc="Supports hormonal balance naturally, reduces cramps, regulates cycle."
-            price="₹1,899"
-            ctaLabel="Buy Now"
-            secondaryLabel="Consult First"
-          />
-        </div>
-      </Section>
+    <Section>
+  <SectionHeader
+    eyebrow="Shop"
+    title="Recommended Homeopathy Products"
+    subtitle="Doctor-formulated kits for common conditions."
+  />
+
+  <div className="mt-12 grid md:grid-cols-2 gap-6">
+
+    <ProductCard
+      img={productHair}
+      tag="Doctor Recommended"
+      name="Hair Fall Control Kit"
+      desc="Reduces hair fall and supports natural regrowth with a 90-day protocol."
+      price="₹1,499"
+      ctaLabel="Buy Now"
+      secondaryLabel="Consult First"
+      slug="hair-fall-control-kit"
+    />
+
+    <ProductCard
+      img={productPcod}
+      tag="Doctor Recommended"
+      name="PCOD Balance Kit"
+      desc="Supports hormonal balance naturally, reduces cramps, regulates cycle."
+      price="₹1,899"
+      ctaLabel="Buy Now"
+      secondaryLabel="Consult First"
+      slug="pcod-balance-kit"
+    />
+
+  </div>
+</Section>
 
       {/* TESTIMONIALS */}
       <Section className="bg-gradient-hero">
@@ -328,8 +338,8 @@ function HomePage() {
   );
 }
 
-function ProductCard({ img, tag, name, desc, price, ctaLabel, secondaryLabel }: {
-  img: string; tag: string; name: string; desc: string; price: string; ctaLabel: string; secondaryLabel: string;
+function ProductCard({ img, tag, name, desc, price, ctaLabel, secondaryLabel, slug }: {
+  img: string; tag: string; name: string; desc: string; price: string; ctaLabel: string; secondaryLabel: string; slug: string;
 }) {
   return (
     <div className="group bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition grid md:grid-cols-2">
@@ -345,8 +355,12 @@ function ProductCard({ img, tag, name, desc, price, ctaLabel, secondaryLabel }: 
           <span className="text-xs text-muted-foreground line-through">₹2,499</span>
         </div>
         <div className="mt-4 flex flex-col sm:flex-row gap-2">
-          <Button variant="hero" className="flex-1">{ctaLabel}</Button>
-          <Button variant="outline" className="flex-1">{secondaryLabel}</Button>
+          <Button asChild variant="hero" className="flex-1">
+            <Link to="/checkout" search={{ slug }}>{ctaLabel}</Link>
+          </Button>
+          <Button asChild variant="outline" className="flex-1">
+            <Link to="/appointment">{secondaryLabel}</Link>
+          </Button>
         </div>
       </div>
     </div>
