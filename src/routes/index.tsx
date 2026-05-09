@@ -245,11 +245,11 @@ function HomePage() {
           />
           <ProductCard
             img={productPcod}
-            tag="Best Seller"
+            tag="Doctor Recommended"
             name="PCOD Balance Kit"
             desc="Supports hormonal balance naturally, reduces cramps, regulates cycle."
             price="₹1,899"
-            ctaLabel="Get Treatment Plan"
+            ctaLabel="Buy Now"
             secondaryLabel="Consult First"
           />
         </div>
