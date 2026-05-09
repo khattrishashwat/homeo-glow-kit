@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as TreatmentsRouteImport } from './routes/treatments'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AppointmentRouteImport } from './routes/appointment'
 import { Route as AboutRouteImport } from './routes/about'
@@ -18,6 +19,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TreatmentsRoute = TreatmentsRouteImport.update({
+  id: '/treatments',
+  path: '/treatments',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/appointment': typeof AppointmentRoute
   '/contact': typeof ContactRoute
   '/services': typeof ServicesRoute
+  '/treatments': typeof TreatmentsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/appointment': typeof AppointmentRoute
   '/contact': typeof ContactRoute
   '/services': typeof ServicesRoute
+  '/treatments': typeof TreatmentsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,27 @@ export interface FileRoutesById {
   '/appointment': typeof AppointmentRoute
   '/contact': typeof ContactRoute
   '/services': typeof ServicesRoute
+  '/treatments': typeof TreatmentsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/appointment' | '/contact' | '/services'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/appointment'
+    | '/contact'
+    | '/services'
+    | '/treatments'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/appointment' | '/contact' | '/services'
-  id: '__root__' | '/' | '/about' | '/appointment' | '/contact' | '/services'
+  to: '/' | '/about' | '/appointment' | '/contact' | '/services' | '/treatments'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/appointment'
+    | '/contact'
+    | '/services'
+    | '/treatments'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +99,7 @@ export interface RootRouteChildren {
   AppointmentRoute: typeof AppointmentRoute
   ContactRoute: typeof ContactRoute
   ServicesRoute: typeof ServicesRoute
+  TreatmentsRoute: typeof TreatmentsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -86,6 +109,13 @@ declare module '@tanstack/react-router' {
       path: '/services'
       fullPath: '/services'
       preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/treatments': {
+      id: '/treatments'
+      path: '/treatments'
+      fullPath: '/treatments'
+      preLoaderRoute: typeof TreatmentsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -125,16 +155,8 @@ const rootRouteChildren: RootRouteChildren = {
   AppointmentRoute: AppointmentRoute,
   ContactRoute: ContactRoute,
   ServicesRoute: ServicesRoute,
+  TreatmentsRoute: TreatmentsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

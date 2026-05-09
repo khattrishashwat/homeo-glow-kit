@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Section, SectionHeader } from "@/components/site/Section";
+import godfatherImg from "@/assets/godfathers.jpeg";
 import doctorImg from "@/assets/doctor-heros.png";
 import clinicImg from "@/assets/clinic.jpg";
 import { Award, Users, ShieldCheck, Heart, Leaf, Microscope, Stethoscope, ClipboardList, Pill, CheckCircle2, Star, ArrowRight, Calendar } from "lucide-react";
@@ -27,22 +28,84 @@ function AboutPage() {
           <p className="mt-5 max-w-2xl mx-auto text-lg text-muted-foreground text-pretty">A clinic built on classical homeopathy, modern diagnostics, and deep human empathy.</p>
         </div>
       </section>
+<Section>
+  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    
+    {/* Left Content */}
+    <div>
+      <p className="text-primary font-semibold uppercase tracking-wide mb-3">
+        In The Loving Memory of
+      </p>
+
+      <h2 className="text-4xl md:text-5xl font-bold leading-tight">
+        Late Smt. Manjusha Bhargava
+      </h2>
+
+      <p className="mt-6 text-muted-foreground text-lg leading-relaxed">
+        The name MD's HOMOEOPATHY is dedicated to the loving memory of our
+        beloved Mother, Late Smt. Manjusha Bhargava. Her values, kindness,
+        and inspiration continue to guide us in serving humanity with
+        compassion and care.
+      </p>
+
+      <div className="mt-10">
+        <p className="text-primary font-semibold uppercase tracking-wide mb-3">
+          In The Loving Memory of
+        </p>
+
+        <h2 className="text-4xl md:text-5xl font-bold leading-tight">
+          Late Dr. Durgendra Nath Bhargava
+        </h2>
+
+        <p className="mt-6 text-muted-foreground text-lg leading-relaxed">
+          The name MD's HOMOEOPATHY is also dedicated to the loving memory of
+          our beloved Father, Late Dr. Durgendra Nath Bhargava. He was a
+          respected Researcher and Professor at Pt. Deen Dayal Upadhyay
+          Veterinary College, Mathura. His dedication to education,
+          research, and healing remains a constant source of inspiration
+          for us.
+        </p>
+      </div>
+    </div>
+
+    {/* Right Image */}
+    <div className="flex justify-center lg:justify-end">
+      <img
+                          src={godfatherImg}
+        alt="Late Smt. Manjusha Bhargava and Late Dr. Durgendra Nath Bhargava"
+        className="w-full max-w-md rounded-3xl shadow-2xl object-cover"
+      />
+    </div>
+
+  </div>
+</Section>
 
       <Section>
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <img src={clinicImg} alt="MD's Homeopathy clinic interior" className="rounded-3xl shadow-card object-cover w-full aspect-[5/4]" loading="lazy" />
-          <div>
-            <SectionHeader eyebrow="Our clinic" title="A safe, modern space for natural healing" center={false} />
-            <p className="mt-4 text-muted-foreground text-pretty">Founded in 2003,MD's HOMOEOPATHY is a multi-specialty clinic dedicated to chronic disease management through classical homeopathy. Our team combines 20+ years of clinical experience with continuous research.</p>
-            <div className="mt-6 grid grid-cols-2 gap-4">
-              {[{i:Award,t:"BHMS & MD certified"},{i:Heart,t:"Patient-first ethos"},{i:Leaf,t:"100% natural remedies"},{i:ShieldCheck,t:"NABH-aligned protocols"}].map(({i:Ic,t})=>(
-                <div key={t} className="flex gap-3 items-center text-sm"><div className="h-9 w-9 grid place-items-center rounded-xl bg-leaf-soft"><Ic className="h-4 w-4 text-primary" /></div>{t}</div>
-              ))}
+        <SectionHeader eyebrow="Our Mission" title="Safe, natural, and effective healthcare with compassion" />
+        <p className="mt-8 max-w-3xl mx-auto text-muted-foreground text-pretty text-center">At MD's Homeopathy, our mission is to provide safe, natural, and effective homeopathic treatment with compassion and trust. We are committed to improving the health and well-being of every patient through personalized care, holistic healing, and long-term wellness solutions. Our goal is to make quality homeopathic healthcare accessible while maintaining the highest standards of ethics, dedication, and patient satisfaction.</p>
+      </Section>
+
+      <Section className="bg-leaf-soft/40">
+        <SectionHeader eyebrow="Core Values" title="Principles that guide our practice" />
+        <div className="mt-12 grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {[
+            "Patient-first approach with compassionate care",
+            "Commitment to natural and holistic healing",
+            "Trust, transparency, and ethical medical practice",
+            "Personalized treatment for every individual",
+            "Continuous learning and medical excellence",
+            "Dedication to long-term health and wellness",
+            "Respect, empathy, and professionalism in healthcare"
+          ].map(value => (
+            <div key={value} className="flex gap-3 items-start">
+              <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+              <span className="text-muted-foreground">{value}</span>
             </div>
-          </div>
+          ))}
         </div>
       </Section>
 
+     
       <Section className="bg-leaf-soft/40">
         <SectionHeader eyebrow="Philosophy" title="Heal the cause, not the symptom" subtitle="We believe true healing happens when we treat the person — not just the disease." />
         <div className="mt-12 grid md:grid-cols-3 gap-6">
