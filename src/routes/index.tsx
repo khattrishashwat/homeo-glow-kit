@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Section, SectionHeader } from "@/components/site/Section";
-import doctorImg from "@/assets/doctor-hero.jpg";
+import doctorImg from "@/assets/doctor-heros.png";
 import productHair from "@/assets/product-hair.jpg";
 import productPcod from "@/assets/product-pcod.jpg";
 import {
