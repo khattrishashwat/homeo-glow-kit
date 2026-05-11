@@ -247,7 +247,7 @@ function HomePage() {
       homeProducts.map((product) => (
         <ProductCard
           key={product.slug}
-          img={assetUrl(product.image || product.images?.[0]) || productHair}
+          img={assetUrl(product.image || product.images?.[0])}
           tag={product.attributes?.recommended ? "Doctor Recommended" : "Treatment Kit"}
           name={product.name}
           desc={productSummary(product)}
