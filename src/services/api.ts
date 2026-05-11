@@ -18,27 +18,39 @@ export type Product = {
   _id: string;
   name: string;
   slug: string;
+  short_description?: string;
   description?: string;
   price: number;
   compare_price?: number;
-  category?: string;
-  image?: string;
-  images?: string[];
+  category?: { _id: string; name: string; slug: string } | string;
   stock?: number;
   in_stock?: boolean;
+  image?: string;
+  image_alt?: string;
+  gallery?: { url: string; alt: string }[];
   active?: boolean;
+  featured?: boolean;
+  sku?: string;
   attributes?: {
     shortDescription?: string;
     benefits?: string[];
     ingredients?: string[];
     usage?: string;
     faqs?: Array<{ q: string; a: string }>;
-    featured?: boolean;
     recommended?: boolean;
     durationWeeks?: number;
   };
   seo_title?: string;
   seo_description?: string;
+  seo_keywords?: string[];
+  canonical_url?: string;
+  og_image?: string;
+  average_rating?: number;
+  total_reviews?: number;
+  views?: number;
+  created_by?: { name: string; email: string };
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type Blog = {
@@ -47,16 +59,45 @@ export type Blog = {
   slug: string;
   excerpt: string;
   content?: string;
-  category: string;
+  category?: { _id: string; name: string; slug: string } | string;
   featured_image?: string;
+  featured_image_alt?: string;
+  og_image?: string;
+  tags?: string[];
   author: string;
-  published_at?: string;
+  author_bio?: string;
+  published?: boolean;
+  featured?: boolean;
   views?: number;
+  published_at?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  seo_title?: string;
   meta_description?: string;
-  meta_keywords?: string;
+  meta_keywords?: string[];
+  canonical_url?: string;
+  reading_time?: number;
+  created_by?: { name: string; email: string };
 };
 
-export type Slot = {
+export type Category = {
+  _id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image?: string;
+  image_alt?: string;
+  seo_title?: string;
+  seo_description?: string;
+  seo_keywords?: string[];
+  canonical_url?: string;
+  active: boolean;
+  type: "blog" | "product" | "both";
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type GoogleReview = {
   _id: string;
   startTime: string;
   endTime: string;
@@ -202,8 +243,14 @@ export const productsApi = {
 
 export const blogsApi = {
   list: (params?: Record<string, string | number | boolean | undefined>) =>
-    apiRequest<{ data: Blog[]; pagination: Pagination }>("/api/blog", {}, params),
+    apiRequest<Blog[]>("/api/blog", {}, params),
   bySlug: (slug: string) => apiRequest<Blog>(`/api/blog/${slug}`),
+};
+
+export const categoriesApi = {
+  list: (params?: Record<string, string | number | boolean | undefined>) =>
+    apiRequest<Category[]>("/api/category", {}, params),
+  bySlug: (slug: string) => apiRequest<Category>(`/api/category/${slug}`),
 };
 
 export const slotsApi = {
