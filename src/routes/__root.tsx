@@ -1,5 +1,4 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
-import appCss from "../styles.css?url";
+import { Outlet, Link, createRootRoute } from "@tanstack/react-router";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { FloatingWhatsapp, StickyMobileBar } from "@/components/site/FloatingActions";
@@ -21,33 +20,9 @@ function NotFoundComponent() {
 }
 
 export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MD's Homeopathy — Natural Treatment for Long-Term Relief" },
-      { name: "description", content: "Personalized homeopathy care for hair fall, PCOD, thyroid, skin and anxiety. 20+ years experience, 1000+ patients treated. Book online consultation." },
-      { name: "author", content: "MD's Homeopathy" },
-      { property: "og:title", content: "MD's Homeopathy — Natural Treatment for Long-Term Relief" },
-      { property: "og:description", content: "Safe, side-effect free, root-cause homeopathy treatment. Book online or visit our clinic." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [{ rel: "stylesheet", href: appCss }],
-  }),
-  shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
 });
-
-function RootShell({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <head><HeadContent /></head>
-      <body>{children}<Scripts /></body>
-    </html>
-  );
-}
 
 function RootComponent() {
   return (

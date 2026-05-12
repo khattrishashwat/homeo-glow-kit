@@ -1,14 +1,15 @@
 import { Link } from "@tanstack/react-router";
-import { Leaf, Menu, X } from "lucide-react";
+import { Leaf, Menu, X, Phone } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const nav = [
   { to: "/", label: "Home" },
-  { to: "/about", label: "About" },
+  { to: "/about", label: "About Us" },
   { to: "/services", label: "Services" },
-  { to: "/appointment", label: "Book" },
-  { to: "/contact", label: "Contact" },
+  { to: "/treatments", label: "Treatments" },
+  { to: "/shop", label: "Shop" },
+  { to: "/contact", label: "Contact Us" },
 ];
 
 export function Header() {
@@ -17,12 +18,12 @@ export function Header() {
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-2 group">
-          <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-leaf shadow-soft group-hover:shadow-glow transition-shadow">
-            <Leaf className="h-5 w-5 text-primary-foreground" />
+          <div className="grid h-10 w-10 place-items-center rounded-xl bg-leaf-soft shadow-soft group-hover:shadow-glow transition-shadow">
+            <Leaf className="h-5 w-5 text-primary" />
           </div>
           <div className="leading-tight">
-            <div className="font-display text-lg font-bold text-foreground">MD's</div>
-            <div className="text-[10px] tracking-widest uppercase text-muted-foreground">Homeopathy</div>
+            <div className="font-display text-lg font-extrabold text-foreground">MD's</div>
+            <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-foreground/80">Homeopathy</div>
           </div>
         </Link>
 
@@ -41,8 +42,8 @@ export function Header() {
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
-          <Button asChild variant="hero" size="sm">
-            <Link to="/appointment">Book Appointment</Link>
+          <Button asChild variant="hero" size="lg" className="rounded-full">
+            <Link to="/appointment"><Phone className="h-4 w-4" /> Book Appointment</Link>
           </Button>
         </div>
 

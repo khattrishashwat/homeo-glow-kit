@@ -1,7 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { Leaf, Phone, Mail, MapPin, Facebook, Instagram, Youtube } from "lucide-react";
+import { useSettings } from "@/hooks/useSettings";
 
 export function Footer() {
+  const { data: settings } = useSettings();
+  const siteName = settings?.site_name || "MD's HOMOEOPATHY";
+  const phone = settings?.phone || "+91 7668610031";
+  const email = settings?.email || "mdshomoeopathy13@gmail.com";
+  const address = settings?.address || "1262/3A Deeg Gali ShahganJ Darwaza, Mathura (U.P)";
   return (
     <footer className="mt-24 border-t border-border bg-gradient-to-b from-background to-leaf-soft/40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 grid gap-10 md:grid-cols-4">
@@ -10,17 +16,21 @@ export function Footer() {
             <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-leaf">
               <Leaf className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="font-display text-lg font-bold">MD's HOMOEOPATHY</span>
+            <span className="font-display text-lg font-bold">{siteName}</span>
           </div>
           <p className="text-sm text-muted-foreground text-pretty">
-            Personalized homeopathy treatment for chronic and acute conditions. Trusted by 1000+ patients.
+            {settings?.site_description || "Personalized homeopathy treatment for chronic and acute conditions. Trusted by 1000+ patients."}
           </p>
           <div className="flex gap-3 mt-5">
-            {[Facebook, Instagram, Youtube].map((Icon, i) => (
-              <a key={i} href="#" className="grid h-9 w-9 place-items-center rounded-full bg-card shadow-soft hover:bg-primary hover:text-primary-foreground transition-colors">
+            {[
+              { Icon: Facebook, href: settings?.social_links?.facebook },
+              { Icon: Instagram, href: settings?.social_links?.instagram },
+              { Icon: Youtube, href: settings?.social_links?.youtube },
+            ].map(({ Icon, href }, i) => href ? (
+              <a key={i} href={href} className="grid h-9 w-9 place-items-center rounded-full bg-card shadow-soft hover:bg-primary hover:text-primary-foreground transition-colors">
                 <Icon className="h-4 w-4" />
               </a>
-            ))}
+            ) : null)}
           </div>
         </div>
 
@@ -47,14 +57,14 @@ export function Footer() {
         <div>
           <h4 className="text-sm font-semibold mb-4">Reach Us</h4>
           <ul className="space-y-3 text-sm text-muted-foreground">
-            <li className="flex gap-2"><Phone className="h-4 w-4 text-primary mt-0.5" /> +91 7668610031</li>
-            <li className="flex gap-2"><Mail className="h-4 w-4 text-primary mt-0.5" /> mdshomoeopathy13@gmail.com</li>
-            <li className="flex gap-2"><MapPin className="h-4 w-4 text-primary mt-0.5" />1262/3A Deeg Gali ShahganJ Darwaza, Mathura (U.P)</li>
+            <li className="flex gap-2"><Phone className="h-4 w-4 text-primary mt-0.5" /> {phone}</li>
+            <li className="flex gap-2"><Mail className="h-4 w-4 text-primary mt-0.5" /> {email}</li>
+            <li className="flex gap-2"><MapPin className="h-4 w-4 text-primary mt-0.5" />{address}</li>
           </ul>
         </div>
       </div>
       <div className="border-t border-border py-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} MD's HOMOEOPATHY. All rights reserved.
+        © {new Date().getFullYear()} {siteName}. All rights reserved.
       </div>
     </footer>
   );

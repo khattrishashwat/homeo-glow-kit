@@ -1,15 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Section, SectionHeader } from "@/components/site/Section";
-import doctorImg from "@/assets/doctor-hero.jpg";
+import { GoogleReviews } from "@/components/site/GoogleReviews";
+import doctorImg from "@/assets/doctor-heros.png";
 import productHair from "@/assets/product-hair.jpg";
-import productPcod from "@/assets/product-pcod.jpg";
 import {
-  Calendar, MessageCircle, ShieldCheck, Award, Users, Globe, Sparkles,
+  Calendar, MessageCircle, ShieldCheck, Award, Users, Globe, Sparkles, Leaf, User,
   HeartPulse, Activity, Brain, Flower2, Scissors, Stethoscope,
-  ClipboardList, Microscope, Pill, Repeat, Star, ArrowRight, CheckCircle2, ChevronDown, Phone
+  ClipboardList, Microscope, Pill, Repeat, ArrowRight, CheckCircle2, ChevronDown, Phone
 } from "lucide-react";
 import { useState } from "react";
+import { useProducts } from "@/hooks/useProducts";
+import { useBlogs } from "@/hooks/useBlogs";
+import { assetUrl, formatINR, productMrp, productSummary } from "@/services/api";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -52,13 +55,7 @@ const why = [
   "Experienced & certified doctors",
   "Online consultation across India",
   "Doorstep medicine delivery",
-];
-
-const blogs = [
-  { title: "Understanding PCOD: A Homeopathic Perspective", tag: "Women's Health", min: "5 min read" },
-  { title: "How to Stop Hair Fall Naturally — Doctor's Guide", tag: "Hair Care", min: "4 min read" },
-  { title: "Managing Anxiety Without Side Effects", tag: "Mental Health", min: "6 min read" },
-];
+];  
 
 const faqs = [
   { q: "How long does homeopathic treatment take?", a: "Duration depends on the condition — chronic issues typically need 3–6 months, acute conditions resolve faster. We share a personalized timeline after consultation." },
@@ -68,82 +65,100 @@ const faqs = [
 ];
 
 function HomePage() {
+  const { data: productResponse, isLoading: loadingProducts } = useProducts({ limit: 2 });
+  const { data: blogResponse, isLoading: loadingBlogs } = useBlogs({ limit: 3 });
+  const homeProducts = productResponse?.data || [];
+  const homeBlogs = blogResponse?.data?.data || [];
+
   return (
     <>
       {/* HERO */}
       <section className="relative bg-gradient-hero overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-12 pb-16 md:pt-20 md:pb-28 grid lg:grid-cols-2 gap-12 items-center">
-          <div className="animate-fade-up">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-card shadow-soft text-xs font-semibold text-primary">
-              <Sparkles className="h-3.5 w-3.5" /> 20+ Years of Trusted Care
-            </span>
-            <h1 className="mt-5 font-display text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] text-balance text-foreground">
-              Natural Homeopathy Treatment for{" "}
-              <span className="bg-gradient-leaf bg-clip-text text-transparent">Long-Term Relief</span>
-            </h1>
-            <p className="mt-5 text-base md:text-lg text-muted-foreground max-w-xl text-pretty">
-              Personalized, safe, and effective treatment for chronic and acute conditions — backed by two decades of clinical experience.
-            </p>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 pb-10 md:pt-16 md:pb-16">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-4 items-center">
+            {/* LEFT */}
+            <div className="animate-fade-up relative z-10">
+              <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-leaf-soft/80 text-xs sm:text-sm font-bold uppercase tracking-wide text-primary shadow-soft">
+                <Leaf className="h-4 w-4" /> Natural Healing. Lasting Results.
+              </span>
+              <h1 className="mt-6 font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.02] tracking-tight text-primary text-balance">
+                MD's<br />Homeopathy
+              </h1>
+              <p className="mt-4 font-display text-xl sm:text-2xl text-foreground/80 font-medium">
+                Natural Healing with Trusted Care
+              </p>
+              <p className="mt-5 text-base text-muted-foreground max-w-md text-pretty">
+                Safe, natural and effective homeopathic treatment for you and your loved ones. Personalized care for a healthier tomorrow.
+              </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild variant="hero" size="xl">
-                <Link to="/appointment"><Calendar /> Book Appointment</Link>
-              </Button>
-              <Button asChild variant="whatsapp" size="xl">
-                <a href="https://wa.me/919876543210"><MessageCircle /> WhatsApp Now</a>
-              </Button>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button asChild variant="hero" size="xl" className="rounded-full">
+                  <Link to="/appointment"><Calendar /> Book Appointment</Link>
+                </Button>
+                <Button asChild variant="outline" size="xl" className="rounded-full bg-card hover:bg-card text-whatsapp border-card shadow-soft hover:shadow-glow">
+                  <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer"><MessageCircle /> Chat on WhatsApp</a>
+                </Button>
+              </div>
             </div>
 
-            <div className="mt-10 flex items-center gap-6">
-              <div className="flex -space-x-3">
-                {[1,2,3,4].map(i => (
-                  <div key={i} className="h-10 w-10 rounded-full border-2 border-background bg-gradient-to-br from-leaf-soft to-sky-soft" />
+            {/* RIGHT — Doctor */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-leaf opacity-15 blur-3xl rounded-full" />
+              <div className="relative">
+                <img
+                  src={doctorImg}
+                  alt="MD's Homeopathy doctor holding a homeopathic remedy"
+                  className="relative w-full h-auto object-contain max-h-[560px] mx-auto drop-shadow-2xl"
+                  width={1024}
+                  height={1024}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* FEATURE CARDS ROW */}
+          <div className="mt-10 md:mt-12 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            {[
+              { icon: Leaf, title: "Natural Treatment", desc: "Side-effect free homeopathic care" },
+              { icon: User, title: "Expert Doctor", desc: "Experienced and trusted homeopath" },
+              { icon: Users, title: "All Age Care", desc: "Treatment for kids, adults & seniors" },
+              { icon: ShieldCheck, title: "Safe & Effective", desc: "Holistic approach for long lasting results" },
+            ].map((f) => (
+              <div key={f.title} className="bg-card/80 backdrop-blur rounded-2xl p-4 sm:p-5 shadow-soft hover:shadow-card transition flex items-start gap-3">
+                <div className="grid h-11 w-11 place-items-center rounded-full border-2 border-primary/30 bg-leaf-soft/60 shrink-0">
+                  <f.icon className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <div className="font-bold text-sm sm:text-base text-foreground leading-tight">{f.title}</div>
+                  <div className="mt-1 text-xs sm:text-sm text-muted-foreground leading-snug">{f.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* TRUST STRIP */}
+          <div className="mt-4 sm:mt-5 bg-leaf-soft/70 rounded-2xl px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-soft">
+            <div className="flex items-center gap-3">
+              <div className="grid h-11 w-11 place-items-center rounded-full bg-card shadow-soft">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <div className="font-bold text-sm sm:text-base">Trusted Homeopathy Clinic</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Thousands of patients healed with care and compassion.</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex -space-x-2">
+                {[1,2,3,4,5,6].map(i => (
+                  <div key={i} className="h-9 w-9 rounded-full border-2 border-background bg-gradient-to-br from-leaf-soft to-sky-soft" />
                 ))}
               </div>
               <div>
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_,i)=> <Star key={i} className="h-4 w-4 fill-warning text-warning" />)}
-                  <span className="ml-1 text-sm font-semibold">4.9/5</span>
-                </div>
-                <p className="text-xs text-muted-foreground">from 1000+ happy patients</p>
+                <div className="font-display font-extrabold text-xl text-primary leading-none">5000+</div>
+                <div className="text-xs text-muted-foreground">Happy Patients</div>
               </div>
             </div>
           </div>
-
-          <div className="relative">
-            <div className="absolute -inset-6 bg-gradient-leaf opacity-20 blur-3xl rounded-full" />
-            <div className="relative aspect-square rounded-[2.5rem] overflow-hidden shadow-glow bg-gradient-card">
-              <img src={doctorImg} alt="Senior homeopathy doctor at MD's clinic" className="h-full w-full object-cover" width={1024} height={1024} />
-            </div>
-            <div className="absolute -bottom-6 -left-6 bg-card rounded-2xl shadow-card p-4 flex items-center gap-3 hidden sm:flex">
-              <div className="grid h-10 w-10 place-items-center rounded-full bg-success/15"><CheckCircle2 className="h-5 w-5 text-success" /></div>
-              <div>
-                <div className="text-sm font-semibold">Verified Doctor</div>
-                <div className="text-xs text-muted-foreground">BHMS, MD (Hom.)</div>
-              </div>
-            </div>
-            <div className="absolute -top-4 -right-4 bg-card rounded-2xl shadow-card p-4 hidden sm:block">
-              <div className="text-2xl font-display font-bold text-primary">1000+</div>
-              <div className="text-xs text-muted-foreground">Patients Healed</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* TRUST BAR */}
-      <section className="border-y border-border bg-card">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-2 md:grid-cols-4 gap-6">
-          {trust.map((t) => (
-            <div key={t.label} className="flex items-center gap-3">
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-leaf-soft">
-                <t.icon className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <div className="font-display text-xl font-bold">{t.value}</div>
-                <div className="text-xs text-muted-foreground">{t.label}</div>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 
@@ -218,70 +233,64 @@ function HomePage() {
       </Section>
 
       {/* PRODUCTS */}
-      <Section>
-        <SectionHeader eyebrow="Shop" title="Recommended Homeopathy Products" subtitle="Doctor-formulated kits for common conditions." />
-        <div className="mt-12 grid md:grid-cols-2 gap-6">
-          <ProductCard
-            img={productHair}
-            tag="Doctor Recommended"
-            name="Hair Fall Control Kit"
-            desc="Reduces hair fall and supports natural regrowth with a 90-day protocol."
-            price="₹1,499"
-            ctaLabel="Buy Now"
-            secondaryLabel="Consult First"
-          />
-          <ProductCard
-            img={productPcod}
-            tag="Best Seller"
-            name="PCOD Balance Kit"
-            desc="Supports hormonal balance naturally, reduces cramps, regulates cycle."
-            price="₹1,899"
-            ctaLabel="Get Treatment Plan"
-            secondaryLabel="Consult First"
-          />
-        </div>
-      </Section>
+    <Section>
+  <SectionHeader
+    eyebrow="Shop"
+    title="Recommended Homeopathy Products"
+    subtitle="Doctor-formulated kits for common conditions."
+  />
+
+  <div className="mt-12 grid md:grid-cols-2 gap-6">
+    {loadingProducts ? (
+      <p className="md:col-span-2 text-center text-sm text-muted-foreground">Loading products...</p>
+    ) : homeProducts.length ? (
+      homeProducts.map((product) => (
+        <ProductCard
+          key={product.slug}
+          img={assetUrl(product.image || product.images?.[0])}
+          tag={product.attributes?.recommended ? "Doctor Recommended" : "Treatment Kit"}
+          name={product.name}
+          desc={productSummary(product)}
+          price={formatINR(product.price)}
+          mrp={formatINR(productMrp(product))}
+          ctaLabel="Buy Now"
+          secondaryLabel="Consult First"
+          slug={product.slug}
+        />
+      ))
+    ) : (
+      <p className="md:col-span-2 text-center text-sm text-muted-foreground">Products will be available shortly.</p>
+    )}
+  </div>
+</Section>
 
       {/* TESTIMONIALS */}
       <Section className="bg-gradient-hero">
         <SectionHeader eyebrow="Testimonials" title="Real Patients. Real Results." />
-        <div className="mt-12 grid md:grid-cols-3 gap-6">
-          {[
-            { name: "Priya S.", city: "Mumbai", text: "After 6 months of treatment, my hair fall completely stopped. Doctor was patient, kind and explained every step." },
-            { name: "Rahul M.", city: "Pune", text: "My PCOD symptoms reduced dramatically. Cycles are regular now. Highly recommend MD's." },
-            { name: "Anita K.", city: "Delhi", text: "I was skeptical about online consultation, but the experience was excellent. Medicines reached on time." },
-          ].map((t)=>(
-            <div key={t.name} className="bg-card rounded-3xl p-6 shadow-card">
-              <div className="flex gap-1 mb-3">{[...Array(5)].map((_,i)=><Star key={i} className="h-4 w-4 fill-warning text-warning" />)}</div>
-              <p className="text-sm text-pretty text-foreground/90">"{t.text}"</p>
-              <div className="mt-5 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-gradient-leaf grid place-items-center text-primary-foreground font-bold">{t.name[0]}</div>
-                <div>
-                  <div className="text-sm font-semibold">{t.name}</div>
-                  <div className="text-xs text-muted-foreground">{t.city}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <GoogleReviews />
       </Section>
 
       {/* BLOG PREVIEW */}
       <Section>
         <SectionHeader eyebrow="Learn" title="From Our Health Journal" subtitle="Insights from our doctors on healing, naturally." />
         <div className="mt-12 grid md:grid-cols-3 gap-6">
-          {blogs.map((b)=>(
-            <article key={b.title} className="group bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition">
+          {loadingBlogs ? (
+            <p className="md:col-span-3 text-center text-sm text-muted-foreground">Loading articles...</p>
+          ) : homeBlogs.length ? homeBlogs.map((b)=>(
+            <Link key={b._id} to="/blog/$slug" params={{ slug: b.slug }} className="group bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition">
               <div className="aspect-[16/10] bg-gradient-to-br from-leaf-soft to-sky-soft relative">
-                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-card text-xs font-semibold text-primary shadow-soft">{b.tag}</span>
+                {b.featured_image ? <img src={assetUrl(b.featured_image)} alt={b.title} className="h-full w-full object-cover" loading="lazy" /> : null}
+                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-card text-xs font-semibold text-primary shadow-soft">{b.category}</span>
               </div>
               <div className="p-5">
-                <div className="text-xs text-muted-foreground">{b.min}</div>
+                <div className="text-xs text-muted-foreground">{b.author}</div>
                 <h3 className="mt-2 font-semibold text-base group-hover:text-primary transition">{b.title}</h3>
                 <div className="mt-3 text-xs font-semibold text-primary inline-flex items-center gap-1">Read article <ArrowRight className="h-3 w-3" /></div>
               </div>
-            </article>
-          ))}
+            </Link>
+          )) : (
+            <p className="md:col-span-3 text-center text-sm text-muted-foreground">Articles will be available shortly.</p>
+          )}
         </div>
       </Section>
 
@@ -315,8 +324,8 @@ function HomePage() {
   );
 }
 
-function ProductCard({ img, tag, name, desc, price, ctaLabel, secondaryLabel }: {
-  img: string; tag: string; name: string; desc: string; price: string; ctaLabel: string; secondaryLabel: string;
+function ProductCard({ img, tag, name, desc, price, mrp, ctaLabel, secondaryLabel, slug }: {
+  img: string; tag: string; name: string; desc: string; price: string; mrp: string; ctaLabel: string; secondaryLabel: string; slug: string;
 }) {
   return (
     <div className="group bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition grid md:grid-cols-2">
@@ -329,11 +338,15 @@ function ProductCard({ img, tag, name, desc, price, ctaLabel, secondaryLabel }: 
         <p className="mt-2 text-sm text-muted-foreground flex-1">{desc}</p>
         <div className="mt-4 flex items-baseline gap-2">
           <span className="font-display text-2xl font-bold text-primary">{price}</span>
-          <span className="text-xs text-muted-foreground line-through">₹2,499</span>
+          <span className="text-xs text-muted-foreground line-through">{mrp}</span>
         </div>
         <div className="mt-4 flex flex-col sm:flex-row gap-2">
-          <Button variant="hero" className="flex-1">{ctaLabel}</Button>
-          <Button variant="outline" className="flex-1">{secondaryLabel}</Button>
+          <Button asChild variant="hero" className="flex-1">
+            <Link to="/checkout" search={{ slug }}>{ctaLabel}</Link>
+          </Button>
+          <Button asChild variant="outline" className="flex-1">
+            <Link to="/appointment">{secondaryLabel}</Link>
+          </Button>
         </div>
       </div>
     </div>

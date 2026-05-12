@@ -1,6 +1,6 @@
+
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +8,8 @@ import { CheckCircle2, ChevronLeft, ChevronRight, Scissors, Flower2, Activity, S
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { appointmentsApi, slotsApi, type Slot } from "@/services/api";
 
 const bookingSchema = z.object({
   problem: z.string().min(2).max(100),
@@ -18,12 +20,13 @@ const bookingSchema = z.object({
   mode: z.enum(["Online", "Clinic Visit"]),
   day: z.string().min(1),
   slot: z.string().min(1),
+  slotId: z.string().min(1),
 });
 
 export const Route = createFileRoute("/appointment")({
   head: () => ({
     meta: [
-      { title: "Book Appointment —MD's HOMOEOPATHY" },
+      { title: "Book Appointment — MD's HOMOEOPATHY" },
       { name: "description", content: "Book your homeopathy consultation in 4 easy steps. Online or in-clinic. Trusted by 1000+ patients." },
       { property: "og:title", content: "Book a Homeopathy Consultation" },
       { property: "og:description", content: "Multi-step booking · online & clinic options · WhatsApp quick booking." },
@@ -38,54 +41,62 @@ const problems = [
   { icon: Activity, name: "Thyroid" },
   { icon: Sparkles, name: "Skin Issues" },
 ];
-const slots = ["10:00 AM", "11:30 AM", "1:00 PM", "3:00 PM", "4:30 PM", "6:00 PM"];
-const days = ["Today", "Tomorrow", "Wed", "Thu", "Fri"];
+const formatDay = (value: string) =>
+  new Intl.DateTimeFormat("en-IN", { weekday: "short", day: "numeric", month: "short" }).format(new Date(value));
+
+const formatTime = (value: string) =>
+  new Intl.DateTimeFormat("en-IN", { hour: "numeric", minute: "2-digit", hour12: true }).format(new Date(value));
+
+// Move Field and Row components outside of AppointmentPage
+function Field({ icon: Ic, label, value, onChange, placeholder }: {
+  icon: any; label: string; value: string; onChange: (v: string) => void; placeholder: string;
+}) {
+  return (
+    <div>
+      <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</Label>
+      <div className="relative mt-1.5">
+        <Ic className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} className="pl-10 h-11 rounded-xl" />
+      </div>
+    </div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between gap-4">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="font-semibold text-right">{value}</span>
+    </div>
+  );
+}
 
 function AppointmentPage() {
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [data, setData] = useState({
-    problem: "", name: "", phone: "", age: "", city: "", mode: "", day: "", slot: "",
+    problem: "", name: "", phone: "", age: "", city: "", mode: "", day: "", slot: "", slotId: "",
   });
   const [done, setDone] = useState(false);
-  const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set());
-  const [loadingSlots, setLoadingSlots] = useState(false);
+  const { data: slotResponse, isLoading: loadingSlots, error: slotsError } = useQuery({
+    queryKey: ["available-slots"],
+    queryFn: async () => {
+      const response = await slotsApi.available();
+      return response.data;
+    },
+    refetchInterval: 15000,
+  });
 
-  const slotKey = (day: string, slot: string, mode: string) => `${day}|${slot}|${mode}`;
+  const slotsByDay = (slotResponse || []).reduce<Record<string, Slot[]>>((acc, slot) => {
+    const day = new Date(slot.startTime).toISOString().slice(0, 10);
+    acc[day] = [...(acc[day] || []), slot].sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+    return acc;
+  }, {});
+  const days = Object.keys(slotsByDay).sort().slice(0, 7);
 
-  // Fetch booked slots for chosen mode in real time
-  useEffect(() => {
-    if (!data.mode) return;
-    let active = true;
-    const fetchBooked = async () => {
-      setLoadingSlots(true);
-      const { data: rows, error } = await supabase
-        .from("appointments")
-        .select("preferred_day, preferred_slot, mode")
-        .eq("mode", data.mode)
-        .neq("status", "cancelled");
-      if (!active) return;
-      if (!error && rows) {
-        setBookedSlots(new Set(rows.map(r => slotKey(r.preferred_day, r.preferred_slot, r.mode))));
-      }
-      setLoadingSlots(false);
-    };
-    fetchBooked();
-
-    const channel = supabase
-      .channel("appointments-availability")
-      .on("postgres_changes", { event: "*", schema: "public", table: "appointments" }, fetchBooked)
-      .subscribe();
-    return () => {
-      active = false;
-      supabase.removeChannel(channel);
-    };
-  }, [data.mode]);
-
-  const isSlotTaken = (day: string, slot: string) =>
-    !!data.mode && bookedSlots.has(slotKey(day, slot, data.mode));
-
-  const update = (k: string, v: string) => setData(d => ({ ...d, [k]: v }));
+  const update = (k: string, v: string) =>
+    setData(d => k === "day" ? { ...d, day: v, slot: "", slotId: "" } : { ...d, [k]: v });
+  
   const canNext = () => {
     if (step === 1) return !!data.problem;
     if (step === 2) {
@@ -95,7 +106,7 @@ function AppointmentPage() {
         data.city.trim().length >= 2;
     }
     if (step === 3) return data.mode === "Online" || data.mode === "Clinic Visit";
-    if (step === 4) return !!data.day && !!data.slot && !isSlotTaken(data.day, data.slot);
+    if (step === 4) return !!data.day && !!data.slot && !!data.slotId;
     return true;
   };
 
@@ -107,37 +118,26 @@ function AppointmentPage() {
       toast.error(parsed.error.issues[0]?.message ?? "Please check your details");
       return;
     }
-    if (isSlotTaken(data.day, data.slot)) {
-      toast.error("That slot was just taken. Please pick another.");
-      setStep(4);
-      return;
-    }
+    
     setSubmitting(true);
-    const { error } = await supabase.from("appointments").insert({
-      name: parsed.data.name,
-      phone: parsed.data.phone,
-      age: parsed.data.age,
-      city: parsed.data.city,
-      problem: parsed.data.problem,
-      mode: parsed.data.mode,
-      preferred_day: parsed.data.day,
-      preferred_slot: parsed.data.slot,
-    });
-    setSubmitting(false);
-    if (error) {
-      // 23505 = unique_violation (double-booking caught by DB)
-      if ((error as { code?: string }).code === "23505") {
-        toast.error("That slot was just booked by someone else. Please pick another.");
-        setBookedSlots(prev => new Set(prev).add(slotKey(data.day, data.slot, data.mode)));
-        update("slot", "");
-        setStep(4);
-        return;
-      }
-      toast.error(error.message || "Could not save your booking. Please try WhatsApp.");
-      return;
+    try {
+      await appointmentsApi.create({
+        name: parsed.data.name,
+        phone: parsed.data.phone,
+        slotId: parsed.data.slotId,
+        reason: parsed.data.problem,
+        consultation_type: parsed.data.mode === "Online" ? "online" : "offline",
+        notes: `Age: ${parsed.data.age}; City: ${parsed.data.city}`,
+      });
+
+      toast.success("Appointment confirmed!");
+      setDone(true);
+    } catch (error) {
+      console.error("[booking] error:", error);
+      toast.error("Could not save your booking. Please contact us on WhatsApp.");
+    } finally {
+      setSubmitting(false);
     }
-    toast.success("Appointment confirmed!");
-    setDone(true);
   };
 
   const waMessage = encodeURIComponent(
@@ -243,10 +243,12 @@ function AppointmentPage() {
                   <div className="mt-6">
                     <Label className="text-xs uppercase tracking-wide text-muted-foreground">Date</Label>
                     <div className="mt-2 flex gap-2 overflow-x-auto pb-2">
+                      {loadingSlots && <span className="px-5 py-3 text-sm text-muted-foreground">Loading dates...</span>}
+                      {slotsError && <span className="px-5 py-3 text-sm text-destructive">Slots unavailable</span>}
                       {days.map(d=>(
                         <button key={d} onClick={()=>update("day",d)}
                           className={cn("px-5 py-3 rounded-xl border-2 text-sm font-semibold whitespace-nowrap transition",
-                            data.day===d ? "border-primary bg-primary text-primary-foreground" : "border-border hover:border-primary/40")}>{d}</button>
+                            data.day===d ? "border-primary bg-primary text-primary-foreground" : "border-border hover:border-primary/40")}>{formatDay(d)}</button>
                       ))}
                     </div>
                   </div>
@@ -255,21 +257,23 @@ function AppointmentPage() {
                       Available slots {loadingSlots && <Loader2 className="h-3 w-3 animate-spin" />}
                     </Label>
                     <div className="mt-2 grid grid-cols-2 md:grid-cols-3 gap-2">
-                      {slots.map(s=>{
-                        const taken = !!data.day && isSlotTaken(data.day, s);
+                      {(slotsByDay[data.day] || []).map(s=>{
+                        const label = formatTime(s.startTime);
                         return (
-                          <button key={s} disabled={taken || !data.day} onClick={()=>update("slot",s)}
+                          <button key={s._id} disabled={!data.day} onClick={()=>setData(d => ({ ...d, slot: label, slotId: s._id }))}
                             className={cn("py-3 rounded-xl border-2 text-sm font-medium transition flex items-center justify-center gap-1.5",
-                              taken ? "border-border bg-muted text-muted-foreground line-through cursor-not-allowed opacity-60" :
-                              data.slot===s ? "border-primary bg-leaf-soft text-primary" : "border-border hover:border-primary/40",
+                              data.slotId===s._id ? "border-primary bg-leaf-soft text-primary" : "border-border hover:border-primary/40",
                               !data.day && "opacity-50 cursor-not-allowed")}>
-                            <Clock className="h-3.5 w-3.5" />{s}{taken && <span className="text-[10px] ml-1">(booked)</span>}
+                            <Clock className="h-3.5 w-3.5" />{label}
                           </button>
                         );
                       })}
+                      {data.day && !slotsByDay[data.day]?.length && (
+                        <p className="col-span-full mt-3 text-xs text-destructive">No slots available for {formatDay(data.day)}. Please pick another date.</p>
+                      )}
                     </div>
-                    {data.day && slots.every(s => isSlotTaken(data.day, s)) && (
-                      <p className="mt-3 text-xs text-destructive">All slots booked for {data.day}. Please pick another date.</p>
+                    {!loadingSlots && days.length === 0 && (
+                      <p className="mt-3 text-xs text-destructive">No appointment slots are currently available. Please contact us on WhatsApp.</p>
                     )}
                   </div>
                 </div>
@@ -309,28 +313,5 @@ function AppointmentPage() {
         </div>
       </div>
     </section>
-  );
-}
-
-function Field({ icon: Ic, label, value, onChange, placeholder }: {
-  icon: any; label: string; value: string; onChange: (v: string) => void; placeholder: string;
-}) {
-  return (
-    <div>
-      <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</Label>
-      <div className="relative mt-1.5">
-        <Ic className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} className="pl-10 h-11 rounded-xl" />
-      </div>
-    </div>
-  );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between gap-4">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-semibold text-right">{value}</span>
-    </div>
   );
 }
