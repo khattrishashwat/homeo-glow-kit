@@ -31,21 +31,16 @@ export type Product = {
   active?: boolean;
   featured?: boolean;
   sku?: string;
-  attributes?: {
-    shortDescription?: string;
-    benefits?: string[];
-    ingredients?: string[];
-    usage?: string;
-    faqs?: Array<{ q: string; a: string }>;
-    recommended?: boolean;
-    durationWeeks?: number;
-  };
-  seo_title?: string;
-  seo_description?: string;
-  seo_keywords?: string[];
-  canonical_url?: string;
-  og_image?: string;
-  average_rating?: number;
+   attributes?: {
+     shortDescription?: string;
+     benefits?: string[];
+     ingredients?: string[];
+     usage?: string;
+     faqs?: Array<{ q: string; a: string }>;
+     recommended?: boolean;
+     durationWeeks?: number;
+   };
+   average_rating?: number;
   total_reviews?: number;
   views?: number;
   created_by?: { name: string; email: string };
@@ -59,24 +54,19 @@ export type Blog = {
   slug: string;
   excerpt: string;
   content?: string;
-  category?: { _id: string; name: string; slug: string } | string;
-  featured_image?: string;
-  featured_image_alt?: string;
-  og_image?: string;
-  tags?: string[];
-  author: string;
-  author_bio?: string;
-  published?: boolean;
-  featured?: boolean;
-  views?: number;
-  published_at?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  seo_title?: string;
-  meta_description?: string;
-  meta_keywords?: string[];
-  canonical_url?: string;
-  reading_time?: number;
+   category?: { _id: string; name: string; slug: string } | string;
+   featured_image?: string;
+   featured_image_alt?: string;
+   tags?: string[];
+   author: string;
+   author_bio?: string;
+   published?: boolean;
+   featured?: boolean;
+   views?: number;
+   published_at?: string;
+   createdAt?: string;
+   updatedAt?: string;
+   reading_time?: number;
   created_by?: { name: string; email: string };
 };
 
@@ -84,14 +74,10 @@ export type Category = {
   _id: string;
   name: string;
   slug: string;
-  description?: string;
-  image?: string;
-  image_alt?: string;
-  seo_title?: string;
-  seo_description?: string;
-  seo_keywords?: string[];
-  canonical_url?: string;
-  active: boolean;
+   description?: string;
+   image?: string;
+   image_alt?: string;
+   active: boolean;
   type: "blog" | "product" | "both";
   createdAt?: string;
   updatedAt?: string;
@@ -137,23 +123,18 @@ export type SiteSettings = {
   state?: string;
   postal_code?: string;
   country?: string;
-  social_links?: {
-    facebook?: string;
-    instagram?: string;
-    youtube?: string;
-    whatsapp?: string;
-  };
-  business_hours?: {
-    monday_friday?: string;
-    saturday?: string;
-    sunday?: string;
-  };
-  seo_settings?: {
-    meta_title?: string;
-    meta_description?: string;
-    meta_keywords?: string;
-  };
-};
+   social_links?: {
+     facebook?: string;
+     instagram?: string;
+     youtube?: string;
+     whatsapp?: string;
+   };
+   business_hours?: {
+     monday_friday?: string;
+     saturday?: string;
+     sunday?: string;
+   };
+ };
 
 export type ContactPayload = {
   name: string;

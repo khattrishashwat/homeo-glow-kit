@@ -97,75 +97,11 @@ function ShopPage() {
 
   const featured = products.filter((p) => p.attributes?.featured || p.featured);
 
-  const siteUrl = "https://mdshomeopathy.com";
-  const shopUrl = `${siteUrl}/shop`;
-
-  // Build product JSON-LD
-  const productItems = filtered.slice(0, 20).map((p, i) => ({
-    "@type": "Product",
-    position: i + 1,
-    name: p.name,
-    image: assetUrl(p.image),
-    description: productSummary(p),
-    offers: {
-      "@type": "Offer",
-      price: p.price,
-      priceCurrency: "INR",
-      availability: p.in_stock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-    },
-    url: `${siteUrl}/shop/${p.slug}`,
-  }));
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name: "Shop - Homeopathy Treatment Kits",
-    description: "Browse our range of doctor-recommended homeopathic treatment kits for various health conditions.",
-    url: shopUrl,
-    mainEntity: {
-      "@type": "ItemList",
-      itemListElement: productItems,
-    },
-  };
-
-  return (
-    <>
-      <Helmet>
-        <title>Shop Homeopathy Treatment Kits | MD's Homeopathy</title>
-        <meta
-          name="description"
-          content="Buy doctor-recommended homeopathy treatment kits for hair fall, PCOD, skin and thyroid. 100% natural, safe and effective."
-        />
-        <meta
-          name="keywords"
-          content="homeopathy treatment kits, natural remedies, doctor recommended, hair fall treatment, PCOD treatment, skin care"
-        />
-        <link rel="canonical" href={shopUrl} />
-
-        {/* OpenGraph */}
-        <meta property="og:title" content="Shop Homeopathy Treatment Kits" />
-        <meta
-          property="og:description"
-          content="Doctor-recommended natural treatment kits delivered to your door."
-        />
-        <meta property="og:image" content={`${siteUrl}/images/shop-og.jpg`} />
-        <meta property="og:url" content={shopUrl} />
-        <meta property="og:type" content="website" />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Shop Homeopathy Treatment Kits" />
-        <meta
-          name="twitter:description"
-          content="Doctor-recommended natural treatment kits delivered to your door."
-        />
-        <meta name="twitter:image" content={`${siteUrl}/images/shop-og.jpg`} />
-
-        {/* JSON-LD */}
-        <script type="application/ld+json">
-          {JSON.stringify(jsonLd)}
-        </script>
-      </Helmet>
+   return (
+     <>
+       <Helmet>
+         <title>Shop Homeopathy Treatment Kits | MD's Homeopathy</title>
+       </Helmet>
 
       <Section className="pt-12 pb-8 bg-gradient-hero">
         <SectionHeader

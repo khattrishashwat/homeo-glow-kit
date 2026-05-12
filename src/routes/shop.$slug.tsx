@@ -38,94 +38,40 @@ function ProductDetailPage() {
 
   const p = data?.data;
 
-  if (isLoading) {
-    return (
-      <Section className="py-20 text-center text-muted-foreground">
-        <Loader2 className="mx-auto mb-3 h-5 w-5 animate-spin" />Loading product...
-      </Section>
-    );
-  }
+   if (isLoading) {
+     return (
+       <Section className="py-20 text-center text-muted-foreground">
+         <Loader2 className="mx-auto mb-3 h-5 w-5 animate-spin" />Loading product...
+       </Section>
+     );
+   }
 
-  if (error || !p) {
-    return (
-      <Section>
-        <div className="text-center">
-          <p>Product not found. <Link to="/shop" className="text-primary underline">Back to shop</Link></p>
-        </div>
-      </Section>
-    );
-  }
+   if (error || !p) {
+     return (
+       <Section>
+         <div className="text-center">
+           <p>Product not found. <Link to="/shop" className="text-primary underline">Back to shop</Link></p>
+         </div>
+       </Section>
+     );
+   }
 
-  const mrp = productMrp(p);
-  const off = discountPercent(mrp, p.price);
-  const mainImage = assetUrl(p.image);
-  // Handle gallery - combine main image with additional images if any
-  const additionalImages = (p as any).images || [];
-  const gallery = [mainImage, ...additionalImages.map((img: string) => assetUrl(img))].filter(Boolean);
-  const related = (relatedData?.data || []).filter((x) => x.slug !== p.slug).slice(0, 3);
-  const benefits = p.attributes?.benefits || [];
-  const ingredients = p.attributes?.ingredients || [];
-  const faqs = p.attributes?.faqs || [];
+   const mrp = productMrp(p);
+   const off = discountPercent(mrp, p.price);
+   const mainImage = assetUrl(p.image);
+   // Handle gallery - combine main image with additional images if any
+   const additionalImages = (p as any).images || [];
+   const gallery = [mainImage, ...additionalImages.map((img: string) => assetUrl(img))].filter(Boolean);
+   const related = (relatedData?.data || []).filter((x) => x.slug !== p.slug).slice(0, 3);
+   const benefits = p.attributes?.benefits || [];
+   const ingredients = p.attributes?.ingredients || [];
+   const faqs = p.attributes?.faqs || [];
 
-  // SEO Data
-  const siteUrl = "https://mdshomeopathy.com"; // Replace with actual site URL
-  const productUrl = `${siteUrl}/shop/${p.slug}`;
-  const seoTitle = p.seo_title || p.name;
-  const seoDescription = p.seo_description || p.short_description || p.description || productSummary(p);
-  const seoKeywords = p.seo_keywords?.join(", ") || "";
-  const ogImage = assetUrl(p.og_image || p.image);
-  const canonicalUrl = p.canonical_url || productUrl;
-
-  // JSON-LD Schema
-  const jsonLd = {
-    "@context": "https://schema.org/",
-    "@type": "Product",
-    name: p.name,
-    image: ogImage,
-    description: seoDescription,
-    sku: p.sku,
-    category: p.category?.name || "Health",
-    offers: {
-      "@type": "Offer",
-      price: p.price,
-      priceCurrency: "INR",
-      availability: p.in_stock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: p.average_rating || 4.9,
-      reviewCount: p.total_reviews || 0,
-    },
-  };
-
-  return (
-    <>
-      <Helmet>
-        <title>{seoTitle}</title>
-        <meta name="description" content={seoDescription} />
-        {seoKeywords && <meta name="keywords" content={seoKeywords} />}
-        <link rel="canonical" href={canonicalUrl} />
-
-        {/* OpenGraph */}
-        <meta property="og:title" content={seoTitle} />
-        <meta property="og:description" content={seoDescription} />
-        <meta property="og:image" content={ogImage} />
-        <meta property="og:url" content={productUrl} />
-        <meta property="og:type" content="product" />
-        <meta property="og:site_name" content="MD's Homeopathy" />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={seoTitle} />
-        <meta name="twitter:description" content={seoDescription} />
-        <meta name="twitter:image" content={ogImage} />
-
-        {/* JSON-LD */}
-        <script type="application/ld+json">
-          {JSON.stringify(jsonLd)}
-        </script>
-      </Helmet>
+   return (
+     <>
+       <Helmet>
+         <title>{p.name}</title>
+       </Helmet>
 
       <Section className="pt-10 pb-6">
         {/* Breadcrumb */}

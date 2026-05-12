@@ -41,69 +41,14 @@ export default function BlogPage() {
     },
   });
 
-  const blogs = data?.data || [];
-  const pagination = data?.pagination;
+   const blogs = data?.data || [];
+   const pagination = data?.pagination;
 
-  const siteUrl = "https://mdshomeopathy.com";
-  const blogUrl = `${siteUrl}/blog`;
-
-  // Build blog list JSON-LD
-  const blogItems = blogs.slice(0, 20).map((b: Blog, i: number) => ({
-    "@type": "BlogPosting",
-    position: i + 1,
-    headline: b.title,
-    description: b.excerpt,
-    image: assetUrl(b.featured_image),
-    url: `${siteUrl}/blog/${b.slug}`,
-    datePublished: b.published_at,
-    author: { "@type": "Person", name: b.author },
-  }));
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    name: "Blog - Health & Wellness Articles",
-    description: "Discover natural health solutions and wellness tips from our expert practitioners",
-    url: blogUrl,
-    numberOfItems: pagination?.total || blogs.length,
-    itemListElement: blogItems,
-  };
-
-  return (
-    <>
-      <Helmet>
-        <title>Health & Wellness Blog | MD's Homeopathy</title>
-        <meta
-          name="description"
-          content="Discover natural health solutions and wellness tips from our expert practitioners. Read about homeopathy treatments, wellness advice, and health updates."
-        />
-        <meta
-          name="keywords"
-          content="health blog, wellness articles, homeopathy tips, natural health, expert advice"
-        />
-        <link rel="canonical" href={blogUrl} />
-
-        {/* OpenGraph */}
-        <meta property="og:title" content="Health & Wellness Blog | MD's Homeopathy" />
-        <meta
-          property="og:description"
-          content="Discover natural health solutions and wellness tips from our expert practitioners"
-        />
-        <meta property="og:image" content={`${siteUrl}/images/blog-og.jpg`} />
-        <meta property="og:url" content={blogUrl} />
-        <meta property="og:type" content="website" />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Health & Wellness Blog | MD's Homeopathy" />
-        <meta name="twitter:description" content="Discover natural health solutions and wellness tips" />
-        <meta name="twitter:image" content={`${siteUrl}/images/blog-og.jpg`} />
-
-        {/* JSON-LD */}
-        <script type="application/ld+json">
-          {JSON.stringify(jsonLd)}
-        </script>
-      </Helmet>
+   return (
+     <>
+       <Helmet>
+         <title>Health & Wellness Blog | MD's Homeopathy</title>
+       </Helmet>
 
       <div className="min-h-screen bg-background">
         {/* Hero Section */}
