@@ -54,76 +54,15 @@ export default function BlogDetailPage() {
     );
   }
 
-  const siteUrl = "https://mdshomeopathy.com"; // Replace with actual site URL
-  const blogUrl = `${siteUrl}/blog/${blog.slug}`;
-  const seoTitle = blog.seo_title || blog.title;
-  const seoDescription = blog.meta_description || blog.excerpt;
-  const seoKeywords = blog.meta_keywords?.join(", ") || "";
-  const ogImage = assetUrl(blog.og_image || blog.featured_image);
+   const siteUrl = "https://mdshomeopathy.com"; // Replace with actual site URL
+   const blogUrl = `${siteUrl}/blog/${blog.slug}`;
 
-  // JSON-LD Schema for BlogPosting
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: blog.title,
-    description: seoDescription,
-    image: ogImage,
-    author: {
-      "@type": "Person",
-      name: blog.author,
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "MD's Homeopathy",
-      logo: {
-        "@type": "ImageObject",
-        url: `${siteUrl}/logo.png`,
-      },
-    },
-    datePublished: blog.published_at || blog.createdAt,
-    dateModified: blog.updatedAt || blog.createdAt,
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": blogUrl,
-    },
-    wordCount: blog.reading_time ? blog.reading_time * 200 : undefined,
-  };
-
-  return (
-    <>
-      <Helmet>
-        <title>{seoTitle}</title>
-        <meta name="description" content={seoDescription} />
-        {seoKeywords && <meta name="keywords" content={seoKeywords} />}
-        {blog.canonical_url && <link rel="canonical" href={blog.canonical_url} />}
-
-        {/* OpenGraph */}
-        <meta property="og:title" content={seoTitle} />
-        <meta property="og:description" content={seoDescription} />
-        <meta property="og:image" content={ogImage} />
-        <meta property="og:url" content={blogUrl} />
-        <meta property="og:type" content="article" />
-        <meta property="og:site_name" content="MD's Homeopathy" />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={seoTitle} />
-        <meta name="twitter:description" content={seoDescription} />
-        <meta name="twitter:image" content={ogImage} />
-
-        {/* Article meta */}
-        {blog.category && (
-          <meta property="article:section" content={typeof blog.category === 'object' ? blog.category.name : blog.category} />
-        )}
-        {blog.tags?.map((tag: string, i: number) => (
-          <meta key={i} property="article:tag" content={tag} />
-        ))}
-
-        {/* JSON-LD */}
-        <script type="application/ld+json">
-          {JSON.stringify(jsonLd)}
-        </script>
-      </Helmet>
+   return (
+     <>
+       <Helmet>
+         <title>{blog.title}</title>
+         <meta name="description" content={blog.excerpt} />
+       </Helmet>
 
       <article className="min-h-screen bg-background">
         {/* Hero Section */}

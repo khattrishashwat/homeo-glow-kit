@@ -71,68 +71,15 @@ export default function CategoryPage() {
     );
   }
 
-  const siteUrl = "https://mdshomeopathy.com";
-  const categoryUrl = `${siteUrl}/category/${category.slug}`;
-  const seoTitle = category.seo_title || category.name;
-  const seoDescription = category.seo_description || category.description || `Browse all ${category.name} products and articles.`;
-  const ogImage = assetUrl(category.image);
+   const siteUrl = "https://mdshomeopathy.com";
+   const categoryUrl = `${siteUrl}/category/${category.slug}`;
 
-  // JSON-LD for CollectionPage
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name: category.name,
-    description: seoDescription,
-    url: categoryUrl,
-    image: ogImage,
-    numberOfItems: products.length + blogs.length,
-    mainEntity: {
-      "@type": "ItemList",
-      itemListElement: [
-        ...products.map((p: any, i: number) => ({
-          "@type": "ListItem",
-          position: i + 1,
-          url: `${siteUrl}/shop/${p.slug}`,
-          name: p.name,
-        })),
-        ...blogs.map((b: any, i: number) => ({
-          "@type": "ListItem",
-          position: products.length + i + 1,
-          url: `${siteUrl}/blog/${b.slug}`,
-          name: b.title,
-        })),
-      ],
-    },
-  };
-
-  return (
-    <>
-      <Helmet>
-        <title>{seoTitle}</title>
-        <meta name="description" content={seoDescription} />
-        {category.seo_keywords?.length > 0 && (
-          <meta name="keywords" content={category.seo_keywords.join(", ")} />
-        )}
-        {category.canonical_url && <link rel="canonical" href={category.canonical_url} />}
-
-        {/* OpenGraph */}
-        <meta property="og:title" content={seoTitle} />
-        <meta property="og:description" content={seoDescription} />
-        {ogImage && <meta property="og:image" content={ogImage} />}
-        <meta property="og:url" content={categoryUrl} />
-        <meta property="og:type" content="website" />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={seoTitle} />
-        <meta name="twitter:description" content={seoDescription} />
-        {ogImage && <meta name="twitter:image" content={ogImage} />}
-
-        {/* JSON-LD */}
-        <script type="application/ld+json">
-          {JSON.stringify(jsonLd)}
-        </script>
-      </Helmet>
+   return (
+     <>
+       <Helmet>
+         <title>{category.name}</title>
+         <meta name="description" content={category.description || `Browse all ${category.name} products and articles.`} />
+       </Helmet>
 
       <Section className="pt-10 pb-6">
         {/* Breadcrumb */}

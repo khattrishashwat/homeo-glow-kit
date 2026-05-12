@@ -30,8 +30,6 @@ export function useCreateBlog() {
       content: string;
       category: string;
       author: string;
-      meta_description: string;
-      meta_keywords: string;
       published: string;
       featured_image?: File;
     }) => {
@@ -41,8 +39,6 @@ export function useCreateBlog() {
       formData.append('content', data.content);
       formData.append('category', data.category);
       formData.append('author', data.author);
-      formData.append('meta_description', data.meta_description);
-      formData.append('meta_keywords', data.meta_keywords);
       formData.append('published', data.published);
 
       if (data.featured_image) {
