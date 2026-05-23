@@ -21,7 +21,7 @@ import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AppointmentRouteImport } from './routes/appointment'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ShopSlugRouteImport } from './routes/shop.$slug'
+import { Route as ShopSlugRouteImport } from './routes/shop_.$slug'
 
 const TreatmentsRoute = TreatmentsRouteImport.update({
   id: '/treatments',
@@ -79,9 +79,9 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const ShopSlugRoute = ShopSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => ShopRoute,
+  id: '/shop_/$slug',
+  path: '/shop/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
@@ -100,7 +100,7 @@ export interface FileRoutesByFullPath {
   '/order-success': typeof OrderSuccessRoute
   '/payment': typeof PaymentRoute
   '/services': typeof ServicesRoute
-  '/shop': typeof ShopRouteWithChildren
+  '/shop': typeof ShopRoute
   '/treatments': typeof TreatmentsRoute
   '/shop/$slug': typeof ShopSlugRoute
 }
@@ -115,7 +115,7 @@ export interface FileRoutesByTo {
   '/order-success': typeof OrderSuccessRoute
   '/payment': typeof PaymentRoute
   '/services': typeof ServicesRoute
-  '/shop': typeof ShopRouteWithChildren
+  '/shop': typeof ShopRoute
   '/treatments': typeof TreatmentsRoute
   '/shop/$slug': typeof ShopSlugRoute
 }
@@ -131,9 +131,9 @@ export interface FileRoutesById {
   '/order-success': typeof OrderSuccessRoute
   '/payment': typeof PaymentRoute
   '/services': typeof ServicesRoute
-  '/shop': typeof ShopRouteWithChildren
+  '/shop': typeof ShopRoute
   '/treatments': typeof TreatmentsRoute
-  '/shop/$slug': typeof ShopSlugRoute
+  '/shop_/$slug': typeof ShopSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -180,7 +180,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/shop'
     | '/treatments'
-    | '/shop/$slug'
+    | '/shop_/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -193,7 +193,8 @@ export interface RootRouteChildren {
   OrderSuccessRoute: typeof OrderSuccessRoute
   PaymentRoute: typeof PaymentRoute
   ServicesRoute: typeof ServicesRoute
-  ShopRoute: typeof ShopRouteWithChildren
+  ShopRoute: typeof ShopRoute
+  ShopSlugRoute: typeof ShopSlugRoute
   TreatmentsRoute: typeof TreatmentsRoute
 }
 
@@ -283,29 +284,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/shop/$slug': {
-      id: '/shop/$slug'
-      path: '/$slug'
+    '/shop_/$slug': {
+      id: '/shop_/$slug'
+      path: '/shop/$slug'
       fullPath: '/shop/$slug'
       preLoaderRoute: typeof ShopSlugRouteImport
-      parentRoute: typeof ShopRoute
+      parentRoute: typeof rootRouteImport
     }
   }
-}
-
-interface ShopRouteChildren {
-  ShopSlugRoute: typeof ShopSlugRoute
 }
 
 interface BlogRouteChildren {
   BlogSlugRoute: typeof BlogSlugRoute
 }
-
-const ShopRouteChildren: ShopRouteChildren = {
-  ShopSlugRoute: ShopSlugRoute,
-}
-
-const ShopRouteWithChildren = ShopRoute._addFileChildren(ShopRouteChildren)
 
 const BlogRouteChildren: BlogRouteChildren = {
   BlogSlugRoute: BlogSlugRoute,
@@ -323,7 +314,8 @@ const rootRouteChildren: RootRouteChildren = {
   OrderSuccessRoute: OrderSuccessRoute,
   PaymentRoute: PaymentRoute,
   ServicesRoute: ServicesRoute,
-  ShopRoute: ShopRouteWithChildren,
+  ShopRoute: ShopRoute,
+  ShopSlugRoute: ShopSlugRoute,
   TreatmentsRoute: TreatmentsRoute,
 }
 export const routeTree = rootRouteImport
