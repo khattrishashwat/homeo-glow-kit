@@ -47,9 +47,9 @@ function ProductCard({ p }: { p: Product }) {
           <span className="ml-1 text-muted-foreground font-medium">(4.9)</span>
         </div>
         <h3 className="mt-2 font-display text-lg font-bold text-foreground">{p.name}</h3>
-        <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
-          {productSummary(p)}
-        </p>
+        <div className="mt-1 text-sm text-muted-foreground line-clamp-2">
+          {p.category?.name}
+        </div>
         <div className="mt-3 flex items-baseline gap-2">
           <span className="text-xl font-bold text-foreground">{formatINR(p.price)}</span>
           {mrp > p.price && (
