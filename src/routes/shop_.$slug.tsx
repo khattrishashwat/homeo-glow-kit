@@ -18,7 +18,7 @@ import { Section } from "@/components/site/Section";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { useProductBySlug, useProducts } from "@/hooks/useProducts";
-import { assetUrl, discountPercent, formatINR, productMrp, productSummary } from "@/services/api";
+import { assetUrl, discountPercent, formatINR, productMrp } from "@/services/api";
 import { whatsappLink } from "@/components/site/FloatingActions";
 
 export const Route = createFileRoute("/shop_/$slug")({
@@ -65,14 +65,6 @@ function ProductDetailPage() {
     }
   }, [gallery.length, selectedImageIndex]);
 
-  // Function to strip HTML tags from description
-  const stripHtmlTags = (html: string) => {
-    if (!html) return "";
-    const temp = document.createElement("div");
-    temp.innerHTML = html;
-    return temp.textContent || temp.innerText || "";
-  };
-
   if (isLoading) {
     return (
       <Section className="py-20 text-center text-muted-foreground">
@@ -107,9 +99,6 @@ function ProductDetailPage() {
   const durationWeeks = p.attributes?.durationWeeks ?? "N/A";
   const isRecommended = p.attributes?.recommended ?? false;
   const usage = p.attributes?.usage || "Use as directed by the doctor after consultation.";
-  
-  // Get plain text description without HTML
-  const plainDescription = stripHtmlTags(p.description || productSummary(p) || "");
 
   const specs = [
     { label: "Category", value: categoryName },
@@ -263,19 +252,9 @@ function ProductDetailPage() {
                     Buy Now
                   </Link>
                 </Button>
-                <Button variant="outline" size="lg" className="w-full" onClick={() => setWishlist((current) => !current)}>
-                  <Heart className="mr-2 h-4 w-4" />
-                  {wishlist ? "Saved" : "Wishlist"}
-                </Button>
               </div>
 
               <div className="mt-4 flex flex-wrap gap-3">
-                <Button variant="secondary" size="sm" className="flex-1 min-w-[10rem]">
-                  <span className="mr-2 inline-flex h-4 w-4 items-center justify-center rounded-full bg-background text-primary">
-                    <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current" aria-hidden="true"><path d="M7 4h14v2H7zm0 4h12v2H7zm0 4h10v2H7zm0 4h8v2H7zm0 4h6v2H7z"></path></svg>
-                  </span>
-                  Add to Cart
-                </Button>
                 <Button asChild variant="outline" size="sm" className="flex-1 min-w-[10rem]">
                   <a href={whatsappLink(`Hi, I want to know more about ${p.name}.`)} target="_blank" rel="noreferrer">
                     <MessageCircle className="mr-2 h-4 w-4" /> Chat
@@ -312,7 +291,17 @@ function ProductDetailPage() {
           <div className="space-y-6">
             <div className="rounded-[2rem] border border-border bg-card p-8">
               <h2 className="font-display text-2xl font-bold">Product Overview</h2>
-              <p className="mt-4 text-sm leading-7 text-muted-foreground">{plainDescription}</p>
+              {p.description ? (
+                <div 
+                  className="mt-4 prose prose-sm prose-gray max-w-none [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mb-1 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2 [&_strong]:text-foreground"
+                  dangerouslySetInnerHTML={{ __html: p.description }}
+                />
+              ) : (
+                <p className="mt-4 text-sm leading-7 text-muted-foreground">
+                  No description available.
+                </p>
+              )}
+              
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-3xl bg-leaf-soft p-5">
                   <h3 className="text-base font-semibold">Category</h3>
@@ -373,7 +362,6 @@ function ProductDetailPage() {
                 ))}
               </dl>
             </div>
-
           </aside>
         </div>
       </Section>
