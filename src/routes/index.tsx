@@ -250,7 +250,6 @@ function HomePage() {
           img={assetUrl(product.image || product.images?.[0])}
           tag={product.attributes?.recommended ? "Doctor Recommended" : "Treatment Kit"}
           name={product.name}
-          desc={productSummary(product)}
           price={formatINR(product.price)}
           mrp={formatINR(productMrp(product))}
           ctaLabel="Buy Now"
