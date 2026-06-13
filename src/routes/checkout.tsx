@@ -39,6 +39,22 @@ const customerSchema = z.object({
 });
 type CustomerForm = z.infer<typeof customerSchema>;
 
+// Utility function to sanitize and render HTML safely
+const sanitizeAndRenderHTML = (html: string) => {
+  if (!html) return null;
+  
+  // Basic sanitization - remove script tags and dangerous attributes
+  const sanitized = html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/on\w+="[^"]*"/g, '')
+    .replace(/on\w+='[^']*'/g, '')
+    .replace(/javascript:/gi, '')
+    .replace(/vbscript:/gi, '')
+    .replace(/data:text\/html/gi, '');
+  
+  return <span dangerouslySetInnerHTML={{ __html: sanitized }} />;
+};
+
 function CheckoutPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
@@ -94,6 +110,10 @@ function CheckoutPage() {
     return <Section className="py-20 text-center text-destructive">Product unavailable. Please return to the shop.</Section>;
   }
 
+  // Get the product summary HTML content
+  const summaryContent = productSummary(product);
+  const hasHtmlContent = summaryContent && /<[a-z][\s\S]*>/i.test(summaryContent);
+
   return (
     <Section className="py-10">
       <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">Checkout</h1>
@@ -104,17 +124,39 @@ function CheckoutPage() {
           {/* Order item */}
           <div className="rounded-3xl bg-card border border-border shadow-card p-6">
             <h2 className="font-display text-xl font-bold mb-4">Order Summary</h2>
-            <div className="flex gap-4 items-center">
-              <img src={assetUrl(product.image || product.images?.[0])} alt={product.name} className="h-20 w-20 rounded-xl object-cover bg-leaf-soft" />
-              <div className="flex-1">
+            <div className="flex gap-4 items-start">
+              <img 
+                src={assetUrl(product.image || product.images?.[0])} 
+                alt={product.name} 
+                className="h-20 w-20 rounded-xl object-cover bg-leaf-soft flex-shrink-0" 
+              />
+              <div className="flex-1 min-w-0">
                 <div className="font-semibold">{product.name}</div>
-                <div className="text-sm text-muted-foreground">{productSummary(product)}</div>
-                <div className="mt-1 text-primary font-bold">{formatINR(product.price)}</div>
+                <div className="text-sm text-muted-foreground mt-1 break-words product-summary-html">
+                  {hasHtmlContent ? (
+                    sanitizeAndRenderHTML(summaryContent)
+                  ) : (
+                    summaryContent
+                  )}
+                </div>
+                <div className="mt-2 text-primary font-bold">{formatINR(product.price)}</div>
               </div>
-              <div className="flex items-center rounded-full border border-border">
-                <button onClick={() => setQty(Math.max(1, qty - 1))} className="p-2 hover:bg-accent rounded-l-full"><Minus className="h-4 w-4" /></button>
+              <div className="flex items-center rounded-full border border-border flex-shrink-0">
+                <button 
+                  onClick={() => setQty(Math.max(1, qty - 1))} 
+                  className="p-2 hover:bg-accent rounded-l-full transition-colors"
+                  aria-label="Decrease quantity"
+                >
+                  <Minus className="h-4 w-4" />
+                </button>
                 <span className="w-10 text-center text-sm font-bold">{qty}</span>
-                <button onClick={() => setQty(Math.min(20, qty + 1))} className="p-2 hover:bg-accent rounded-r-full"><Plus className="h-4 w-4" /></button>
+                <button 
+                  onClick={() => setQty(Math.min(20, qty + 1))} 
+                  className="p-2 hover:bg-accent rounded-r-full transition-colors"
+                  aria-label="Increase quantity"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
               </div>
             </div>
           </div>
@@ -125,25 +167,67 @@ function CheckoutPage() {
               <h2 className="font-display text-xl font-bold">Delivery & Contact</h2>
               <div className="grid sm:grid-cols-2 gap-4">
                 <FormField control={form.control} name="name" render={({ field }) => (
-                  <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="Your name" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem>
+                    <FormLabel>Full Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )} />
                 <FormField control={form.control} name="phone" render={({ field }) => (
-                  <FormItem><FormLabel>Phone</FormLabel><FormControl><Input placeholder="10-digit phone" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem>
+                    <FormLabel>Phone</FormLabel>
+                    <FormControl>
+                      <Input placeholder="10-digit phone" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )} />
                 <FormField control={form.control} name="email" render={({ field }) => (
-                  <FormItem className="sm:col-span-2"><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="you@example.com" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem className="sm:col-span-2">
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="you@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )} />
                 <FormField control={form.control} name="address_line" render={({ field }) => (
-                  <FormItem className="sm:col-span-2"><FormLabel>Address</FormLabel><FormControl><Input placeholder="House no, street, area" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem className="sm:col-span-2">
+                    <FormLabel>Address</FormLabel>
+                    <FormControl>
+                      <Input placeholder="House no, street, area" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )} />
                 <FormField control={form.control} name="city" render={({ field }) => (
-                  <FormItem><FormLabel>City</FormLabel><FormControl><Input placeholder="City" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem>
+                    <FormLabel>City</FormLabel>
+                    <FormControl>
+                      <Input placeholder="City" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )} />
                 <FormField control={form.control} name="state" render={({ field }) => (
-                  <FormItem><FormLabel>State</FormLabel><FormControl><Input placeholder="State" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem>
+                    <FormLabel>State</FormLabel>
+                    <FormControl>
+                      <Input placeholder="State" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )} />
                 <FormField control={form.control} name="pincode" render={({ field }) => (
-                  <FormItem><FormLabel>Pincode</FormLabel><FormControl><Input placeholder="6-digit pincode" {...field} /></FormControl><FormMessage /></FormItem>
+                  <FormItem>
+                    <FormLabel>Pincode</FormLabel>
+                    <FormControl>
+                      <Input placeholder="6-digit pincode" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )} />
               </div>
 
@@ -165,7 +249,9 @@ function CheckoutPage() {
               )} />
 
               <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <Button type="submit" variant="hero" size="lg" className="flex-1">Continue to Payment</Button>
+                <Button type="submit" variant="hero" size="lg" className="flex-1">
+                  Continue to Payment
+                </Button>
                 <Button asChild variant="whatsapp" size="lg" type="button">
                   <a href={whatsappLink("Hi, I need help with my order checkout.")} target="_blank" rel="noreferrer">
                     <MessageCircle className="h-4 w-4" /> WhatsApp Support
@@ -183,23 +269,44 @@ function CheckoutPage() {
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input value={coupon} onChange={(e) => setCoupon(e.target.value)} placeholder="Coupon code (try MDH10)" className="pl-9" />
+              <Input 
+                value={coupon} 
+                onChange={(e) => setCoupon(e.target.value)} 
+                placeholder="Coupon code (try MDH10)" 
+                className="pl-9" 
+              />
             </div>
-            <Button type="button" variant="soft" onClick={applyCoupon}>Apply</Button>
+            <Button type="button" variant="soft" onClick={applyCoupon}>
+              Apply
+            </Button>
           </div>
 
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between"><span className="text-muted-foreground">Product total</span><span>{formatINR(totals.subtotal)}</span></div>
-            <div className="flex justify-between text-success"><span>Discount</span><span>− {formatINR(totals.discount)}</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Delivery</span><span>{totals.delivery === 0 ? "FREE" : formatINR(totals.delivery)}</span></div>
-            <div className="border-t border-border pt-3 flex justify-between text-lg font-bold"><span>Total</span><span className="text-primary">{formatINR(totals.total)}</span></div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Product total</span>
+              <span>{formatINR(totals.subtotal)}</span>
+            </div>
+            <div className="flex justify-between text-success">
+              <span>Discount</span>
+              <span>− {formatINR(totals.discount)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Delivery</span>
+              <span>{totals.delivery === 0 ? "FREE" : formatINR(totals.delivery)}</span>
+            </div>
+            <div className="border-t border-border pt-3 flex justify-between text-lg font-bold">
+              <span>Total</span>
+              <span className="text-primary">{formatINR(totals.total)}</span>
+            </div>
           </div>
 
           <div className="flex items-center gap-2 text-xs text-muted-foreground rounded-xl bg-leaf-soft/60 p-3">
             <ShieldCheck className="h-4 w-4 text-primary" /> 100% secure checkout & easy refunds
           </div>
 
-          <Link to="/shop" className="block text-center text-sm text-primary font-semibold hover:underline">← Continue shopping</Link>
+          <Link to="/shop" className="block text-center text-sm text-primary font-semibold hover:underline">
+            ← Continue shopping
+          </Link>
         </aside>
       </div>
     </Section>
