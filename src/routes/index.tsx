@@ -280,7 +280,7 @@ function HomePage() {
             <Link key={b._id} to="/blog/$slug" params={{ slug: b.slug }} className="group bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition">
               <div className="aspect-[16/10] bg-gradient-to-br from-leaf-soft to-sky-soft relative">
                 {b.featured_image ? <img src={assetUrl(b.featured_image)} alt={b.title} className="h-full w-full object-cover" loading="lazy" /> : null}
-                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-card text-xs font-semibold text-primary shadow-soft">{b.category}</span>
+                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-card text-xs font-semibold text-primary shadow-soft">{typeof b.category === 'object' && b.category !== null ? b.category.name : b.category}</span>
               </div>
               <div className="p-5">
                 <div className="text-xs text-muted-foreground">{b.author}</div>
