@@ -15,7 +15,7 @@ export const Route = createFileRoute("/shop")({
 function ProductCard({ p }: { p: Product }) {
   const mrp = productMrp(p);
   const off = discountPercent(mrp, p.price);
-  const image = assetUrl(p.image || p.images?.[0]);
+  const image = assetUrl(p.image || p.gallery?.[0]?.url);
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-3xl bg-card shadow-card border border-border/60 transition-all hover:-translate-y-1 hover:shadow-glow">
@@ -48,7 +48,7 @@ function ProductCard({ p }: { p: Product }) {
         </div>
         <h3 className="mt-2 font-display text-lg font-bold text-foreground">{p.name}</h3>
         <div className="mt-1 text-sm text-muted-foreground line-clamp-2">
-          {p.category?.name}
+          {typeof p.category === 'object' && p.category !== null ? p.category.name : p.category}
         </div>
         <div className="mt-3 flex items-baseline gap-2">
           <span className="text-xl font-bold text-foreground">{formatINR(p.price)}</span>
@@ -79,13 +79,17 @@ function ShopPage() {
   const { data, isLoading, error } = useProducts({ limit: 50 });
   const products = data?.data || [];
   const categories = useMemo(() => {
-    const values = Array.from(new Set(products.map((p) => p.category?.name || p.category).filter(Boolean))) as string[];
+    const values = Array.from(new Set(products.map((p) => {
+      const cat = p.category;
+      return typeof cat === 'object' && cat !== null ? cat.name : cat;
+    }).filter(Boolean))) as string[];
     return ["All", ...values];
   }, [products]);
 
   const filtered = useMemo(() => {
     return products.filter((p) => {
-      const matchCat = cat === "All" || p.category?.name === cat || p.category === cat;
+      const productCat = typeof p.category === 'object' && p.category !== null ? p.category.name : p.category;
+      const matchCat = cat === "All" || productCat === cat;
       const summary = productSummary(p);
       const matchQ =
         !q ||
@@ -95,7 +99,7 @@ function ShopPage() {
     });
   }, [products, q, cat]);
 
-  const featured = products.filter((p) => p.attributes?.featured || p.featured);
+  const featured = products.filter((p) => p.featured);
 
    return (
      <>

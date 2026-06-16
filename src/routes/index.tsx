@@ -68,7 +68,7 @@ function HomePage() {
   const { data: productResponse, isLoading: loadingProducts } = useProducts({ limit: 2 });
   const { data: blogResponse, isLoading: loadingBlogs } = useBlogs({ limit: 3 });
   const homeProducts = productResponse?.data || [];
-  const homeBlogs = blogResponse?.data?.data || [];
+  const homeBlogs = blogResponse?.data || [];
 
   return (
     <>
@@ -247,9 +247,10 @@ function HomePage() {
       homeProducts.map((product) => (
         <ProductCard
           key={product.slug}
-          img={assetUrl(product.image || product.images?.[0])}
+          img={assetUrl(product.image || product.gallery?.[0]?.url)}
           tag={product.attributes?.recommended ? "Doctor Recommended" : "Treatment Kit"}
           name={product.name}
+          desc={productSummary(product)}
           price={formatINR(product.price)}
           mrp={formatINR(productMrp(product))}
           ctaLabel="Buy Now"
