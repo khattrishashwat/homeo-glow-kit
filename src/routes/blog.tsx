@@ -28,7 +28,7 @@ export default function BlogPage() {
     queryKey: ['categories', 'blog'],
     queryFn: () => categoriesApi.list(),
   });
-  const categories = (categoriesData || []).filter((c: Category) => c.type === 'blog' || c.type === 'both');
+  const categories = (categoriesData?.data || []).filter((c: Category) => c.type === 'blog' || c.type === 'both');
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['blogs', page, selectedCategoryId],

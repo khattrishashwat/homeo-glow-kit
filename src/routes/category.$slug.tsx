@@ -5,6 +5,7 @@ import { Section } from "@/components/site/Section";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Package, FileText, FolderOpen } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { assetUrl, categoriesApi, productsApi, blogsApi, type Product, type Blog } from "@/services/api";
 
 export const Route = createFileRoute("/category/$slug")({
