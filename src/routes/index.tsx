@@ -68,7 +68,7 @@ function HomePage() {
   const { data: productResponse, isLoading: loadingProducts } = useProducts({ limit: 2 });
   const { data: blogResponse, isLoading: loadingBlogs } = useBlogs({ limit: 3 });
   const homeProducts = productResponse?.data || [];
-  const homeBlogs = blogResponse?.data?.data || [];
+  const homeBlogs = blogResponse?.data || [];
 
   return (
     <>
@@ -247,9 +247,10 @@ function HomePage() {
       homeProducts.map((product) => (
         <ProductCard
           key={product.slug}
-          img={assetUrl(product.image || product.images?.[0])}
+          img={assetUrl(product.image || product.gallery?.[0]?.url)}
           tag={product.attributes?.recommended ? "Doctor Recommended" : "Treatment Kit"}
           name={product.name}
+          desc={productSummary(product)}
           price={formatINR(product.price)}
           mrp={formatINR(productMrp(product))}
           ctaLabel="Buy Now"
@@ -279,7 +280,7 @@ function HomePage() {
             <Link key={b._id} to="/blog/$slug" params={{ slug: b.slug }} className="group bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition">
               <div className="aspect-[16/10] bg-gradient-to-br from-leaf-soft to-sky-soft relative">
                 {b.featured_image ? <img src={assetUrl(b.featured_image)} alt={b.title} className="h-full w-full object-cover" loading="lazy" /> : null}
-                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-card text-xs font-semibold text-primary shadow-soft">{b.category}</span>
+                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-card text-xs font-semibold text-primary shadow-soft">{typeof b.category === 'object' && b.category !== null ? b.category.name : b.category}</span>
               </div>
               <div className="p-5">
                 <div className="text-xs text-muted-foreground">{b.author}</div>

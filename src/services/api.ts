@@ -83,7 +83,7 @@ export type Category = {
   updatedAt?: string;
 };
 
-export type GoogleReview = {
+export type Slot = {
   _id: string;
   startTime: string;
   endTime: string;

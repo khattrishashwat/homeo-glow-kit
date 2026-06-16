@@ -126,7 +126,7 @@ function CheckoutPage() {
             <h2 className="font-display text-xl font-bold mb-4">Order Summary</h2>
             <div className="flex gap-4 items-start">
               <img 
-                src={assetUrl(product.image || product.images?.[0])} 
+                src={assetUrl(product.image || product.gallery?.[0]?.url)} 
                 alt={product.name} 
                 className="h-20 w-20 rounded-xl object-cover bg-leaf-soft flex-shrink-0" 
               />

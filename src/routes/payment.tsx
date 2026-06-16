@@ -152,7 +152,7 @@ function PaymentPage() {
           <div className="text-xs text-muted-foreground mb-2">Order ID</div>
           <div className="font-mono text-sm font-bold mb-4">{orderId}</div>
           <div className="flex gap-3 items-center">
-            <img src={assetUrl(product.image || product.images?.[0])} alt={product.name} className="h-16 w-16 rounded-xl object-cover bg-leaf-soft" />
+            <img src={assetUrl(product.image || product.gallery?.[0]?.url)} alt={product.name} className="h-16 w-16 rounded-xl object-cover bg-leaf-soft" />
             <div className="flex-1">
               <div className="font-semibold text-sm">{product.name}</div>
               <div className="text-xs text-muted-foreground">Qty {draft.quantity}</div>
