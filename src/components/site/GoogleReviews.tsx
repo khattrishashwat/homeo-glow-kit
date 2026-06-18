@@ -1,6 +1,10 @@
-import { Star, Loader2 } from "lucide-react";
+import { Star } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useGoogleReviews } from "@/hooks/useGoogleReviews";
+import {
+  googleReviews,
+  googleReviewsRating,
+  googleReviewsTotal,
+} from "@/data/reviews";
 
 const initials = (name: string) =>
   name
@@ -10,54 +14,62 @@ const initials = (name: string) =>
     .slice(0, 2)
     .toUpperCase();
 
+const GoogleGlyph = () => (
+  <svg viewBox="0 0 48 48" className="h-5 w-5" aria-hidden="true">
+    <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z" />
+    <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z" />
+    <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24s.85 6.91 2.34 9.88l7.35-5.7z" />
+    <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z" />
+  </svg>
+);
+
 export function GoogleReviews() {
-  const { data, isLoading, error } = useGoogleReviews();
-  const reviews = data?.reviews || [];
-
-  if (isLoading) {
-    return (
-      <div className="mt-12 flex items-center justify-center gap-2 text-muted-foreground">
-        <Loader2 className="h-4 w-4 animate-spin" /> Loading Google reviews...
-      </div>
-    );
-  }
-
-  if (error || reviews.length === 0) {
-    return (
-      <p className="mt-12 text-center text-sm text-muted-foreground">
-        Google reviews are currently unavailable. Please check back shortly.
-      </p>
-    );
-  }
-
   return (
     <>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground">
-        <span className="inline-flex items-center gap-1 font-semibold text-foreground">
-          <Star className="h-4 w-4 fill-warning text-warning" />
-          {data?.rating?.toFixed(1) || "5.0"}
+        <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 shadow-soft">
+          <GoogleGlyph />
+          <span className="font-semibold text-foreground">Google Reviews</span>
+          <span className="inline-flex items-center gap-1 font-semibold text-foreground">
+            <Star className="h-4 w-4 fill-warning text-warning" />
+            {googleReviewsRating.toFixed(1)}
+          </span>
+          <span className="text-muted-foreground">({googleReviewsTotal})</span>
         </span>
-        <span>{data?.totalReviews || reviews.length} Google reviews</span>
       </div>
-      <div className="mt-8 grid md:grid-cols-3 gap-6">
-        {reviews.slice(0, 3).map((review) => (
-          <div key={review.id} className="bg-card rounded-3xl p-6 shadow-card">
-            <div className="flex gap-1 mb-3">
-              {Array.from({ length: Math.round(review.rating || 5) }).map((_, i) => (
-                <Star key={i} className="h-4 w-4 fill-warning text-warning" />
-              ))}
+
+      <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {googleReviews.map((review) => (
+          <div
+            key={review.id}
+            className="flex flex-col rounded-3xl bg-card p-6 shadow-card transition hover:shadow-glow"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex gap-1">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    className={
+                      i < Math.round(review.rating)
+                        ? "h-4 w-4 fill-warning text-warning"
+                        : "h-4 w-4 text-muted-foreground/30"
+                    }
+                  />
+                ))}
+              </div>
+              <GoogleGlyph />
             </div>
-            <p className="text-sm text-pretty text-foreground/90">"{review.text}"</p>
-            <div className="mt-5 flex items-center gap-3">
+            <p className="mt-4 flex-1 text-pretty text-sm text-foreground/90">
+              "{review.text}"
+            </p>
+            <div className="mt-5 flex items-center gap-3 border-t border-border/60 pt-4">
               <Avatar>
                 <AvatarImage src={review.profileImage} alt={review.reviewerName} />
-                <AvatarFallback>{initials(review.reviewerName || "Google User")}</AvatarFallback>
+                <AvatarFallback>{initials(review.reviewerName)}</AvatarFallback>
               </Avatar>
               <div>
                 <div className="text-sm font-semibold">{review.reviewerName}</div>
-                <div className="text-xs text-muted-foreground">
-                  {review.relativeTime || (review.reviewDate ? new Date(review.reviewDate).toLocaleDateString() : "Google review")}
-                </div>
+                <div className="text-xs text-muted-foreground">{review.relativeTime}</div>
               </div>
             </div>
           </div>

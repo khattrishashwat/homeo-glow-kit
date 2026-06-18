@@ -11,8 +11,9 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
-import { useBlogs } from "@/hooks/useBlogs";
 import { assetUrl, formatINR, productMrp, productSummary } from "@/services/api";
+import { conditions } from "@/data/conditions";
+import { blogPosts, formatBlogDate } from "@/data/blogs";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,14 +25,7 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-const diseases = [
-  { icon: Scissors, name: "Hair Fall", color: "from-emerald-400 to-emerald-600" },
-  { icon: Flower2, name: "PCOD", color: "from-rose-400 to-rose-600" },
-  { icon: Activity, name: "Thyroid", color: "from-amber-400 to-amber-600" },
-  { icon: Sparkles, name: "Skin Issues", color: "from-sky-400 to-sky-600" },
-  { icon: Brain, name: "Anxiety", color: "from-violet-400 to-violet-600" },
-  { icon: HeartPulse, name: "Joint Pain", color: "from-orange-400 to-orange-600" },
-];
+
 
 const trust = [
   { icon: Award, value: "20+", label: "Years Experience" },
@@ -66,9 +60,7 @@ const faqs = [
 
 function HomePage() {
   const { data: productResponse, isLoading: loadingProducts } = useProducts({ limit: 2 });
-  const { data: blogResponse, isLoading: loadingBlogs } = useBlogs({ limit: 3 });
   const homeProducts = productResponse?.data || [];
-  const homeBlogs = blogResponse?.data || [];
 
   return (
     <>
@@ -165,15 +157,18 @@ function HomePage() {
       {/* DISEASES */}
       <Section>
         <SectionHeader eyebrow="What we treat" title="Conditions We Heal Naturally" subtitle="Specialized homeopathic care for the most common chronic and acute conditions." />
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {diseases.map((d) => (
-            <Link key={d.name} to="/services" className="group bg-card rounded-3xl p-5 shadow-soft hover:shadow-glow transition-all hover:-translate-y-1 text-center">
-              <div className={`mx-auto h-14 w-14 grid place-items-center rounded-2xl bg-gradient-to-br ${d.color} text-white shadow-soft`}>
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {conditions.map((d) => (
+            <div key={d.slug} className="group bg-card rounded-3xl p-6 shadow-soft hover:shadow-glow transition-all hover:-translate-y-1">
+              <div className={`h-14 w-14 grid place-items-center rounded-2xl bg-gradient-to-br ${d.color} text-white shadow-soft`}>
                 <d.icon className="h-6 w-6" />
               </div>
-              <div className="mt-3 font-semibold text-sm">{d.name}</div>
-              <div className="mt-1 text-xs text-primary opacity-0 group-hover:opacity-100 transition">Explore →</div>
-            </Link>
+              <h3 className="mt-5 font-display text-xl font-bold">{d.name}</h3>
+              <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{d.shortDescription}</p>
+              <Link to="/conditions/$slug" params={{ slug: d.slug }} className="mt-5 inline-flex text-sm font-semibold text-primary items-center gap-1 group-hover:gap-2 transition-all">
+                Learn More <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           ))}
         </div>
       </Section>
@@ -273,24 +268,21 @@ function HomePage() {
       {/* BLOG PREVIEW */}
       <Section>
         <SectionHeader eyebrow="Learn" title="From Our Health Journal" subtitle="Insights from our doctors on healing, naturally." />
-        <div className="mt-12 grid md:grid-cols-3 gap-6">
-          {loadingBlogs ? (
-            <p className="md:col-span-3 text-center text-sm text-muted-foreground">Loading articles...</p>
-          ) : homeBlogs.length ? homeBlogs.map((b)=>(
-            <Link key={b._id} to="/blog/$slug" params={{ slug: b.slug }} className="group bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition">
-              <div className="aspect-[16/10] bg-gradient-to-br from-leaf-soft to-sky-soft relative">
-                {b.featured_image ? <img src={assetUrl(b.featured_image)} alt={b.title} className="h-full w-full object-cover" loading="lazy" /> : null}
-                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-card text-xs font-semibold text-primary shadow-soft">{typeof b.category === 'object' && b.category !== null ? b.category.name : b.category}</span>
+        <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {blogPosts.slice(0, 5).map((b) => (
+            <Link key={b.slug} to="/blog/$slug" params={{ slug: b.slug }} className="group bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition hover:-translate-y-1">
+              <div className="aspect-[16/10] overflow-hidden relative">
+                <img src={b.featuredImage} alt={b.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-card/90 text-xs font-semibold text-primary shadow-soft backdrop-blur">{b.category}</span>
               </div>
               <div className="p-5">
-                <div className="text-xs text-muted-foreground">{b.author}</div>
-                <h3 className="mt-2 font-semibold text-base group-hover:text-primary transition">{b.title}</h3>
-                <div className="mt-3 text-xs font-semibold text-primary inline-flex items-center gap-1">Read article <ArrowRight className="h-3 w-3" /></div>
+                <div className="text-xs text-muted-foreground">{formatBlogDate(b.publishDate)}</div>
+                <h3 className="mt-2 font-semibold text-base group-hover:text-primary transition line-clamp-2">{b.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{b.excerpt}</p>
+                <div className="mt-3 text-xs font-semibold text-primary inline-flex items-center gap-1">Read More <ArrowRight className="h-3 w-3" /></div>
               </div>
             </Link>
-          )) : (
-            <p className="md:col-span-3 text-center text-sm text-muted-foreground">Articles will be available shortly.</p>
-          )}
+          ))}
         </div>
       </Section>
 
