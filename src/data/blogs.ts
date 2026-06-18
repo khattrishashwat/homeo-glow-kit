@@ -33,7 +33,7 @@ export const blogPosts: BlogPost[] = [
     author: "Dr. M. Desai",
     publishDate: "2026-06-10",
     readingTime: 6,
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    videoUrl: "https://www.youtube.com/embed/aqz-KE-bpKQ",
     tags: ["Thyroid", "Hormones", "Homeopathy"],
     content: `
       <p>Thyroid disorders affect millions of people, often causing fatigue, weight changes, mood swings and hair fall. While conventional medicine focuses on regulating hormone levels, homeopathy takes a deeper, root-cause approach.</p>
