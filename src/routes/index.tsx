@@ -277,24 +277,21 @@ function HomePage() {
       {/* BLOG PREVIEW */}
       <Section>
         <SectionHeader eyebrow="Learn" title="From Our Health Journal" subtitle="Insights from our doctors on healing, naturally." />
-        <div className="mt-12 grid md:grid-cols-3 gap-6">
-          {loadingBlogs ? (
-            <p className="md:col-span-3 text-center text-sm text-muted-foreground">Loading articles...</p>
-          ) : homeBlogs.length ? homeBlogs.map((b)=>(
-            <Link key={b._id} to="/blog/$slug" params={{ slug: b.slug }} className="group bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition">
-              <div className="aspect-[16/10] bg-gradient-to-br from-leaf-soft to-sky-soft relative">
-                {b.featured_image ? <img src={assetUrl(b.featured_image)} alt={b.title} className="h-full w-full object-cover" loading="lazy" /> : null}
-                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-card text-xs font-semibold text-primary shadow-soft">{typeof b.category === 'object' && b.category !== null ? b.category.name : b.category}</span>
+        <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {blogPosts.slice(0, 5).map((b) => (
+            <Link key={b.slug} to="/blog/$slug" params={{ slug: b.slug }} className="group bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition hover:-translate-y-1">
+              <div className="aspect-[16/10] overflow-hidden relative">
+                <img src={b.featuredImage} alt={b.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-card/90 text-xs font-semibold text-primary shadow-soft backdrop-blur">{b.category}</span>
               </div>
               <div className="p-5">
-                <div className="text-xs text-muted-foreground">{b.author}</div>
-                <h3 className="mt-2 font-semibold text-base group-hover:text-primary transition">{b.title}</h3>
-                <div className="mt-3 text-xs font-semibold text-primary inline-flex items-center gap-1">Read article <ArrowRight className="h-3 w-3" /></div>
+                <div className="text-xs text-muted-foreground">{formatBlogDate(b.publishDate)}</div>
+                <h3 className="mt-2 font-semibold text-base group-hover:text-primary transition line-clamp-2">{b.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{b.excerpt}</p>
+                <div className="mt-3 text-xs font-semibold text-primary inline-flex items-center gap-1">Read More <ArrowRight className="h-3 w-3" /></div>
               </div>
             </Link>
-          )) : (
-            <p className="md:col-span-3 text-center text-sm text-muted-foreground">Articles will be available shortly.</p>
-          )}
+          ))}
         </div>
       </Section>
 
