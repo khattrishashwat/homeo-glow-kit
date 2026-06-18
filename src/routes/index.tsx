@@ -165,15 +165,18 @@ function HomePage() {
       {/* DISEASES */}
       <Section>
         <SectionHeader eyebrow="What we treat" title="Conditions We Heal Naturally" subtitle="Specialized homeopathic care for the most common chronic and acute conditions." />
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {diseases.map((d) => (
-            <Link key={d.name} to="/services" className="group bg-card rounded-3xl p-5 shadow-soft hover:shadow-glow transition-all hover:-translate-y-1 text-center">
-              <div className={`mx-auto h-14 w-14 grid place-items-center rounded-2xl bg-gradient-to-br ${d.color} text-white shadow-soft`}>
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {conditions.map((d) => (
+            <div key={d.slug} className="group bg-card rounded-3xl p-6 shadow-soft hover:shadow-glow transition-all hover:-translate-y-1">
+              <div className={`h-14 w-14 grid place-items-center rounded-2xl bg-gradient-to-br ${d.color} text-white shadow-soft`}>
                 <d.icon className="h-6 w-6" />
               </div>
-              <div className="mt-3 font-semibold text-sm">{d.name}</div>
-              <div className="mt-1 text-xs text-primary opacity-0 group-hover:opacity-100 transition">Explore →</div>
-            </Link>
+              <h3 className="mt-5 font-display text-xl font-bold">{d.name}</h3>
+              <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{d.shortDescription}</p>
+              <Link to="/conditions/$slug" params={{ slug: d.slug }} className="mt-5 inline-flex text-sm font-semibold text-primary items-center gap-1 group-hover:gap-2 transition-all">
+                Learn More <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           ))}
         </div>
       </Section>
