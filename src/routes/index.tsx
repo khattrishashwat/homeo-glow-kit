@@ -25,14 +25,7 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-const diseases = [
-  { icon: Scissors, name: "Hair Fall", color: "from-emerald-400 to-emerald-600" },
-  { icon: Flower2, name: "PCOD", color: "from-rose-400 to-rose-600" },
-  { icon: Activity, name: "Thyroid", color: "from-amber-400 to-amber-600" },
-  { icon: Sparkles, name: "Skin Issues", color: "from-sky-400 to-sky-600" },
-  { icon: Brain, name: "Anxiety", color: "from-violet-400 to-violet-600" },
-  { icon: HeartPulse, name: "Joint Pain", color: "from-orange-400 to-orange-600" },
-];
+
 
 const trust = [
   { icon: Award, value: "20+", label: "Years Experience" },
