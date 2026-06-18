@@ -11,8 +11,9 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
-import { useBlogs } from "@/hooks/useBlogs";
 import { assetUrl, formatINR, productMrp, productSummary } from "@/services/api";
+import { conditions } from "@/data/conditions";
+import { blogPosts, formatBlogDate } from "@/data/blogs";
 
 export const Route = createFileRoute("/")({
   head: () => ({
