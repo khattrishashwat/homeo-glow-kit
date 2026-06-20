@@ -18,6 +18,7 @@ import { Section } from "@/components/site/Section";
 import {
   getBlogBySlug,
   getRelatedBlogs,
+  getAdjacentBlogs,
   formatBlogDate,
 } from "@/data/blogs";
 
