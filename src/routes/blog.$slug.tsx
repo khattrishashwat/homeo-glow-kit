@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Calendar,
+  ChevronRight,
   Clock,
   Facebook,
   Linkedin,
