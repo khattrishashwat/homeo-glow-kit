@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/site/Section";
+import { VideoGallery } from "@/components/site/VideoGallery";
 import { conditions, getConditionBySlug } from "@/data/conditions";
 
 export const Route = createFileRoute("/conditions/$slug")({
