@@ -47,6 +47,7 @@ export default function BlogDetailPage() {
   }
 
   const related = getRelatedBlogs(blog.slug, 3);
+  const { prev, next } = getAdjacentBlogs(blog.slug);
   const shareUrl =
     typeof window !== "undefined" ? window.location.href : `/blog/${blog.slug}`;
   const shareText = encodeURIComponent(blog.title);
