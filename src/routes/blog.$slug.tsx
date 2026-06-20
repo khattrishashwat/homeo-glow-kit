@@ -4,6 +4,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Calendar,
+  ChevronRight,
   Clock,
   Facebook,
   Linkedin,
@@ -84,9 +85,29 @@ export default function BlogDetailPage() {
         {/* Header */}
         <section className="bg-gradient-hero">
           <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pt-10 pb-8">
+            {/* Breadcrumb */}
+            <nav aria-label="Breadcrumb">
+              <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
+                <li>
+                  <Link to="/" className="transition hover:text-primary">
+                    Home
+                  </Link>
+                </li>
+                <ChevronRight className="h-3.5 w-3.5" aria-hidden />
+                <li>
+                  <Link to="/blog" className="transition hover:text-primary">
+                    Blog
+                  </Link>
+                </li>
+                <ChevronRight className="h-3.5 w-3.5" aria-hidden />
+                <li className="font-medium text-foreground line-clamp-1" aria-current="page">
+                  {blog.title}
+                </li>
+              </ol>
+            </nav>
             <Link
               to="/blog"
-              className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+              className="mt-5 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
             >
               <ArrowLeft className="h-4 w-4" /> Back to Blog
             </Link>

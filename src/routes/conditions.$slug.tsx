@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/site/Section";
+import { VideoGallery } from "@/components/site/VideoGallery";
 import { conditions, getConditionBySlug } from "@/data/conditions";
 
 export const Route = createFileRoute("/conditions/$slug")({
@@ -177,6 +178,12 @@ function ConditionDetailPage() {
           </div>
         </div>
       </Section>
+
+      {/* Patient video testimonials */}
+      <VideoGallery
+        title="Patient Video Testimonials"
+        subtitle={`Watch how homeopathy has helped patients with ${condition.name.toLowerCase()} and other conditions.`}
+      />
 
       {/* Other conditions */}
       <Section>
