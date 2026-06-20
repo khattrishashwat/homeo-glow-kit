@@ -181,6 +181,15 @@ export const getBlogBySlug = (slug: string) =>
 export const getRelatedBlogs = (slug: string, limit = 3) =>
   blogPosts.filter((b) => b.slug !== slug).slice(0, limit);
 
+export const getAdjacentBlogs = (slug: string) => {
+  const index = blogPosts.findIndex((b) => b.slug === slug);
+  if (index === -1) return { prev: undefined, next: undefined };
+  return {
+    prev: index > 0 ? blogPosts[index - 1] : undefined,
+    next: index < blogPosts.length - 1 ? blogPosts[index + 1] : undefined,
+  };
+};
+
 export const formatBlogDate = (date: string) =>
   new Date(date).toLocaleDateString("en-IN", {
     day: "numeric",
