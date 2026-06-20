@@ -21,7 +21,7 @@ import {
   formatBlogDate,
 } from "@/data/blogs";
 
-export const Route = createFileRoute("/blog/$slug")({
+export const Route = createFileRoute("/blog_/$slug")({
   component: BlogDetailPage,
 });
 

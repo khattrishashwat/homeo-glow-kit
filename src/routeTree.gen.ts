@@ -23,7 +23,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopSlugRouteImport } from './routes/shop_.$slug'
 import { Route as ConditionsSlugRouteImport } from './routes/conditions.$slug'
 import { Route as CategorySlugRouteImport } from './routes/category.$slug'
-import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as BlogSlugRouteImport } from './routes/blog_.$slug'
 
 const TreatmentsRoute = TreatmentsRouteImport.update({
   id: '/treatments',
@@ -96,16 +96,16 @@ const CategorySlugRoute = CategorySlugRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => BlogRoute,
+  id: '/blog_/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/appointment': typeof AppointmentRoute
-  '/blog': typeof BlogRouteWithChildren
+  '/blog': typeof BlogRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/order-success': typeof OrderSuccessRoute
@@ -122,7 +122,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/appointment': typeof AppointmentRoute
-  '/blog': typeof BlogRouteWithChildren
+  '/blog': typeof BlogRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/order-success': typeof OrderSuccessRoute
@@ -140,7 +140,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/appointment': typeof AppointmentRoute
-  '/blog': typeof BlogRouteWithChildren
+  '/blog': typeof BlogRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/order-success': typeof OrderSuccessRoute
@@ -148,7 +148,7 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/shop': typeof ShopRoute
   '/treatments': typeof TreatmentsRoute
-  '/blog/$slug': typeof BlogSlugRoute
+  '/blog_/$slug': typeof BlogSlugRoute
   '/category/$slug': typeof CategorySlugRoute
   '/conditions/$slug': typeof ConditionsSlugRoute
   '/shop_/$slug': typeof ShopSlugRoute
@@ -201,7 +201,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/shop'
     | '/treatments'
-    | '/blog/$slug'
+    | '/blog_/$slug'
     | '/category/$slug'
     | '/conditions/$slug'
     | '/shop_/$slug'
@@ -211,7 +211,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AppointmentRoute: typeof AppointmentRoute
-  BlogRoute: typeof BlogRouteWithChildren
+  BlogRoute: typeof BlogRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   OrderSuccessRoute: typeof OrderSuccessRoute
@@ -219,6 +219,7 @@ export interface RootRouteChildren {
   ServicesRoute: typeof ServicesRoute
   ShopRoute: typeof ShopRoute
   TreatmentsRoute: typeof TreatmentsRoute
+  BlogSlugRoute: typeof BlogSlugRoute
   CategorySlugRoute: typeof CategorySlugRoute
   ConditionsSlugRoute: typeof ConditionsSlugRoute
   ShopSlugRoute: typeof ShopSlugRoute
@@ -324,31 +325,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategorySlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blog/$slug': {
-      id: '/blog/$slug'
-      path: '/$slug'
+    '/blog_/$slug': {
+      id: '/blog_/$slug'
+      path: '/blog/$slug'
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
-      parentRoute: typeof BlogRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
-
-interface BlogRouteChildren {
-  BlogSlugRoute: typeof BlogSlugRoute
-}
-
-const BlogRouteChildren: BlogRouteChildren = {
-  BlogSlugRoute: BlogSlugRoute,
-}
-
-const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AppointmentRoute: AppointmentRoute,
-  BlogRoute: BlogRouteWithChildren,
+  BlogRoute: BlogRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   OrderSuccessRoute: OrderSuccessRoute,
@@ -356,6 +347,7 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesRoute: ServicesRoute,
   ShopRoute: ShopRoute,
   TreatmentsRoute: TreatmentsRoute,
+  BlogSlugRoute: BlogSlugRoute,
   CategorySlugRoute: CategorySlugRoute,
   ConditionsSlugRoute: ConditionsSlugRoute,
   ShopSlugRoute: ShopSlugRoute,
