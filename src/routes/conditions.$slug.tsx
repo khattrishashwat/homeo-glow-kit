@@ -179,6 +179,12 @@ function ConditionDetailPage() {
         </div>
       </Section>
 
+      {/* Patient video testimonials */}
+      <VideoGallery
+        title="Patient Video Testimonials"
+        subtitle={`Watch how homeopathy has helped patients with ${condition.name.toLowerCase()} and other conditions.`}
+      />
+
       {/* Other conditions */}
       <Section>
         <h2 className="font-display text-2xl md:text-3xl font-bold">
