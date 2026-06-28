@@ -4,6 +4,8 @@ import { Section, SectionHeader } from "@/components/site/Section";
 import { GoogleReviews } from "@/components/site/GoogleReviews";
 import doctorImg from "@/assets/doctor-heros.png";
 import productHair from "@/assets/product-hair.jpg";
+import heroBg from "@/assets/hero-clinic-bg.jpg";
+import mdLogo from "@/assets/md-logo.png";
 import {
   Calendar, MessageCircle, ShieldCheck, Award, Users, Globe, Sparkles, Leaf, User,
   HeartPulse, Activity, Brain, Flower2, Scissors, Stethoscope,
