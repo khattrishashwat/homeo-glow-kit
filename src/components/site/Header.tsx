@@ -23,7 +23,7 @@ export function Header() {
           <img
             src={mdLogo}
             alt="MD's Homoeopathy"
-            className="h-10 sm:h-12 w-auto object-contain"
+            className="h-14 sm:h-16 w-auto object-contain"
             width={1658}
             height={1402}
           />
