@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { Leaf, Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import mdLogoAsset from "@/assets/md-logo-transparent.png.asset.json";
 
 const nav = [
   { to: "/", label: "Home" },
