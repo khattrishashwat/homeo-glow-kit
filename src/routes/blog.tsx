@@ -21,10 +21,10 @@ export default function BlogPage() {
   return (
     <>
       <Helmet>
-        <title>Health & Wellness Blog | MD's Homeopathy</title>
+        <title>Health & Wellness Blog | MD's Homoeopathy </title>
         <meta
           name="description"
-          content="Insights from our doctors on natural healing, women's health, nutrition and lifestyle. Read the MD's Homeopathy health journal."
+          content="Insights from our doctors on natural healing, women's health, nutrition and lifestyle. Read the MD's Homoeopathy  health journal."
         />
       </Helmet>
 
@@ -38,7 +38,7 @@ export default function BlogPage() {
             Insights for Natural Healing
           </h1>
           <p className="mt-5 max-w-2xl mx-auto text-lg text-muted-foreground text-pretty">
-            Expert advice on homeopathy, wellness, women's health and everyday
+            Expert advice on Homoeopathy , wellness, women's health and everyday
             habits for a healthier life.
           </p>
         </div>

@@ -31,8 +31,8 @@ export const Route = createFileRoute("/appointment")({
   head: () => ({
     meta: [
       { title: "Book Appointment — MD's HOMOEOPATHY" },
-      { name: "description", content: "Book your homeopathy consultation in 4 easy steps. Online or in-clinic. Trusted by 1000+ patients." },
-      { property: "og:title", content: "Book a Homeopathy Consultation" },
+      { name: "description", content: "Book your Homoeopathy  consultation in 4 easy steps. Online or in-clinic. Trusted by 1000+ patients." },
+      { property: "og:title", content: "Book a Homoeopathy  Consultation" },
       { property: "og:description", content: "Multi-step booking · online & clinic options · WhatsApp quick booking." },
     ],
   }),
@@ -151,7 +151,7 @@ function AppointmentPage() {
   };
 
   const waMessage = encodeURIComponent(
-    `Hi, I want to book a homeopathy consultation.\nName: ${data.name || "-"}\nPhone: ${data.phone || "-"}\nConcern: ${data.problem || "-"}\nMode: ${data.mode || "-"}\nWhen: ${data.day || "-"} ${data.slot || ""}`.trim()
+    `Hi, I want to book a Homoeopathy  consultation.\nName: ${data.name || "-"}\nPhone: ${data.phone || "-"}\nConcern: ${data.problem || "-"}\nMode: ${data.mode || "-"}\nWhen: ${data.day || "-"} ${data.slot || ""}`.trim()
   );
 
   return (

@@ -47,7 +47,7 @@ export const conditions: Condition[] = [
     banner:
       "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&w=1600&q=80",
     detailedDescription:
-      "Chronic sinusitis, allergic rhinitis, recurrent colds and nasal polyps respond remarkably well to homeopathy. Instead of suppressing symptoms with decongestants, our remedies strengthen your respiratory immunity and reduce hypersensitivity to allergens, so episodes become milder and far less frequent over time.",
+      "Chronic sinusitis, allergic rhinitis, recurrent colds and nasal polyps respond remarkably well to Homoeopathy . Instead of suppressing symptoms with decongestants, our remedies strengthen your respiratory immunity and reduce hypersensitivity to allergens, so episodes become milder and far less frequent over time.",
     videoUrl: "https://www.youtube.com/embed/aqz-KE-bpKQ",
     treatments: [
       "Immunity-building constitutional treatment",
@@ -95,7 +95,7 @@ export const conditions: Condition[] = [
     banner:
       "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=1600&q=80",
     detailedDescription:
-      "Migraines, anxiety, vertigo, neuralgia and stress-related conditions are deeply individual. Homeopathy addresses both the physical and emotional dimensions of neurological health, calming the nervous system and reducing the frequency and intensity of episodes — gently and without sedation or dependency.",
+      "Migraines, anxiety, vertigo, neuralgia and stress-related conditions are deeply individual. Homoeopathy  addresses both the physical and emotional dimensions of neurological health, calming the nervous system and reducing the frequency and intensity of episodes — gently and without sedation or dependency.",
     videoUrl: "https://www.youtube.com/embed/aqz-KE-bpKQ",
     treatments: [
       "Constitutional remedies for nervous system balance",
@@ -143,7 +143,7 @@ export const conditions: Condition[] = [
     banner:
       "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?auto=format&fit=crop&w=1600&q=80",
     detailedDescription:
-      "Acidity, IBS, constipation, bloating and chronic gastritis often stem from deeper digestive imbalances. Homeopathy restores healthy gut function by treating the root cause, improving digestion and reducing recurring discomfort — paired with practical diet guidance for lasting results.",
+      "Acidity, IBS, constipation, bloating and chronic gastritis often stem from deeper digestive imbalances. Homoeopathy  restores healthy gut function by treating the root cause, improving digestion and reducing recurring discomfort — paired with practical diet guidance for lasting results.",
     videoUrl: "https://www.youtube.com/embed/aqz-KE-bpKQ",
     treatments: [
       "Root-cause treatment for acidity and IBS",

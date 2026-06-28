@@ -104,7 +104,7 @@ function ShopPage() {
    return (
      <>
        <Helmet>
-         <title>Shop Homeopathy Treatment Kits | MD's Homeopathy</title>
+         <title>Shop Homoeopathy  Treatment Kits | MD's Homoeopathy </title>
        </Helmet>
 
       <Section className="pt-12 pb-8 bg-gradient-hero">

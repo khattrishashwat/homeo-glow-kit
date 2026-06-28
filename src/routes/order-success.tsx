@@ -8,7 +8,7 @@ import { whatsappLink } from "@/components/site/FloatingActions";
 import { formatINR } from "@/services/api";
 
 export const Route = createFileRoute("/order-success")({
-  head: () => ({ meta: [{ title: "Order Confirmed | MD's Homeopathy" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Order Confirmed | MD's Homoeopathy " }, { name: "robots", content: "noindex" }] }),
   component: SuccessPage,
 });
 

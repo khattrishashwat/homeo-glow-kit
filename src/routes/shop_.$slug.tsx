@@ -265,7 +265,7 @@ function ProductDetailPage() {
               <div className="mt-6 rounded-[1.75rem] border border-border bg-leaf-soft p-5 text-sm text-muted-foreground">
                 <div className="flex items-center gap-3">
                   <Check className="h-4 w-4 text-emerald-500" />
-                  <span>Doctor-formulated homeopathy kit.</span>
+                  <span>Doctor-formulated Homoeopathy  kit.</span>
                 </div>
                 <div className="mt-3 flex items-center gap-3">
                   <Truck className="h-4 w-4 text-primary" />

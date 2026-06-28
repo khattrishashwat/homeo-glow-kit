@@ -23,8 +23,8 @@ export const blogCategories = [
 
 export const blogPosts: BlogPost[] = [
   {
-    slug: "homeopathy-for-thyroid-natural-balance",
-    title: "Homeopathy for Thyroid: A Natural Path to Hormonal Balance",
+    slug: "Homoeopathy -for-thyroid-natural-balance",
+    title: "Homoeopathy  for Thyroid: A Natural Path to Hormonal Balance",
     excerpt:
       "Discover how constitutional homeopathic treatment helps restore thyroid function naturally, without dependency or side effects.",
     featuredImage:
@@ -34,27 +34,27 @@ export const blogPosts: BlogPost[] = [
     publishDate: "2026-06-10",
     readingTime: 6,
     videoUrl: "https://www.youtube.com/embed/aqz-KE-bpKQ",
-    tags: ["Thyroid", "Hormones", "Homeopathy"],
+    tags: ["Thyroid", "Hormones", "Homoeopathy "],
     content: `
-      <p>Thyroid disorders affect millions of people, often causing fatigue, weight changes, mood swings and hair fall. While conventional medicine focuses on regulating hormone levels, homeopathy takes a deeper, root-cause approach.</p>
+      <p>Thyroid disorders affect millions of people, often causing fatigue, weight changes, mood swings and hair fall. While conventional medicine focuses on regulating hormone levels, Homoeopathy  takes a deeper, root-cause approach.</p>
       <h2>Understanding the Thyroid</h2>
       <p>The thyroid gland controls metabolism, energy and temperature regulation. When it becomes underactive (hypothyroid) or overactive (hyperthyroid), the whole body feels the impact.</p>
       <h2>The Homeopathic Approach</h2>
-      <p>Instead of simply replacing hormones, homeopathy aims to stimulate the body's own regulatory mechanisms. A detailed case history helps identify the constitutional remedy that matches your unique symptom picture.</p>
+      <p>Instead of simply replacing hormones, Homoeopathy  aims to stimulate the body's own regulatory mechanisms. A detailed case history helps identify the constitutional remedy that matches your unique symptom picture.</p>
       <ul>
         <li>Personalized remedies based on your full health profile</li>
         <li>Support for energy, weight and emotional balance</li>
         <li>Gradual, supervised reduction of dependency</li>
       </ul>
       <h2>What to Expect</h2>
-      <p>Most patients notice steady improvement over a few months. Combined with mindful nutrition and lifestyle changes, homeopathy offers a gentle, sustainable path back to balance.</p>
+      <p>Most patients notice steady improvement over a few months. Combined with mindful nutrition and lifestyle changes, Homoeopathy  offers a gentle, sustainable path back to balance.</p>
     `,
   },
   {
     slug: "managing-pcod-naturally",
     title: "Managing PCOD Naturally: Lifestyle and Homeopathic Support",
     excerpt:
-      "PCOD is more than a hormonal issue. Learn how a holistic plan combining homeopathy and lifestyle can regulate cycles and improve wellbeing.",
+      "PCOD is more than a hormonal issue. Learn how a holistic plan combining Homoeopathy  and lifestyle can regulate cycles and improve wellbeing.",
     featuredImage:
       "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80",
     category: "Women's Health",
@@ -66,7 +66,7 @@ export const blogPosts: BlogPost[] = [
       <p>Polycystic Ovarian Disease (PCOD) is one of the most common hormonal conditions among women today. It can lead to irregular periods, weight gain, acne and fertility challenges.</p>
       <h2>Why a Holistic Approach Matters</h2>
       <p>PCOD is rarely caused by a single factor. Stress, diet, insulin resistance and genetics all play a role, which is why a holistic plan works best.</p>
-      <h2>Homeopathy's Role</h2>
+      <h2>Homoeopathy 's Role</h2>
       <p>Homeopathic remedies aim to restore natural hormonal balance and regulate menstrual cycles without introducing external hormones.</p>
       <ul>
         <li>Cycle regulation and reduced cramping</li>
@@ -80,7 +80,7 @@ export const blogPosts: BlogPost[] = [
     slug: "natural-relief-for-sinus-and-allergies",
     title: "Natural Relief for Sinus and Allergies That Actually Lasts",
     excerpt:
-      "Tired of seasonal congestion? Explore how homeopathy strengthens immunity to reduce recurring sinus and allergy flare-ups.",
+      "Tired of seasonal congestion? Explore how Homoeopathy  strengthens immunity to reduce recurring sinus and allergy flare-ups.",
     featuredImage:
       "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&w=1200&q=80",
     category: "Wellness",
@@ -91,7 +91,7 @@ export const blogPosts: BlogPost[] = [
     content: `
       <p>Recurring sinusitis and allergic rhinitis can be exhausting. Decongestants offer temporary relief but rarely address why your body keeps reacting.</p>
       <h2>Building Resilience</h2>
-      <p>Homeopathy focuses on reducing your hypersensitivity to allergens and strengthening respiratory immunity, so flare-ups become milder and less frequent.</p>
+      <p>Homoeopathy  focuses on reducing your hypersensitivity to allergens and strengthening respiratory immunity, so flare-ups become milder and less frequent.</p>
       <ul>
         <li>Constitutional immunity-building treatment</li>
         <li>Targeted remedies for congestion and drip</li>
@@ -140,7 +140,7 @@ export const blogPosts: BlogPost[] = [
     content: `
       <p>Stress and anxiety don't just affect the mind — they influence sleep, digestion, immunity and even hormonal balance.</p>
       <h2>A Gentle Approach</h2>
-      <p>Homeopathy addresses both the emotional and physical aspects of stress, helping calm the nervous system without drowsiness or dependency.</p>
+      <p>Homoeopathy  addresses both the emotional and physical aspects of stress, helping calm the nervous system without drowsiness or dependency.</p>
       <ul>
         <li>Remedies matched to your emotional profile</li>
         <li>Better sleep and steadier focus</li>
@@ -164,7 +164,7 @@ export const blogPosts: BlogPost[] = [
     content: `
       <p>Joint pain and arthritis can make everyday tasks difficult, but long-term painkiller use carries its own risks.</p>
       <h2>Natural Inflammation Control</h2>
-      <p>Homeopathy works to reduce inflammation and stiffness while supporting cartilage and bone health, helping you stay mobile naturally.</p>
+      <p>Homoeopathy  works to reduce inflammation and stiffness while supporting cartilage and bone health, helping you stay mobile naturally.</p>
       <ul>
         <li>Constitutional remedies for chronic pain</li>
         <li>Improved flexibility and reduced stiffness</li>

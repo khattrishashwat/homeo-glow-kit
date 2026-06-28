@@ -18,8 +18,8 @@ import { blogPosts, formatBlogDate } from "@/data/blogs";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MD's Homeopathy — Natural Treatment for Long-Term Relief" },
-      { name: "description", content: "Safe, personalized homeopathy for hair fall, PCOD, thyroid, skin & anxiety. Online & clinic consultations. Book today." },
+      { title: "MD's Homoeopathy  — Natural Treatment for Long-Term Relief" },
+      { name: "description", content: "Safe, personalized Homoeopathy  for hair fall, PCOD, thyroid, skin & anxiety. Online & clinic consultations. Book today." },
     ],
   }),
   component: HomePage,
@@ -51,7 +51,7 @@ const why = [
 
 const faqs = [
   { q: "How long does homeopathic treatment take?", a: "Duration depends on the condition — chronic issues typically need 3–6 months, acute conditions resolve faster. We share a personalized timeline after consultation." },
-  { q: "Are there any side effects?", a: "Homeopathy is 100% natural and free of side effects when prescribed by a qualified doctor. Safe for all ages, including children and pregnant women." },
+  { q: "Are there any side effects?", a: "Homoeopathy  is 100% natural and free of side effects when prescribed by a qualified doctor. Safe for all ages, including children and pregnant women." },
   { q: "How is the medicine delivered?", a: "After consultation, your personalized medicine is shipped via express courier across India, typically within 2–4 business days." },
   { q: "Can I consult online?", a: "Yes! We offer secure video consultations. You'll receive a prescription and medicines at your doorstep." },
 ];
@@ -80,13 +80,13 @@ function HomePage() {
             {/* LEFT */}
             <div className="animate-fade-up relative z-10">
               <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-leaf-soft/80 text-xs sm:text-sm font-bold uppercase tracking-wide text-primary shadow-soft">
-                <Leaf className="h-4 w-4" /> Natural Healing. Lasting Results.
+                <Leaf className="h-4 w-4" /> A DESTINATION FOR PERMANENT CURE AND PERFECT CARE.
               </span>
               <h1 className="mt-6 font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.02] tracking-tight text-primary text-balance">
-                MD's<br />Homeopathy
+                MD's<br />HOMOEOPATHY 
               </h1>
               <p className="mt-4 font-display text-xl sm:text-2xl text-foreground/80 font-medium">
-                Natural Healing with Trusted Care
+                We Heal Immunity and Improve Your Health.
               </p>
               <p className="mt-5 text-base text-muted-foreground max-w-md text-pretty">
                 Safe, natural and effective homeopathic treatment for you and your loved ones. Personalized care for a healthier tomorrow.
@@ -105,15 +105,15 @@ function HomePage() {
             {/* RIGHT — Doctor */}
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-leaf opacity-15 blur-3xl rounded-full" />
-              <div className="relative">
+              {/* <div className="relative">
                 <img
                   src={doctorImg}
-                  alt="MD's Homeopathy doctor holding a homeopathic remedy"
+                  alt="MD's Homoeopathy  doctor holding a homeopathic remedy"
                   className="relative w-full h-auto object-contain max-h-[560px] mx-auto drop-shadow-2xl"
                   width={1024}
                   height={1024}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -144,7 +144,7 @@ function HomePage() {
                 <ShieldCheck className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <div className="font-bold text-sm sm:text-base">Trusted Homeopathy Clinic</div>
+                <div className="font-bold text-sm sm:text-base">Trusted Homoeopathy  Clinic</div>
                 <div className="text-xs sm:text-sm text-muted-foreground">Thousands of patients healed with care and compassion.</div>
               </div>
             </div>
@@ -189,7 +189,7 @@ function HomePage() {
             <span className="inline-block px-3 py-1 rounded-full bg-card text-primary text-xs font-semibold uppercase tracking-wide">About MD's</span>
             <h2 className="mt-4 font-display text-3xl md:text-4xl font-bold text-balance">Two decades of healing, one patient at a time.</h2>
             <p className="mt-4 text-muted-foreground text-pretty">
-              At MD's HOMOEOPATHY, we combine classical homeopathy with modern diagnostics to deliver care that addresses the root cause — not just symptoms. Every treatment plan is built around you.
+              At MD's HOMOEOPATHY, we combine classical Homoeopathy  with modern diagnostics to deliver care that addresses the root cause — not just symptoms. Every treatment plan is built around you.
             </p>
             <div className="mt-6 grid grid-cols-2 gap-4">
               {["Root-cause approach","Personalized care","Online consultations","Trusted by 1000+"].map(t=>(
@@ -240,7 +240,7 @@ function HomePage() {
       <Section>
         <SectionHeader
           eyebrow="Shop"
-          title="Recommended Homeopathy Products"
+          title="Recommended Homoeopathy  Products"
           subtitle="Doctor-formulated kits for common conditions."
         />
 

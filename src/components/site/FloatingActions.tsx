@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useSettings } from "@/hooks/useSettings";
 
 const WHATSAPP_NUMBER = "919876543210";
-const DEFAULT_MESSAGE = "Hi, I want to book a homeopathy consultation.";
+const DEFAULT_MESSAGE = "Hi, I want to book a Homoeopathy  consultation.";
 const normalizePhone = (value?: string) => (value || WHATSAPP_NUMBER).replace(/\D/g, "");
 export const whatsappLink = (msg: string = DEFAULT_MESSAGE, phone?: string) =>
   `https://wa.me/${normalizePhone(phone)}?text=${encodeURIComponent(msg)}`;

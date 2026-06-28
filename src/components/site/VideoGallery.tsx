@@ -8,7 +8,7 @@ export type GalleryVideo = {
 
 const DEFAULT_VIDEOS: GalleryVideo[] = [
   { id: "ZCMEAEMIOCs", title: "Patient Recovery Journey" },
-  { id: "mVKH_ngGb50", title: "Healing with Homeopathy" },
+  { id: "mVKH_ngGb50", title: "Healing with Homoeopathy " },
   { id: "pfDppZkGOFs", title: "Real Patient Experience" },
   { id: "W5JIkQnu42E", title: "Natural Treatment Results" },
   { id: "R-gJ4vtEHjA", title: "Doctor's Care & Guidance" },

@@ -7,7 +7,7 @@ export const Route = createFileRoute("/treatments")({
   head: () => ({
     meta: [
       { title: "Our Treatments — Homeopathic Treatment Process | MD's" },
-      { name: "description", content: "Learn about our 5-step treatment process and why patients choose MD's Homeopathy for safe, natural healing." },
+      { name: "description", content: "Learn about our 5-step treatment process and why patients choose MD's Homoeopathy  for safe, natural healing." },
       { property: "og:title", content: "Homeopathic Treatment Process — MD's" },
       { property: "og:description", content: "Personalized treatment plans for chronic and acute conditions." },
     ],
@@ -52,7 +52,7 @@ function TreatmentsPage() {
       </Section>
 
       <Section>
-        <SectionHeader eyebrow="Why Choose MD's Homeopathy" title="Why Patients Trust Us" />
+        <SectionHeader eyebrow="Why Choose MD's Homoeopathy " title="Why Patients Trust Us" />
         <div className="mt-12 grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {[
             "Personalized treatment plans",

@@ -44,7 +44,7 @@ function ConditionDetailPage() {
   return (
     <>
       <Helmet>
-        <title>{condition.name} Treatment | MD's Homeopathy</title>
+        <title>{condition.name} Treatment | MD's Homoeopathy </title>
         <meta name="description" content={condition.shortDescription} />
       </Helmet>
 
@@ -136,7 +136,7 @@ function ConditionDetailPage() {
               </div>
               <div className="flex items-center gap-2 bg-card px-5 py-3 text-sm text-muted-foreground">
                 <PlayCircle className="h-4 w-4 text-primary" />
-                Watch how homeopathy helps with {condition.name.toLowerCase()}
+                Watch how Homoeopathy  helps with {condition.name.toLowerCase()}
               </div>
             </div>
 
@@ -182,7 +182,7 @@ function ConditionDetailPage() {
       {/* Patient video testimonials */}
       <VideoGallery
         title="Patient Video Testimonials"
-        subtitle={`Watch how homeopathy has helped patients with ${condition.name.toLowerCase()} and other conditions.`}
+        subtitle={`Watch how Homoeopathy  has helped patients with ${condition.name.toLowerCase()} and other conditions.`}
       />
 
       {/* Other conditions */}

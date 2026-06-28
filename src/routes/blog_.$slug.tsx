@@ -79,7 +79,7 @@ export default function BlogDetailPage() {
   return (
     <>
       <Helmet>
-        <title>{blog.title} | MD's Homeopathy</title>
+        <title>{blog.title} | MD's Homoeopathy </title>
         <meta name="description" content={blog.excerpt} />
       </Helmet>
 

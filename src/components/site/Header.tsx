@@ -24,7 +24,7 @@ export function Header() {
           </div>
           <div className="leading-tight">
             <div className="font-display text-lg font-extrabold text-foreground">MD's</div>
-            <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-foreground/80">Homeopathy</div>
+            <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-foreground/80">Homoeopathy </div>
           </div>
         </Link>
 

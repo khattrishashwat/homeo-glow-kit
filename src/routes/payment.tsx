@@ -9,7 +9,7 @@ import { clearDraft, loadDraft, saveLastOrder } from "@/lib/order-store";
 import { useProductBySlug } from "@/hooks/useProducts";
 
 export const Route = createFileRoute("/payment")({
-  head: () => ({ meta: [{ title: "Payment | MD's Homeopathy" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Payment | MD's Homoeopathy " }, { name: "robots", content: "noindex" }] }),
   component: PaymentPage,
 });
 

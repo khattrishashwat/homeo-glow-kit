@@ -16,7 +16,7 @@ export const googleReviews: StaticReview[] = [
     id: "r1",
     reviewerName: "Priya Sharma",
     rating: 5,
-    text: "After years of struggling with thyroid issues, MD's Homeopathy gave me a treatment plan that actually worked. My reports are normal now and I feel energetic again. Highly recommended!",
+    text: "After years of struggling with thyroid issues, MD's Homoeopathy  gave me a treatment plan that actually worked. My reports are normal now and I feel energetic again. Highly recommended!",
     profileImage: "https://i.pravatar.cc/150?img=47",
     reviewDate: "2026-05-28",
     relativeTime: "3 weeks ago",

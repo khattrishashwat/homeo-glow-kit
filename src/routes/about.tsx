@@ -12,7 +12,7 @@ export const Route = createFileRoute("/about")({
       { title: "AboutMD's HOMOEOPATHY — 20+ Years of Trusted Care" },
       { name: "description", content: "Learn about our clinic, our doctors, and our root-cause approach to homeopathic healing." },
       { property: "og:title", content: "AboutMD's HOMOEOPATHY" },
-      { property: "og:description", content: "20+ years, 1000+ patients. Personalized homeopathy with a root-cause approach." },
+      { property: "og:description", content: "20+ years, 1000+ patients. Personalized Homoeopathy  with a root-cause approach." },
     ],
   }),
   component: AboutPage,
@@ -24,8 +24,8 @@ function AboutPage() {
       <section className="bg-gradient-hero">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
           <span className="inline-block px-4 py-1.5 rounded-full bg-card shadow-soft text-xs font-semibold text-primary uppercase tracking-wide">About Us</span>
-          <h1 className="mt-5 font-display text-4xl md:text-6xl font-bold text-balance">20+ Years of Trusted Homeopathy Care</h1>
-          <p className="mt-5 max-w-2xl mx-auto text-lg text-muted-foreground text-pretty">A clinic built on classical homeopathy, modern diagnostics, and deep human empathy.</p>
+          <h1 className="mt-5 font-display text-4xl md:text-6xl font-bold text-balance">20+ Years of Trusted Homoeopathy  Care</h1>
+          <p className="mt-5 max-w-2xl mx-auto text-lg text-muted-foreground text-pretty">A clinic built on classical Homoeopathy , modern diagnostics, and deep human empathy.</p>
         </div>
       </section>
 <Section>
@@ -82,7 +82,7 @@ function AboutPage() {
 
       <Section>
         <SectionHeader eyebrow="Our Mission" title="Safe, natural, and effective healthcare with compassion" />
-        <p className="mt-8 max-w-3xl mx-auto text-muted-foreground text-pretty text-center">At MD's Homeopathy, our mission is to provide safe, natural, and effective homeopathic treatment with compassion and trust. We are committed to improving the health and well-being of every patient through personalized care, holistic healing, and long-term wellness solutions. Our goal is to make quality homeopathic healthcare accessible while maintaining the highest standards of ethics, dedication, and patient satisfaction.</p>
+        <p className="mt-8 max-w-3xl mx-auto text-muted-foreground text-pretty text-center">At MD's Homoeopathy , our mission is to provide safe, natural, and effective homeopathic treatment with compassion and trust. We are committed to improving the health and well-being of every patient through personalized care, holistic healing, and long-term wellness solutions. Our goal is to make quality homeopathic healthcare accessible while maintaining the highest standards of ethics, dedication, and patient satisfaction.</p>
       </Section>
 
       <Section className="bg-leaf-soft/40">
@@ -141,7 +141,7 @@ function AboutPage() {
           <div>
             <p className="text-muted-foreground text-pretty">Dr. Mehta specializes in chronic conditions including PCOD, thyroid disorders, autoimmune diseases, and dermatological issues. His patient-first approach has helped thousands return to a life of balance and vitality.</p>
             <ul className="mt-6 space-y-3">
-              {["Specialist in PCOD, Thyroid & Skin","Published in 12+ medical journals","International conference speaker","Member, Central Council of Homeopathy"].map(t=>(
+              {["Specialist in PCOD, Thyroid & Skin","Published in 12+ medical journals","International conference speaker","Member, Central Council of Homoeopathy "].map(t=>(
                 <li key={t} className="flex gap-2 items-center text-sm"><CheckCircle2 className="h-4 w-4 text-primary" />{t}</li>
               ))}
             </ul>

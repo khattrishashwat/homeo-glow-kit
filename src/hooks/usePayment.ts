@@ -90,7 +90,7 @@ export function useInitiateRazorpay() {
           key,
           order_id: orderId,
           amount: amount * 100, // Convert to paise
-          name: 'Homeopathy Clinic',
+          name: 'Homoeopathy  Clinic',
           description: 'Appointment Payment',
           theme: { color: '#667eea' },
           handler: async (response: RazorpayResponse) => {

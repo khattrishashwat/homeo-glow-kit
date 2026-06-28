@@ -19,7 +19,7 @@ export function Footer() {
             <span className="font-display text-lg font-bold">{siteName}</span>
           </div>
           <p className="text-sm text-muted-foreground text-pretty">
-            {settings?.site_description || "Personalized homeopathy treatment for chronic and acute conditions. Trusted by 1000+ patients."}
+            {settings?.site_description || "Personalized Homoeopathy  treatment for chronic and acute conditions. Trusted by 1000+ patients."}
           </p>
           <div className="flex gap-3 mt-5">
             {[

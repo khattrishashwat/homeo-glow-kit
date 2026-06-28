@@ -72,7 +72,7 @@ export default function CategoryPage() {
     );
   }
 
-   const siteUrl = "https://mdshomeopathy.com";
+   const siteUrl = "https://mdsHomoeopathy .com";
    const categoryUrl = `${siteUrl}/category/${category.slug}`;
 
    return (

@@ -220,7 +220,7 @@ function ContactPage() {
             </div>
             <div className="rounded-3xl overflow-hidden shadow-card aspect-[4/3]">
               <iframe
-                title="MD's Homeopathy Clinic - Mathura Location"
+                title="MD's Homoeopathy  Clinic - Mathura Location"
                 src="https://www.google.com/maps?q=MD%27s+HOMOEOPATHY%2C+1262%2F3A+Deeg+Gali+Shahganj+Darwaza+Mathura+Uttar+Pradesh+281001+India&output=embed&entry=ttu&g_ep=EgoyMDI0MDgyMS4wIKXMDSoASAFQAw%3D%3D"
                 className="w-full h-full border-0"
                 loading="lazy"
