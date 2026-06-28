@@ -21,7 +21,7 @@ export function Header() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-2 group shrink-0">
           <img
-            src={mdLogoAsset.url}
+            src={mdLogo}
             alt="MD's Homoeopathy"
             className="h-10 sm:h-12 w-auto object-contain"
             width={1658}
