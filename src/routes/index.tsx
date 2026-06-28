@@ -76,11 +76,27 @@ function HomePage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative bg-gradient-hero overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 pb-10 md:pt-16 md:pb-16">
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-4 items-center">
-            {/* LEFT */}
-            <div className="animate-fade-up relative z-10">
+      <section className="relative overflow-hidden">
+        {/* Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-bottom bg-no-repeat"
+          style={{ backgroundImage: `url(${heroBg})` }}
+        />
+        {/* Light cream overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/75 to-background/60" />
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10 pb-10 md:pt-16 md:pb-16">
+          <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
+            {/* BRANDING LOGO */}
+            <img
+              src={mdLogo}
+              alt="MD's Homoeopathy logo"
+              className="animate-fade-up w-40 sm:w-52 lg:w-64 h-auto object-contain drop-shadow-[0_8px_24px_hsl(var(--primary)/0.15)]"
+              width={1279}
+              height={1077}
+            />
+
+            <div className="animate-fade-up relative z-10 mt-6">
               <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-leaf-soft/80 text-xs sm:text-sm font-bold uppercase tracking-wide text-primary shadow-soft">
                 <Leaf className="h-4 w-4" /> A DESTINATION FOR PERMANENT CURE AND PERFECT CARE.
               </span>
@@ -90,11 +106,11 @@ function HomePage() {
               <p className="mt-4 font-display text-xl sm:text-2xl text-foreground/80 font-medium">
                 We Heal Immunity and Improve Your Health.
               </p>
-              <p className="mt-5 text-base text-muted-foreground max-w-md text-pretty">
+              <p className="mt-5 text-base text-muted-foreground max-w-md mx-auto text-pretty">
                 Safe, natural and effective homeopathic treatment for you and your loved ones. Personalized care for a healthier tomorrow.
               </p>
 
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-8 flex flex-wrap gap-3 justify-center">
                 <Button asChild variant="hero" size="xl" className="rounded-full">
                   <Link to="/appointment"><Calendar /> Book Appointment</Link>
                 </Button>
@@ -102,20 +118,6 @@ function HomePage() {
                   <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer"><MessageCircle /> Chat on WhatsApp</a>
                 </Button>
               </div>
-            </div>
-
-            {/* RIGHT — Doctor */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-leaf opacity-15 blur-3xl rounded-full" />
-              {/* <div className="relative">
-                <img
-                  src={doctorImg}
-                  alt="MD's Homoeopathy  doctor holding a homeopathic remedy"
-                  className="relative w-full h-auto object-contain max-h-[560px] mx-auto drop-shadow-2xl"
-                  width={1024}
-                  height={1024}
-                />
-              </div> */}
             </div>
           </div>
 
