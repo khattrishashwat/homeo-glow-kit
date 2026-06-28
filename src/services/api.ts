@@ -1,4 +1,4 @@
-export const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+export const API_URL = import.meta.env.VITE_BACKEND_URL || "https://homopatic-backend-1.onrender.com";
 
 export type ApiResponse<T> = {
   success: boolean;
