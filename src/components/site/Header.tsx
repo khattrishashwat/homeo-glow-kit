@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
-import { Leaf, Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import mdLogo from "@/assets/md-logo-header.png";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -17,15 +18,15 @@ export function Header() {
   const [open, setOpen] = useState(false);
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="grid h-10 w-10 place-items-center rounded-xl bg-leaf-soft shadow-soft group-hover:shadow-glow transition-shadow">
-            <Leaf className="h-5 w-5 text-primary" />
-          </div>
-          <div className="leading-tight">
-            <div className="font-display text-lg font-extrabold text-foreground">MD's</div>
-            <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-foreground/80">Homoeopathy </div>
-          </div>
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-6 lg:px-8">
+        <Link to="/" className="flex items-center gap-2 group shrink-0">
+          <img
+            src={mdLogo}
+            alt="MD's Homoeopathy"
+            className="h-14 sm:h-16 w-auto object-contain"
+            width={1658}
+            height={1402}
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
