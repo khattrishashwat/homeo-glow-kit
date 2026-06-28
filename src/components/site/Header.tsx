@@ -19,14 +19,14 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="grid h-10 w-10 place-items-center rounded-xl bg-leaf-soft shadow-soft group-hover:shadow-glow transition-shadow">
-            <Leaf className="h-5 w-5 text-primary" />
-          </div>
-          <div className="leading-tight">
-            <div className="font-display text-lg font-extrabold text-foreground">MD's</div>
-            <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-foreground/80">Homoeopathy </div>
-          </div>
+        <Link to="/" className="flex items-center gap-2 group shrink-0">
+          <img
+            src={mdLogoAsset.url}
+            alt="MD's Homoeopathy"
+            className="h-10 sm:h-12 w-auto object-contain"
+            width={1658}
+            height={1402}
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
