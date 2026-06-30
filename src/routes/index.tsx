@@ -229,7 +229,7 @@ function HomePage() {
       {/* WHY CHOOSE US */}
       <Section className="bg-sky-soft/40">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
-          <SectionHeader eyebrow="Why us" title="Why patients choose MD's" subtitle="Care that's personal, science-backed, and side-effect free." center={false} />
+          <SectionHeader eyebrow="Why us" title="Why Patients Choose MD's HOMOEOPATHY" subtitle="Care that's personal, science-backed, and side-effect free." center={false} />
           <ul className="grid sm:grid-cols-2 gap-4">
             {why.map(w => (
               <li key={w} className="flex gap-3 bg-card rounded-2xl p-4 shadow-soft">
