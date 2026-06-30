@@ -374,6 +374,69 @@ function HomePage() {
         </div>
       </Section>
 
+      {/* DOCTOR PROFILE */}
+      <Section className="bg-leaf-soft/40">
+        <SectionHeader eyebrow="Meet Your Doctor" title="Why We Started MD's HOMOEOPATHY" subtitle="Compassionate, root-cause homeopathic care led by an experienced homeopath." />
+        <div className="mt-12 grid lg:grid-cols-2 gap-10 items-center">
+          <div className="relative max-w-md mx-auto w-full">
+            <div className="absolute -inset-4 bg-gradient-leaf opacity-20 blur-2xl rounded-full" />
+            <img src={doctorImg} alt="Dr. Parth Bhargava" className="relative rounded-3xl shadow-card aspect-square object-cover w-full" loading="lazy" />
+          </div>
+          <div>
+            <h3 className="font-display text-3xl font-bold">Dr. Parth Bhargava</h3>
+            <p className="mt-1 text-primary font-semibold">BHMS · Homoeopathic Consultant</p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-1.5 text-sm font-medium shadow-soft"><Award className="h-4 w-4 text-primary" /> Qualified BHMS</span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-1.5 text-sm font-medium shadow-soft"><Users className="h-4 w-4 text-primary" /> 5000+ Patients Treated</span>
+            </div>
+            <p className="mt-5 text-muted-foreground text-pretty">
+              Dr. Parth Bhargava founded MD's HOMOEOPATHY with a single belief — that medicine should heal the root cause, not just mask symptoms. With deep expertise in chronic conditions like thyroid, nasal, gynecological, neuro, osteo and digestive disorders, he provides personalized, side-effect-free treatment with genuine care and compassion.
+            </p>
+            <Button asChild variant="hero" size="lg" className="mt-7">
+              <Link to="/appointment"><Calendar /> Book a Consultation</Link>
+            </Button>
+          </div>
+        </div>
+      </Section>
+
+      {/* TEST REPORTS CHECK */}
+      <TestReports />
+
+      {/* REACH US */}
+      <Section className="bg-sky-soft/30">
+        <SectionHeader eyebrow="Visit Us" title="Reach Us" subtitle="Walk in to our clinic or connect with us online — we're here to help." />
+        <div className="mt-12 grid lg:grid-cols-2 gap-6">
+          <div className="rounded-3xl bg-card p-7 shadow-soft">
+            <div className="flex gap-4">
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-leaf text-primary-foreground"><MapPin className="h-6 w-6" /></div>
+              <div>
+                <h3 className="font-display text-lg font-bold">Clinic Address</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                  1262/3A, Deeg Gali, Shahganj Darwaza, Mathura, Uttar Pradesh – 281001, India
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 grid sm:grid-cols-2 gap-3">
+              <a href="tel:+917668610031" className="flex items-center gap-2 rounded-2xl bg-leaf-soft/60 px-4 py-3 text-sm font-medium hover:bg-leaf-soft transition">
+                <Phone className="h-4 w-4 text-primary" /> +91 76686 10031
+              </a>
+              <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-2xl bg-leaf-soft/60 px-4 py-3 text-sm font-medium hover:bg-leaf-soft transition">
+                <MessageCircle className="h-4 w-4 text-whatsapp" /> Chat on WhatsApp
+              </a>
+            </div>
+          </div>
+          <div className="overflow-hidden rounded-3xl shadow-soft min-h-[260px]">
+            <iframe
+              title="MD's Homoeopathy Clinic Location"
+              src="https://www.google.com/maps?q=Shahganj%20Darwaza%2C%20Mathura%2C%20Uttar%20Pradesh%20281001&output=embed"
+              className="h-full w-full min-h-[260px] border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+        </div>
+      </Section>
+
       {/* FINAL CTA */}
       <Section>
         <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-leaf p-10 md:p-16 text-center shadow-glow">
