@@ -124,7 +124,7 @@ function AboutPage() {
       </Section>
 
       <Section>
-        <SectionHeader eyebrow="Our story" title="Why we started MD's" />
+        <SectionHeader eyebrow="Our story" title="Why We Started MD's HOMOEOPATHY" />
         <div className="mt-10 max-w-3xl mx-auto space-y-6 text-muted-foreground text-pretty">
           <p>Two decades ago, Dr. Mehta started MD's with a single belief: medicine should heal, not mask. After years of seeing patients shuffle from one prescription to another, he set out to build a clinic where time, listening, and personalization came first.</p>
           <p>Today, that belief drives a team of four doctors and a network of patients across India — many of whom we've watched grow from chronic illness to complete recovery.</p>
