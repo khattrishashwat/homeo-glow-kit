@@ -124,21 +124,33 @@ function ConditionDetailPage() {
 
           {/* Video + benefits */}
           <div className="space-y-8">
-            <div className="overflow-hidden rounded-3xl shadow-card">
-              <div className="relative aspect-video">
-                <iframe
-                  src={condition.videoUrl}
-                  title={`${condition.name} treatment video`}
-                  className="h-full w-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+            {condition.comingSoon || condition.videos.length === 0 ? (
+              <div className="rounded-3xl border-2 border-dashed border-primary/30 bg-leaf-soft/40 p-10 text-center shadow-soft">
+                <PlayCircle className="mx-auto h-10 w-10 text-primary/60" />
+                <h3 className="mt-4 font-display text-lg font-bold">Video Coming Soon</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Detailed treatment videos for {condition.name.toLowerCase()} will be added shortly. Meanwhile, book a consultation to learn more.
+                </p>
               </div>
-              <div className="flex items-center gap-2 bg-card px-5 py-3 text-sm text-muted-foreground">
-                <PlayCircle className="h-4 w-4 text-primary" />
-                Watch how Homoeopathy  helps with {condition.name.toLowerCase()}
-              </div>
-            </div>
+            ) : (
+              condition.videos.map((v) => (
+                <div key={v.url} className="overflow-hidden rounded-3xl shadow-card">
+                  <div className="relative aspect-video">
+                    <iframe
+                      src={v.url}
+                      title={`${condition.name} — ${v.title}`}
+                      className="h-full w-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 bg-card px-5 py-3 text-sm font-medium text-foreground">
+                    <PlayCircle className="h-4 w-4 text-primary" />
+                    {v.title}
+                  </div>
+                </div>
+              ))
+            )}
 
             <div className="rounded-3xl bg-leaf-soft/50 p-7">
               <h3 className="font-display text-xl font-bold">Benefits</h3>
