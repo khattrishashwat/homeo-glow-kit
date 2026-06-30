@@ -7,7 +7,7 @@ export function Footer() {
   const siteName = settings?.site_name || "MD's HOMOEOPATHY";
   const phone = settings?.phone || "+91 7668610031";
   const email = settings?.email || "mdshomoeopathy13@gmail.com";
-  const address = settings?.address || "1262/3A Deeg Gali ShahganJ Darwaza, Mathura (U.P)";
+  const address = settings?.address || "1262/3A, Deeg Gali, Shahganj Darwaza, Mathura, Uttar Pradesh – 281001, India";
   return (
     <footer className="mt-24 border-t border-border bg-gradient-to-b from-background to-leaf-soft/40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 grid gap-10 md:grid-cols-4">
