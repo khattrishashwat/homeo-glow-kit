@@ -501,3 +501,62 @@ function Faq({ q, a }: { q: string; a: string }) {
     </div>
   );
 }
+
+const reportImages = [
+  { src: "https://images.unsplash.com/photo-1581595219315-a187dd40c322?auto=format&fit=crop&w=800&q=80", label: "Thyroid Profile — Before & After" },
+  { src: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80", label: "Blood Sugar Report" },
+  { src: "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80", label: "Diagnostic Lab Report" },
+  { src: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80", label: "Health Recovery Report" },
+  { src: "https://images.unsplash.com/photo-1530026405186-ed1f139313f8?auto=format&fit=crop&w=800&q=80", label: "Hormonal Panel Improvement" },
+  { src: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=800&q=80", label: "Follow-up Progress Report" },
+];
+
+function TestReports() {
+  const [preview, setPreview] = useState<{ src: string; label: string } | null>(null);
+  return (
+    <Section>
+      <SectionHeader
+        eyebrow="Proven Results"
+        title="Test Reports Check"
+        subtitle="Real before & after medical reports showing the impact of our homeopathic treatment."
+      />
+      <div className="mt-12 grid grid-cols-2 md:grid-cols-3 gap-4">
+        {reportImages.map((r) => (
+          <button
+            key={r.label}
+            onClick={() => setPreview(r)}
+            className="group relative overflow-hidden rounded-3xl bg-card shadow-soft hover:shadow-glow transition text-left"
+          >
+            <div className="aspect-[4/3] overflow-hidden">
+              <img src={r.src} alt={r.label} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            </div>
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/80 to-transparent p-4">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-white">
+                <ImageIcon className="h-3.5 w-3.5" /> {r.label}
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {preview && (
+        <div
+          className="fixed inset-0 z-[60] grid place-items-center bg-foreground/70 p-4 backdrop-blur-sm animate-fade-up"
+          onClick={() => setPreview(null)}
+        >
+          <div className="relative max-w-3xl w-full" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setPreview(null)}
+              aria-label="Close preview"
+              className="absolute -top-3 -right-3 z-10 grid h-10 w-10 place-items-center rounded-full bg-card text-foreground shadow-glow hover:scale-110 transition"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <img src={preview.src} alt={preview.label} className="w-full rounded-3xl shadow-glow" />
+            <div className="mt-3 text-center text-sm font-medium text-white">{preview.label}</div>
+          </div>
+        </div>
+      )}
+    </Section>
+  );
+}
