@@ -306,7 +306,7 @@ function HomePage() {
 
       {/* TESTIMONIALS */}
       <Section className="bg-gradient-hero">
-        <SectionHeader eyebrow="Testimonials" title="Real Patients. Real Results." />
+        <SectionHeader eyebrow="Real Reviews" title="Real Patients. Real Results." />
         <GoogleReviews />
       </Section>
 
