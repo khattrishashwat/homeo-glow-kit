@@ -241,6 +241,41 @@ function HomePage() {
         </div>
       </Section>
 
+      {/* SPECIALISED FACILITIES */}
+      <Section>
+        <SectionHeader eyebrow="Our Facilities" title="More Than Just Medicine" subtitle="Complete, modern support to make your healing journey effective and convenient." />
+        <div className="mt-12 grid md:grid-cols-2 gap-6">
+          {[
+            {
+              icon: ClipboardList,
+              title: "Diet Chart by Expert Dietitians",
+              points: ["Professional diet guidance", "Personalized nutrition plans"],
+            },
+            {
+              icon: Activity,
+              title: "In-house ECG, PFT & BSG Facility",
+              points: ["Diagnostic support available", "Advanced health monitoring facilities"],
+            },
+          ].map((f) => (
+            <div key={f.title} className="flex gap-5 rounded-3xl bg-card p-7 shadow-soft hover:shadow-card transition">
+              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-leaf text-primary-foreground shadow-soft">
+                <f.icon className="h-7 w-7" />
+              </div>
+              <div>
+                <h3 className="font-display text-xl font-bold">{f.title}</h3>
+                <ul className="mt-3 space-y-2">
+                  {f.points.map((p) => (
+                    <li key={p} className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle2 className="h-4 w-4 text-primary" /> {p}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
       {/* PRODUCTS */}
       <Section>
         <SectionHeader
