@@ -9,7 +9,8 @@ import mdLogo from "@/assets/md-logo.png";
 import {
   Calendar, MessageCircle, ShieldCheck, Award, Users, Globe, Sparkles, Leaf, User,
   HeartPulse, Activity, Brain, Flower2, Scissors, Stethoscope,
-  ClipboardList, Microscope, Pill, Repeat, ArrowRight, CheckCircle2, ChevronDown, Phone
+  ClipboardList, Microscope, Pill, Repeat, ArrowRight, CheckCircle2, ChevronDown, Phone,
+  MapPin, X, ImageIcon
 } from "lucide-react";
 import { useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
