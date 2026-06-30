@@ -2,6 +2,7 @@ import { Outlet, Link, createRootRoute } from "@tanstack/react-router";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { FloatingWhatsapp, StickyMobileBar } from "@/components/site/FloatingActions";
+import { Chatbot } from "@/components/site/Chatbot";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -33,6 +34,7 @@ function RootComponent() {
       </main>
       <Footer />
       <FloatingWhatsapp />
+      <Chatbot />
       <StickyMobileBar />
       <Toaster position="top-center" richColors />
     </>
