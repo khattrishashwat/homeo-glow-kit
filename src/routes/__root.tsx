@@ -34,6 +34,7 @@ function RootComponent() {
       </main>
       <Footer />
       <FloatingWhatsapp />
+      <Chatbot />
       <StickyMobileBar />
       <Toaster position="top-center" richColors />
     </>
