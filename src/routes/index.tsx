@@ -191,7 +191,7 @@ function HomePage() {
       <Section className="bg-leaf-soft/40">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <span className="inline-block px-3 py-1 rounded-full bg-card text-primary text-xs font-semibold uppercase tracking-wide">About MD's</span>
+            <span className="inline-block px-3 py-1 rounded-full bg-card text-primary text-xs font-semibold uppercase tracking-wide">About MD's HOMOEOPATHY</span>
             <h2 className="mt-4 font-display text-3xl md:text-4xl font-bold text-balance">Two decades of healing, one patient at a time.</h2>
             <p className="mt-4 text-muted-foreground text-pretty">
               At MD's HOMOEOPATHY, we combine classical Homoeopathy  with modern diagnostics to deliver care that addresses the root cause — not just symptoms. Every treatment plan is built around you.
