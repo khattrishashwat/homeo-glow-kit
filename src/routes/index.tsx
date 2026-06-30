@@ -245,9 +245,34 @@ function HomePage() {
       <Section>
         <SectionHeader
           eyebrow="Shop"
-          title="Recommended Homoeopathy  Products"
-          subtitle="Doctor-formulated kits for common conditions."
+          title="Recommended MD's Homoeopathy Products"
+          subtitle="Doctor-formulated remedies for common conditions."
         />
+
+        {/* Highlighted recommended products */}
+        <div className="mt-12 grid sm:grid-cols-2 gap-6">
+          {[
+            { name: "Scalp Vital Spray", tag: "Top Recommended", desc: "Doctor-formulated scalp spray to control hair fall and nourish roots naturally." },
+            { name: "BR Oil", tag: "Top Recommended", desc: "Therapeutic homeopathic oil for hair, scalp and skin care with zero side effects." },
+          ].map((p) => (
+            <div key={p.name} className="relative overflow-hidden rounded-3xl border-2 border-primary/20 bg-gradient-to-br from-leaf-soft/60 to-card p-6 shadow-soft hover:shadow-glow transition">
+              <span className="inline-flex items-center gap-1 rounded-full bg-success px-3 py-1 text-xs font-bold text-white shadow-soft">
+                <Sparkles className="h-3 w-3" /> {p.tag}
+              </span>
+              <h3 className="mt-4 font-display text-2xl font-bold text-foreground">{p.name}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <Button asChild variant="hero" className="rounded-full">
+                  <Link to="/shop">View Product</Link>
+                </Button>
+                <Button asChild variant="outline" className="rounded-full">
+                  <Link to="/appointment">Consult First</Link>
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+
 
         <div className="mt-12 grid md:grid-cols-2 gap-6">
           {loadingProducts ? (
