@@ -29,6 +29,7 @@ import {
   formatBlogDate,
 } from "@/data/blogs";
 import { useState, useEffect } from "react";
+import { BlogComments } from "@/components/site/BlogComments";
 
 export const Route = createFileRoute("/blog_/$slug")({
   component: BlogDetailPage,
@@ -394,6 +395,15 @@ export default function BlogDetailPage() {
             </div>
           )}
         </div>
+
+        {/* Comments */}
+        <Section className="pt-0 pb-4">
+          <div className="mx-auto max-w-3xl">
+            <BlogComments blogSlug={blog.slug} />
+          </div>
+        </Section>
+
+
 
         {/* Related Articles - Fixed Spacing */}
         {related.length > 0 && (
