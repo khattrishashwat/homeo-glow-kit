@@ -9,7 +9,8 @@ import mdLogo from "@/assets/md-logo.png";
 import {
   Calendar, MessageCircle, ShieldCheck, Award, Users, Globe, Sparkles, Leaf, User,
   HeartPulse, Activity, Brain, Flower2, Scissors, Stethoscope,
-  ClipboardList, Microscope, Pill, Repeat, ArrowRight, CheckCircle2, ChevronDown, Phone
+  ClipboardList, Microscope, Pill, Repeat, ArrowRight, CheckCircle2, ChevronDown, Phone,
+  MapPin, X, ImageIcon
 } from "lucide-react";
 import { useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
@@ -52,6 +53,7 @@ const why = [
 ];
 
 const faqs = [
+  { q: "How long does Homoeopathy treatment take?", a: "The duration of treatment completely depends upon the pathogenicity, severity, and condition of the disease. Every patient responds differently, therefore treatment duration may vary from case to case." },
   { q: "How long does homeopathic treatment take?", a: "Duration depends on the condition — chronic issues typically need 3–6 months, acute conditions resolve faster. We share a personalized timeline after consultation." },
   { q: "Are there any side effects?", a: "Homoeopathy  is 100% natural and free of side effects when prescribed by a qualified doctor. Safe for all ages, including children and pregnant women." },
   { q: "How is the medicine delivered?", a: "After consultation, your personalized medicine is shipped via express courier across India, typically within 2–4 business days." },
@@ -115,7 +117,7 @@ function HomePage() {
                   <Link to="/appointment"><Calendar /> Book Appointment</Link>
                 </Button>
                 <Button asChild variant="outline" size="xl" className="rounded-full bg-card hover:bg-card text-whatsapp border-card shadow-soft hover:shadow-glow">
-                  <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer"><MessageCircle /> Chat on WhatsApp</a>
+                  <a href="https://wa.me/917668610031" target="_blank" rel="noreferrer"><MessageCircle /> Chat on WhatsApp</a>
                 </Button>
               </div>
             </div>
@@ -190,7 +192,7 @@ function HomePage() {
       <Section className="bg-leaf-soft/40">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <span className="inline-block px-3 py-1 rounded-full bg-card text-primary text-xs font-semibold uppercase tracking-wide">About MD's</span>
+            <span className="inline-block px-3 py-1 rounded-full bg-card text-primary text-xs font-semibold uppercase tracking-wide">About MD's HOMOEOPATHY</span>
             <h2 className="mt-4 font-display text-3xl md:text-4xl font-bold text-balance">Two decades of healing, one patient at a time.</h2>
             <p className="mt-4 text-muted-foreground text-pretty">
               At MD's HOMOEOPATHY, we combine classical Homoeopathy  with modern diagnostics to deliver care that addresses the root cause — not just symptoms. Every treatment plan is built around you.
@@ -228,7 +230,7 @@ function HomePage() {
       {/* WHY CHOOSE US */}
       <Section className="bg-sky-soft/40">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
-          <SectionHeader eyebrow="Why us" title="Why patients choose MD's" subtitle="Care that's personal, science-backed, and side-effect free." center={false} />
+          <SectionHeader eyebrow="Why us" title="Why Patients Choose MD's HOMOEOPATHY" subtitle="Care that's personal, science-backed, and side-effect free." center={false} />
           <ul className="grid sm:grid-cols-2 gap-4">
             {why.map(w => (
               <li key={w} className="flex gap-3 bg-card rounded-2xl p-4 shadow-soft">
@@ -240,13 +242,73 @@ function HomePage() {
         </div>
       </Section>
 
+      {/* SPECIALISED FACILITIES */}
+      <Section>
+        <SectionHeader eyebrow="Our Facilities" title="More Than Just Medicine" subtitle="Complete, modern support to make your healing journey effective and convenient." />
+        <div className="mt-12 grid md:grid-cols-2 gap-6">
+          {[
+            {
+              icon: ClipboardList,
+              title: "Diet Chart by Expert Dietitians",
+              points: ["Professional diet guidance", "Personalized nutrition plans"],
+            },
+            {
+              icon: Activity,
+              title: "In-house ECG, PFT & BSG Facility",
+              points: ["Diagnostic support available", "Advanced health monitoring facilities"],
+            },
+          ].map((f) => (
+            <div key={f.title} className="flex gap-5 rounded-3xl bg-card p-7 shadow-soft hover:shadow-card transition">
+              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-leaf text-primary-foreground shadow-soft">
+                <f.icon className="h-7 w-7" />
+              </div>
+              <div>
+                <h3 className="font-display text-xl font-bold">{f.title}</h3>
+                <ul className="mt-3 space-y-2">
+                  {f.points.map((p) => (
+                    <li key={p} className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle2 className="h-4 w-4 text-primary" /> {p}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
       {/* PRODUCTS */}
       <Section>
         <SectionHeader
           eyebrow="Shop"
-          title="Recommended Homoeopathy  Products"
-          subtitle="Doctor-formulated kits for common conditions."
+          title="Recommended MD's Homoeopathy Products"
+          subtitle="Doctor-formulated remedies for common conditions."
         />
+
+        {/* Highlighted recommended products */}
+        <div className="mt-12 grid sm:grid-cols-2 gap-6">
+          {[
+            { name: "Scalp Vital Spray", tag: "Top Recommended", desc: "Doctor-formulated scalp spray to control hair fall and nourish roots naturally." },
+            { name: "BR Oil", tag: "Top Recommended", desc: "Therapeutic homeopathic oil for hair, scalp and skin care with zero side effects." },
+          ].map((p) => (
+            <div key={p.name} className="relative overflow-hidden rounded-3xl border-2 border-primary/20 bg-gradient-to-br from-leaf-soft/60 to-card p-6 shadow-soft hover:shadow-glow transition">
+              <span className="inline-flex items-center gap-1 rounded-full bg-success px-3 py-1 text-xs font-bold text-white shadow-soft">
+                <Sparkles className="h-3 w-3" /> {p.tag}
+              </span>
+              <h3 className="mt-4 font-display text-2xl font-bold text-foreground">{p.name}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <Button asChild variant="hero" className="rounded-full">
+                  <Link to="/shop">View Product</Link>
+                </Button>
+                <Button asChild variant="outline" className="rounded-full">
+                  <Link to="/appointment">Consult First</Link>
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+
 
         <div className="mt-12 grid md:grid-cols-2 gap-6">
           {loadingProducts ? (
@@ -280,7 +342,7 @@ function HomePage() {
 
       {/* TESTIMONIALS */}
       <Section className="bg-gradient-hero">
-        <SectionHeader eyebrow="Testimonials" title="Real Patients. Real Results." />
+        <SectionHeader eyebrow="Real Reviews" title="Real Patients. Real Results." />
         <GoogleReviews />
       </Section>
 
@@ -313,21 +375,62 @@ function HomePage() {
         </div>
       </Section>
 
-      {/* FINAL CTA */}
-      <Section>
-        <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-leaf p-10 md:p-16 text-center shadow-glow">
-          <div className="absolute inset-0 opacity-10" style={{backgroundImage: "radial-gradient(circle at 20% 50%, white, transparent 40%), radial-gradient(circle at 80% 30%, white, transparent 40%)"}} />
-          <div className="relative">
-            <h2 className="font-display text-3xl md:text-5xl font-bold text-primary-foreground text-balance">Start Your Healing Journey Today</h2>
-            <p className="mt-4 text-primary-foreground/90 max-w-xl mx-auto">Take the first step toward better health — book a free consultation and get personalized advice.</p>
-            <div className="mt-8 flex flex-wrap gap-3 justify-center">
-              <Button asChild size="xl" className="bg-card text-primary hover:bg-card/90 hover:shadow-glow">
-                <Link to="/appointment"><Calendar /> Book Appointment</Link>
-              </Button>
-              <Button asChild size="xl" variant="whatsapp">
-                <a href="tel:+919876543210"><Phone /> Call Now</a>
-              </Button>
+      {/* DOCTOR PROFILE */}
+      <Section className="bg-leaf-soft/40">
+        <SectionHeader eyebrow="Meet Your Doctor" title="Why We Started MD's HOMOEOPATHY" subtitle="Compassionate, root-cause homeopathic care led by an experienced homeopath." />
+        <div className="mt-12 grid lg:grid-cols-2 gap-10 items-center">
+          <div className="relative max-w-md mx-auto w-full">
+            <div className="absolute -inset-4 bg-gradient-leaf opacity-20 blur-2xl rounded-full" />
+            <img src={doctorImg} alt="Dr. Parth Bhargava" className="relative rounded-3xl shadow-card aspect-square object-cover w-full" loading="lazy" />
+          </div>
+          <div>
+            <h3 className="font-display text-3xl font-bold">Dr. Parth Bhargava</h3>
+            <p className="mt-1 text-primary font-semibold">BHMS · Homoeopathic Consultant</p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-1.5 text-sm font-medium shadow-soft"><Award className="h-4 w-4 text-primary" /> Qualified BHMS</span>
+              <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-1.5 text-sm font-medium shadow-soft"><Users className="h-4 w-4 text-primary" /> 5000+ Patients Treated</span>
             </div>
+            <p className="mt-5 text-muted-foreground text-pretty">
+              Dr. Parth Bhargava founded MD's HOMOEOPATHY with a single belief — that medicine should heal the root cause, not just mask symptoms. With deep expertise in chronic conditions like thyroid, nasal, gynecological, neuro, osteo and digestive disorders, he provides personalized, side-effect-free treatment with genuine care and compassion.
+            </p>
+            <Button asChild variant="hero" size="lg" className="mt-7">
+              <Link to="/appointment"><Calendar /> Book a Consultation</Link>
+            </Button>
+          </div>
+        </div>
+      </Section>
+
+      {/* TEST REPORTS CHECK */}
+      <TestReports />
+
+      {/* REACH US */}
+      <Section className="bg-sky-soft/30">
+        <SectionHeader eyebrow="Visit Us" title="Reach Us" subtitle="Walk in to our clinic or connect with us online — we're here to help." />
+        <div className="mt-12 grid lg:grid-cols-2 gap-6">
+          <div className="rounded-3xl bg-card p-7 shadow-soft">
+            <div className="flex gap-4">
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-leaf text-primary-foreground"><MapPin className="h-6 w-6" /></div>
+              <div>
+                <h3 className="font-display text-lg font-bold">Clinic Address</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                  1262/3A, Deeg Gali, Shahganj Darwaza, Mathura, Uttar Pradesh – 281001, India
+                </p>
+              </div>
+            </div>
+            <div className="mt-6 grid sm:grid-cols-2 gap-3">
+              <a href="tel:+917668610031" className="flex items-center gap-2 rounded-2xl bg-leaf-soft/60 px-4 py-3 text-sm font-medium hover:bg-leaf-soft transition">
+                <Phone className="h-4 w-4 text-primary" /> +91 76686 10031
+              </a>
+            </div>
+          </div>
+          <div className="overflow-hidden rounded-3xl shadow-soft min-h-[260px]">
+            <iframe
+              title="MD's Homoeopathy Clinic Location"
+              src="https://www.google.com/maps?q=Shahganj%20Darwaza%2C%20Mathura%2C%20Uttar%20Pradesh%20281001&output=embed"
+              className="h-full w-full min-h-[260px] border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
           </div>
         </div>
       </Section>
@@ -374,5 +477,64 @@ function Faq({ q, a }: { q: string; a: string }) {
       </button>
       {open && <div className="px-5 pb-5 text-sm text-muted-foreground animate-fade-up">{a}</div>}
     </div>
+  );
+}
+
+const reportImages = [
+  { src: "https://images.unsplash.com/photo-1581595219315-a187dd40c322?auto=format&fit=crop&w=800&q=80", label: "Thyroid Profile — Before & After" },
+  { src: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80", label: "Blood Sugar Report" },
+  { src: "https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&w=800&q=80", label: "Diagnostic Lab Report" },
+  { src: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80", label: "Health Recovery Report" },
+  { src: "https://images.unsplash.com/photo-1530026405186-ed1f139313f8?auto=format&fit=crop&w=800&q=80", label: "Hormonal Panel Improvement" },
+  { src: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=800&q=80", label: "Follow-up Progress Report" },
+];
+
+function TestReports() {
+  const [preview, setPreview] = useState<{ src: string; label: string } | null>(null);
+  return (
+    <Section>
+      <SectionHeader
+        eyebrow="Proven Results"
+        title="Test Reports Check"
+        subtitle="Real before & after medical reports showing the impact of our homeopathic treatment."
+      />
+      <div className="mt-12 grid grid-cols-2 md:grid-cols-3 gap-4">
+        {reportImages.map((r) => (
+          <button
+            key={r.label}
+            onClick={() => setPreview(r)}
+            className="group relative overflow-hidden rounded-3xl bg-card shadow-soft hover:shadow-glow transition text-left"
+          >
+            <div className="aspect-[4/3] overflow-hidden">
+              <img src={r.src} alt={r.label} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+            </div>
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-foreground/80 to-transparent p-4">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-white">
+                <ImageIcon className="h-3.5 w-3.5" /> {r.label}
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {preview && (
+        <div
+          className="fixed inset-0 z-[60] grid place-items-center bg-foreground/70 p-4 backdrop-blur-sm animate-fade-up"
+          onClick={() => setPreview(null)}
+        >
+          <div className="relative max-w-3xl w-full" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setPreview(null)}
+              aria-label="Close preview"
+              className="absolute -top-3 -right-3 z-10 grid h-10 w-10 place-items-center rounded-full bg-card text-foreground shadow-glow hover:scale-110 transition"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <img src={preview.src} alt={preview.label} className="w-full rounded-3xl shadow-glow" />
+            <div className="mt-3 text-center text-sm font-medium text-white">{preview.label}</div>
+          </div>
+        </div>
+      )}
+    </Section>
   );
 }

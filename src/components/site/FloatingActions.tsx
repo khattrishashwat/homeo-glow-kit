@@ -2,7 +2,7 @@ import { MessageCircle, Phone, Calendar } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useSettings } from "@/hooks/useSettings";
 
-const WHATSAPP_NUMBER = "919876543210";
+const WHATSAPP_NUMBER = "917668610031";
 const DEFAULT_MESSAGE = "Hi, I want to book a Homoeopathy  consultation.";
 const normalizePhone = (value?: string) => (value || WHATSAPP_NUMBER).replace(/\D/g, "");
 export const whatsappLink = (msg: string = DEFAULT_MESSAGE, phone?: string) =>
@@ -26,7 +26,7 @@ export function FloatingWhatsapp() {
 
 export function StickyMobileBar() {
   const { data: settings } = useSettings();
-  const phone = settings?.phone || "+919876543210";
+  const phone = settings?.phone || "+917668610031";
   return (
     <div className="md:hidden fixed bottom-0 inset-x-0 z-40 grid grid-cols-3 bg-card/95 backdrop-blur-xl border-t border-border shadow-card">
       <a href={`tel:${phone}`} className="flex flex-col items-center gap-0.5 py-3 text-xs font-medium text-foreground">

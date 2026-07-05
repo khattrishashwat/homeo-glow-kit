@@ -1,5 +1,10 @@
 import { Activity, Wind, Flower2, Brain, Bone, Pill, type LucideIcon } from "lucide-react";
 
+export type ConditionVideo = {
+  title: string;
+  url: string;
+};
+
 export type Condition = {
   slug: string;
   name: string;
@@ -9,6 +14,8 @@ export type Condition = {
   banner: string;
   detailedDescription: string;
   videoUrl: string;
+  videos: ConditionVideo[];
+  comingSoon?: boolean;
   treatments: string[];
   benefits: string[];
 };
@@ -24,7 +31,11 @@ export const conditions: Condition[] = [
       "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&w=1600&q=80",
     detailedDescription:
       "Thyroid disorders disrupt the body's metabolism, energy and mood. Our homeopathic approach addresses the underlying glandular imbalance rather than only managing hormone numbers. Through detailed case-taking we identify the constitutional remedy that helps your thyroid function return to its natural rhythm — supporting both hypothyroid and hyperthyroid presentations safely, without dependency or side effects.",
-    videoUrl: "https://www.youtube.com/embed/aqz-KE-bpKQ",
+    videoUrl: "https://www.youtube.com/embed/DrysMOa6-7E",
+    videos: [
+      { title: "Hyperthyroidism", url: "https://www.youtube.com/embed/DrysMOa6-7E" },
+      { title: "Hypothyroidism", url: "https://www.youtube.com/embed/WMKCKzdwebQ" },
+    ],
     treatments: [
       "Constitutional remedies tailored to your symptom picture",
       "Support for weight, energy, hair and mood balance",
@@ -48,7 +59,10 @@ export const conditions: Condition[] = [
       "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&w=1600&q=80",
     detailedDescription:
       "Chronic sinusitis, allergic rhinitis, recurrent colds and nasal polyps respond remarkably well to Homoeopathy . Instead of suppressing symptoms with decongestants, our remedies strengthen your respiratory immunity and reduce hypersensitivity to allergens, so episodes become milder and far less frequent over time.",
-    videoUrl: "https://www.youtube.com/embed/aqz-KE-bpKQ",
+    videoUrl: "https://www.youtube.com/embed/RjTdB-Bs8kE",
+    videos: [
+      { title: "Nasal Polyp", url: "https://www.youtube.com/embed/RjTdB-Bs8kE" },
+    ],
     treatments: [
       "Immunity-building constitutional treatment",
       "Targeted remedies for congestion and post-nasal drip",
@@ -72,7 +86,10 @@ export const conditions: Condition[] = [
       "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1600&q=80",
     detailedDescription:
       "From PCOD/PCOS and irregular periods to menopausal complaints, women's health needs gentle, individualized care. Our homeopathic treatment works to restore natural hormonal balance, regulate cycles and ease symptoms — supporting fertility and overall wellbeing without hormonal side effects.",
-    videoUrl: "https://www.youtube.com/embed/aqz-KE-bpKQ",
+    videoUrl: "https://www.youtube.com/embed/Jbd4DWAR11Y",
+    videos: [
+      { title: "Uterine Fibroid", url: "https://www.youtube.com/embed/Jbd4DWAR11Y" },
+    ],
     treatments: [
       "Hormonal balance for PCOD/PCOS",
       "Cycle regulation and pain management",
@@ -96,7 +113,9 @@ export const conditions: Condition[] = [
       "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=1600&q=80",
     detailedDescription:
       "Migraines, anxiety, vertigo, neuralgia and stress-related conditions are deeply individual. Homoeopathy  addresses both the physical and emotional dimensions of neurological health, calming the nervous system and reducing the frequency and intensity of episodes — gently and without sedation or dependency.",
-    videoUrl: "https://www.youtube.com/embed/aqz-KE-bpKQ",
+    videoUrl: "",
+    videos: [],
+    comingSoon: true,
     treatments: [
       "Constitutional remedies for nervous system balance",
       "Migraine and headache frequency reduction",
@@ -120,7 +139,10 @@ export const conditions: Condition[] = [
       "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1600&q=80",
     detailedDescription:
       "Arthritis, joint pain, back pain, cervical spondylosis and osteoporosis can limit everyday life. Our homeopathic remedies reduce inflammation, ease stiffness and improve mobility while supporting bone and cartilage health — offering sustained relief without the long-term risks of painkillers.",
-    videoUrl: "https://www.youtube.com/embed/aqz-KE-bpKQ",
+    videoUrl: "https://www.youtube.com/embed/ojPydM5NGHM",
+    videos: [
+      { title: "Osteoarthritis", url: "https://www.youtube.com/embed/ojPydM5NGHM" },
+    ],
     treatments: [
       "Anti-inflammatory constitutional remedies",
       "Mobility and stiffness improvement",
@@ -144,7 +166,10 @@ export const conditions: Condition[] = [
       "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?auto=format&fit=crop&w=1600&q=80",
     detailedDescription:
       "Acidity, IBS, constipation, bloating and chronic gastritis often stem from deeper digestive imbalances. Homoeopathy  restores healthy gut function by treating the root cause, improving digestion and reducing recurring discomfort — paired with practical diet guidance for lasting results.",
-    videoUrl: "https://www.youtube.com/embed/aqz-KE-bpKQ",
+    videoUrl: "https://www.youtube.com/embed/LQxMwBGU7SM",
+    videos: [
+      { title: "Acidity", url: "https://www.youtube.com/embed/LQxMwBGU7SM" },
+    ],
     treatments: [
       "Root-cause treatment for acidity and IBS",
       "Gut motility and digestion support",

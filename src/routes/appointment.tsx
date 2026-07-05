@@ -166,7 +166,7 @@ function AppointmentPage() {
           <p className="mt-2 text-lg md:text-xl font-medium text-foreground/80">Consult with Expert Doctors</p>
           <p className="mt-3 text-muted-foreground max-w-xl mx-auto text-pretty">
             Get in touch with us, schedule your appointment and consult with doctors.
-            For any query and questions, <a href="tel:+919876543210" className="text-primary font-medium hover:underline">contact us</a>.
+            For any query and questions, <a href="tel:+917668610031" className="text-primary font-medium hover:underline">contact us</a>.
           </p>
         </div>
 
@@ -231,7 +231,7 @@ function AppointmentPage() {
           <div className="mb-8">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs font-semibold text-primary">Step {Math.min(step, totalSteps)} of {totalSteps}</span>
-              <a href={`https://wa.me/919876543210?text=${waMessage}`} target="_blank" rel="noreferrer" className="text-xs font-semibold text-whatsapp inline-flex items-center gap-1.5"><MessageCircle className="h-3.5 w-3.5" /> Quick book on WhatsApp</a>
+              <a href={`https://wa.me/917668610031?text=${waMessage}`} target="_blank" rel="noreferrer" className="text-xs font-semibold text-whatsapp inline-flex items-center gap-1.5"><MessageCircle className="h-3.5 w-3.5" /> Quick book on WhatsApp</a>
             </div>
             <div className="h-2 rounded-full bg-card shadow-soft overflow-hidden">
               <div className="h-full bg-gradient-leaf transition-all duration-500" style={{ width: `${(Math.min(step, totalSteps)/totalSteps)*100}%` }} />
@@ -252,12 +252,12 @@ function AppointmentPage() {
                 </div>
                 <div className="mt-6 flex flex-wrap gap-3 justify-center">
                   <Button asChild variant="hero">
-                    <a href={`https://wa.me/919876543210?text=${waMessage}`} target="_blank" rel="noreferrer">
+                    <a href={`https://wa.me/917668610031?text=${waMessage}`} target="_blank" rel="noreferrer">
                       <MessageCircle /> Confirm on WhatsApp
                     </a>
                   </Button>
                   <Button asChild variant="outline">
-                    <a href="tel:+919876543210"><Phone /> Call clinic</a>
+                    <a href="tel:+917668610031"><Phone /> Call clinic</a>
                   </Button>
                 </div>
               </div>
