@@ -10,13 +10,18 @@ import {
   Calendar, MessageCircle, ShieldCheck, Award, Users, Globe, Sparkles, Leaf, User,
   HeartPulse, Activity, Brain, Flower2, Scissors, Stethoscope,
   ClipboardList, Microscope, Pill, Repeat, ArrowRight, CheckCircle2, ChevronDown, Phone,
-  MapPin, X, ImageIcon
+  MapPin, X, ImageIcon, Star
 } from "lucide-react";
 import { useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
 import { assetUrl, formatINR, productMrp, productSummary } from "@/services/api";
 import { conditions } from "@/data/conditions";
 import { blogPosts, formatBlogDate } from "@/data/blogs";
+import { FeaturedProducts } from "@/components/site/FeaturedProducts";
+import { featuredProducts } from "@/data/featuredProducts";
+
+const GOOGLE_REVIEW_URL =
+  "https://www.google.com/maps/search/?api=1&query=MD%27s+Homoeopathy+Mathura";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -277,6 +282,9 @@ function HomePage() {
         </div>
       </Section>
 
+      {/* FEATURED PRODUCT HIGHLIGHTS */}
+      <FeaturedProducts />
+
       {/* PRODUCTS */}
       <Section>
         <SectionHeader
@@ -287,19 +295,24 @@ function HomePage() {
 
         {/* Highlighted recommended products */}
         <div className="mt-12 grid sm:grid-cols-2 gap-6">
-          {[
-            { name: "Scalp Vital Spray", tag: "Top Recommended", desc: "Doctor-formulated scalp spray to control hair fall and nourish roots naturally." },
-            { name: "BR Oil", tag: "Top Recommended", desc: "Therapeutic homeopathic oil for hair, scalp and skin care with zero side effects." },
-          ].map((p) => (
-            <div key={p.name} className="relative overflow-hidden rounded-3xl border-2 border-primary/20 bg-gradient-to-br from-leaf-soft/60 to-card p-6 shadow-soft hover:shadow-glow transition">
-              <span className="inline-flex items-center gap-1 rounded-full bg-success px-3 py-1 text-xs font-bold text-white shadow-soft">
-                <Sparkles className="h-3 w-3" /> {p.tag}
+          {featuredProducts.map((p) => (
+            <div key={p.slug} className="group relative flex h-full flex-col overflow-hidden rounded-3xl border-2 border-primary/20 bg-gradient-to-br from-leaf-soft/60 to-card p-6 shadow-soft transition hover:shadow-glow">
+              <span className="inline-flex w-fit items-center gap-1 rounded-full bg-success px-3 py-1 text-xs font-bold text-white shadow-soft">
+                <Sparkles className="h-3 w-3" /> Top Recommended
               </span>
+              <div className="mt-4 grid place-items-center overflow-hidden rounded-2xl bg-white p-4">
+                <img
+                  src={p.bottle}
+                  alt={p.image_alt}
+                  loading="lazy"
+                  className="h-48 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
               <h3 className="mt-4 font-display text-2xl font-bold text-foreground">{p.name}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{p.desc}</p>
+              <p className="mt-2 flex-1 text-sm text-muted-foreground">{p.short_description}</p>
               <div className="mt-5 flex flex-wrap gap-2">
                 <Button asChild variant="hero" className="rounded-full">
-                  <Link to="/shop">View Product</Link>
+                  <Link to="/shop/$slug" params={{ slug: p.slug }}>View Product</Link>
                 </Button>
                 <Button asChild variant="outline" className="rounded-full">
                   <Link to="/appointment">Consult First</Link>
@@ -308,6 +321,7 @@ function HomePage() {
             </div>
           ))}
         </div>
+
 
 
         <div className="mt-12 grid md:grid-cols-2 gap-6">
@@ -344,6 +358,13 @@ function HomePage() {
       <Section className="bg-gradient-hero">
         <SectionHeader eyebrow="Real Reviews" title="Real Patients. Real Results." />
         <GoogleReviews />
+        <div className="mt-10 text-center">
+          <Button asChild variant="hero" size="lg" className="rounded-full">
+            <a href={GOOGLE_REVIEW_URL} target="_blank" rel="noopener noreferrer">
+              <Star className="h-4 w-4" /> Write a Google Review
+            </a>
+          </Button>
+        </div>
       </Section>
 
       {/* BLOG PREVIEW */}

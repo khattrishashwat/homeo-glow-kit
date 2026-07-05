@@ -20,6 +20,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useProductBySlug, useProducts } from "@/hooks/useProducts";
 import { assetUrl, discountPercent, formatINR, productMrp } from "@/services/api";
 import { whatsappLink } from "@/components/site/FloatingActions";
+import { getFeaturedProduct } from "@/data/featuredProducts";
+import { ProductReviews } from "@/components/site/ProductReviews";
 
 export const Route = createFileRoute("/shop_/$slug")({
   component: ProductDetailPage,
@@ -41,7 +43,8 @@ function ProductDetailPage() {
   const [wishlist, setWishlist] = useState(false);
   const [lens, setLens] = useState({ visible: false, left: 0, top: 0, x: 50, y: 50 });
 
-  const p = data?.data;
+  const staticProduct = getFeaturedProduct(slug);
+  const p = data?.data ?? staticProduct;
 
   useEffect(() => {
     if (!p) return;
@@ -65,7 +68,7 @@ function ProductDetailPage() {
     }
   }, [gallery.length, selectedImageIndex]);
 
-  if (isLoading) {
+  if (isLoading && !staticProduct) {
     return (
       <Section className="py-20 text-center text-muted-foreground">
         <Loader2 className="mx-auto mb-3 h-5 w-5 animate-spin" />Loading product...
@@ -73,7 +76,7 @@ function ProductDetailPage() {
     );
   }
 
-  if (error || !p) {
+  if (!p) {
     return (
       <Section>
         <div className="text-center">
@@ -364,6 +367,10 @@ function ProductDetailPage() {
             </div>
           </aside>
         </div>
+      </Section>
+
+      <Section className="py-10">
+        <ProductReviews productSlug={p.slug} />
       </Section>
 
       {related.length > 0 && (
