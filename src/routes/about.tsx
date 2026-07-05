@@ -9,9 +9,9 @@ import { Award, Users, ShieldCheck, Heart, Leaf, Microscope, Stethoscope, Clipbo
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "AboutMD's HOMOEOPATHY — 20+ Years of Trusted Care" },
+      { title: "About MD's HOMOEOPATHY — 20+ Years of Trusted Care" },
       { name: "description", content: "Learn about our clinic, our doctors, and our root-cause approach to homeopathic healing." },
-      { property: "og:title", content: "AboutMD's HOMOEOPATHY" },
+      { property: "og:title", content: "About MD's HOMOEOPATHY" },
       { property: "og:description", content: "20+ years, 1000+ patients. Personalized Homoeopathy  with a root-cause approach." },
     ],
   }),
@@ -132,14 +132,14 @@ function AboutPage() {
       </Section>
 
       <Section className="bg-sky-soft/40">
-        <SectionHeader eyebrow="Meet the doctor" title="Dr. Aarav Mehta" subtitle="Senior Homeopath · BHMS, MD (Hom.) · 20+ years experience" />
+        <SectionHeader eyebrow="Meet the doctor" title="Dr. Parth Bhargava" subtitle="Senior Homeopath · BHMS, MD (Hom.) · 20+ years experience" />
         <div className="mt-10 grid lg:grid-cols-2 gap-10 items-center">
           <div className="relative max-w-md mx-auto">
             <div className="absolute -inset-4 bg-gradient-leaf opacity-20 blur-2xl rounded-full" />
-            <img src={doctorImg} alt="Dr. Aarav Mehta" className="relative rounded-3xl shadow-card aspect-square object-cover w-full" loading="lazy" />
+            <img src={doctorImg} alt="Dr. Parth Bhargava" className="relative rounded-3xl shadow-card aspect-square object-cover w-full" loading="lazy" />
           </div>
           <div>
-            <p className="text-muted-foreground text-pretty">Dr. Mehta specializes in chronic conditions including PCOD, thyroid disorders, autoimmune diseases, and dermatological issues. His patient-first approach has helped thousands return to a life of balance and vitality.</p>
+            <p className="text-muted-foreground text-pretty">Dr. Parth Bhargava specializes in chronic conditions including PCOD, thyroid disorders, autoimmune diseases, and dermatological issues. His patient-first approach has helped thousands return to a life of balance and vitality.</p>
             <ul className="mt-6 space-y-3">
               {["Specialist in PCOD, Thyroid & Skin","Published in 12+ medical journals","International conference speaker","Member, Central Council of Homoeopathy "].map(t=>(
                 <li key={t} className="flex gap-2 items-center text-sm"><CheckCircle2 className="h-4 w-4 text-primary" />{t}</li>
