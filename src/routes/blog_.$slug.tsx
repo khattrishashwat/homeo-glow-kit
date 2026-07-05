@@ -395,6 +395,15 @@ export default function BlogDetailPage() {
           )}
         </div>
 
+        {/* Comments */}
+        <Section className="pt-0 pb-4">
+          <div className="mx-auto max-w-3xl">
+            <BlogComments blogSlug={blog.slug} />
+          </div>
+        </Section>
+
+
+
         {/* Related Articles - Fixed Spacing */}
         {related.length > 0 && (
           <Section className="bg-gradient-to-b from-leaf-soft/30 to-background py-16 md:py-20">
