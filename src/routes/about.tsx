@@ -167,7 +167,7 @@ function AboutPage() {
 
       <Section className="bg-leaf-soft/40">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[{v:"1000+",l:"Patients Treated"},{v:"20+",l:"Years Experience"},{v:"4.9★",l:"Avg. Rating"},{v:"30+",l:"Cities Served"}].map(s=>(
+          {[{v:"1000+",l:"Patients Treated"},{v:"5+",l:"Years Experience"},{v:"4.9★",l:"Avg. Rating"},{v:"30+",l:"Cities Served"}].map(s=>(
             <div key={s.l} className="bg-card rounded-3xl p-6 text-center shadow-soft">
               <div className="font-display text-3xl md:text-4xl font-bold text-primary">{s.v}</div>
               <div className="text-sm text-muted-foreground mt-1">{s.l}</div>

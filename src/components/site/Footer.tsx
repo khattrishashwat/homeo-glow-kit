@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Leaf, Phone, Mail, MapPin, Facebook, Instagram, Youtube } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
+import mdLogo from "@/assets/md-logo-header.png";
 
 export function Footer() {
   const { data: settings } = useSettings();
@@ -13,9 +14,15 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 grid gap-10 md:grid-cols-4">
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-leaf">
-              <Leaf className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <Link to="/" className="flex items-center gap-2 group shrink-0">
+          <img
+            src={mdLogo}
+            alt="MD's Homoeopathy"
+            className="h-14 sm:h-16 w-auto object-contain"
+            width={1658}
+            height={1402}
+          />
+        </Link>
             <span className="font-display text-lg font-bold">{siteName}</span>
           </div>
           <p className="text-sm text-muted-foreground text-pretty">

@@ -29,7 +29,7 @@ export const Route = createFileRoute("/")({
 });
 
 const trust = [
-  { icon: Award, value: "20+", label: "Years Experience" },
+  { icon: Award, value: "5+", label: "Years Experience" },
   { icon: Users, value: "1000+", label: "Patients Treated" },
   { icon: ShieldCheck, value: "100%", label: "Safe & Side-Effect Free" },
   { icon: Globe, value: "Online", label: "Consultation Available" },
