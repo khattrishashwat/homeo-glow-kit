@@ -29,6 +29,7 @@ import {
   formatBlogDate,
 } from "@/data/blogs";
 import { useState, useEffect } from "react";
+import { BlogComments } from "@/components/site/BlogComments";
 
 export const Route = createFileRoute("/blog_/$slug")({
   component: BlogDetailPage,
