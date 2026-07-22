@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Section, SectionHeader } from "@/components/site/Section";
 import godfatherImg from "@/assets/godfathers.jpeg";
-import doctorImg from "@/assets/doctor-heros.png";
+
 import clinicImg from "@/assets/clinic.jpg";
 import { Award, Users, ShieldCheck, Heart, Leaf, Microscope, Stethoscope, ClipboardList, Pill, CheckCircle2, Star, ArrowRight, Calendar } from "lucide-react";
 
