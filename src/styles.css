@@ -64,8 +64,8 @@
   --primary-hover: #0F3276;
   --primary-foreground: #FFFFFF;
 
-  /* Secondary = medical green */
-  --secondary: #2AAE66;
+  /* Secondary = secondary medical blue */
+  --secondary: #2B5FB8;
   --secondary-foreground: #FFFFFF;
 
   --muted: #EDF5FF;
@@ -80,13 +80,15 @@
   --input: #E7EDF5;
   --ring: #123D8F;
 
-  /* Brand token aliases used across the site */
-  --leaf: #2AAE66;              /* medical green */
-  --leaf-soft: #E8F8EF;         /* light green surface */
+  /* Brand token aliases used across the site — retuned to premium blue.
+     `--leaf*` names retained for backwards-compat with existing utility classes;
+     they now render blue so the whole site rethemes without touching components. */
+  --leaf: #123D8F;              /* primary blue (was medical green) */
+  --leaf-soft: #EDF5FF;         /* light blue surface (was light green) */
   --sky: #123D8F;               /* primary blue */
   --sky-soft: #EDF5FF;          /* light blue surface */
   --sand: #F8FBFF;              /* very light blue background */
-  --success: #2AAE66;
+  --success: #2AAE66;           /* semantic-only green */
   --warning: #F59E0B;
   --whatsapp: #25D366;
 
@@ -95,8 +97,8 @@
     linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(248,251,255,0.92) 55%, rgba(237,245,255,0.90) 100%),
     url('./assets/hero-clinic-bg.jpg');
 
-  --gradient-leaf: linear-gradient(135deg, #2AAE66 0%, #1E8F52 100%);
-  --gradient-sky:  linear-gradient(135deg, #123D8F 0%, #1E5ABF 100%);
+  --gradient-leaf: linear-gradient(135deg, #123D8F 0%, #2B5FB8 100%);
+  --gradient-sky:  linear-gradient(135deg, #123D8F 0%, #2B5FB8 100%);
   --gradient-card: linear-gradient(180deg, #FFFFFF 0%, #F8FBFF 100%);
 
   --shadow-soft: 0 6px 24px -8px rgba(15, 40, 90, 0.10);
