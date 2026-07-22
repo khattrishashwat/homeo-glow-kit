@@ -1,13 +1,14 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-button: 'Poppins', 'Inter', sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -47,72 +48,81 @@
 }
 
 :root {
-  --radius: 1rem;
-  --background: oklch(0.995 0.005 150);
-  --foreground: oklch(0.22 0.04 200);
+  --radius: 1.25rem;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.04 200);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.04 200);
+  /* Premium medical palette — bright, clean, trustworthy */
+  --background: #F7F9FC;
+  --foreground: #102542;
 
-  /* Calming sage green = primary */
-  --primary: oklch(0.55 0.12 155);
-  --primary-foreground: oklch(0.99 0.01 150);
+  --card: #FFFFFF;
+  --card-foreground: #102542;
+  --popover: #FFFFFF;
+  --popover-foreground: #102542;
 
-  /* Trust blue = secondary accent */
-  --secondary: oklch(0.55 0.13 235);
-  --secondary-foreground: oklch(0.99 0.01 235);
+  /* Primary deep medical blue */
+  --primary: #123D8F;
+  --primary-hover: #0F3276;
+  --primary-foreground: #FFFFFF;
 
-  --muted: oklch(0.96 0.015 160);
-  --muted-foreground: oklch(0.45 0.03 200);
-  --accent: oklch(0.94 0.04 150);
-  --accent-foreground: oklch(0.28 0.08 160);
-  --destructive: oklch(0.6 0.22 25);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.92 0.02 160);
-  --input: oklch(0.94 0.015 160);
-  --ring: oklch(0.55 0.12 155);
+  /* Secondary = medical green */
+  --secondary: #2AAE66;
+  --secondary-foreground: #FFFFFF;
 
-  --leaf: oklch(0.55 0.12 155);
-  --leaf-soft: oklch(0.94 0.05 150);
-  --sky: oklch(0.6 0.13 235);
-  --sky-soft: oklch(0.95 0.04 230);
-  --sand: oklch(0.97 0.025 85);
-  --success: oklch(0.65 0.17 150);
-  --warning: oklch(0.78 0.16 75);
-  --whatsapp: oklch(0.62 0.17 150);
+  --muted: #EDF5FF;
+  --muted-foreground: #667085;
+  --accent: #EDF5FF;
+  --accent-foreground: #123D8F;
 
-  --gradient-hero: radial-gradient(ellipse at top left, oklch(0.94 0.05 150 / 0.7), transparent 60%),
-                    radial-gradient(ellipse at bottom right, oklch(0.93 0.05 230 / 0.55), transparent 60%),
-                    linear-gradient(180deg, oklch(0.99 0.005 150), oklch(0.97 0.02 160));
-  --gradient-leaf: linear-gradient(135deg, oklch(0.6 0.13 155), oklch(0.5 0.12 175));
-  --gradient-sky: linear-gradient(135deg, oklch(0.65 0.13 235), oklch(0.55 0.14 220));
-  --gradient-card: linear-gradient(180deg, oklch(1 0 0), oklch(0.985 0.01 150));
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
 
-  --shadow-soft: 0 6px 24px -8px oklch(0.55 0.12 155 / 0.18);
-  --shadow-card: 0 2px 4px -1px oklch(0.4 0.05 200 / 0.04), 0 12px 32px -12px oklch(0.4 0.08 200 / 0.10);
-  --shadow-glow: 0 10px 40px -10px oklch(0.55 0.12 155 / 0.45);
+  --border: #E7EDF5;
+  --input: #E7EDF5;
+  --ring: #123D8F;
+
+  /* Brand token aliases used across the site */
+  --leaf: #2AAE66;              /* medical green */
+  --leaf-soft: #E8F8EF;         /* light green surface */
+  --sky: #123D8F;               /* primary blue */
+  --sky-soft: #EDF5FF;          /* light blue surface */
+  --sand: #F8FBFF;              /* very light blue background */
+  --success: #2AAE66;
+  --warning: #F59E0B;
+  --whatsapp: #25D366;
+
+  /* Global hero background: clinic image, softened with near-white overlay */
+  --gradient-hero:
+    linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(248,251,255,0.92) 55%, rgba(237,245,255,0.90) 100%),
+    url('./assets/hero-clinic-bg.jpg');
+
+  --gradient-leaf: linear-gradient(135deg, #2AAE66 0%, #1E8F52 100%);
+  --gradient-sky:  linear-gradient(135deg, #123D8F 0%, #1E5ABF 100%);
+  --gradient-card: linear-gradient(180deg, #FFFFFF 0%, #F8FBFF 100%);
+
+  --shadow-soft: 0 6px 24px -8px rgba(15, 40, 90, 0.10);
+  --shadow-card: 0 10px 35px rgba(15, 40, 90, 0.06);
+  --shadow-glow: 0 14px 40px -10px rgba(18, 61, 143, 0.35);
 }
 
+/* Dark tokens kept ONLY so components that opt into `.dark` (e.g. footer) still theme correctly. */
 .dark {
-  --background: oklch(0.18 0.02 200);
-  --foreground: oklch(0.97 0.01 150);
-  --card: oklch(0.22 0.025 200);
-  --card-foreground: oklch(0.97 0.01 150);
-  --popover: oklch(0.22 0.025 200);
-  --popover-foreground: oklch(0.97 0.01 150);
-  --primary: oklch(0.7 0.13 155);
-  --primary-foreground: oklch(0.18 0.02 200);
-  --secondary: oklch(0.65 0.13 235);
-  --secondary-foreground: oklch(0.18 0.02 200);
-  --muted: oklch(0.26 0.02 200);
-  --muted-foreground: oklch(0.7 0.02 180);
-  --accent: oklch(0.3 0.04 160);
-  --accent-foreground: oklch(0.97 0.01 150);
-  --border: oklch(1 0 0 / 0.08);
-  --input: oklch(1 0 0 / 0.1);
-  --ring: oklch(0.7 0.13 155);
+  --background: #0B1B36;
+  --foreground: #EDF5FF;
+  --card: #12264A;
+  --card-foreground: #EDF5FF;
+  --popover: #12264A;
+  --popover-foreground: #EDF5FF;
+  --primary: #4F86D9;
+  --primary-foreground: #0B1B36;
+  --secondary: #2AAE66;
+  --secondary-foreground: #FFFFFF;
+  --muted: #14294D;
+  --muted-foreground: #9BB0CE;
+  --accent: #163061;
+  --accent-foreground: #EDF5FF;
+  --border: rgba(255,255,255,0.08);
+  --input: rgba(255,255,255,0.10);
+  --ring: #4F86D9;
 }
 
 @layer base {
@@ -125,20 +135,31 @@
     -webkit-font-smoothing: antialiased;
     font-feature-settings: "ss01", "cv11";
   }
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.01em; font-weight: 400; }
+  button, .btn, [role="button"] { font-family: var(--font-button); letter-spacing: 0.005em; }
 }
 
 @layer utilities {
   .font-display { font-family: var(--font-display); }
-  .bg-gradient-hero { background: var(--gradient-hero); }
+  .font-button  { font-family: var(--font-button); }
+
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+  }
   .bg-gradient-leaf { background: var(--gradient-leaf); }
-  .bg-gradient-sky { background: var(--gradient-sky); }
+  .bg-gradient-sky  { background: var(--gradient-sky); }
   .bg-gradient-card { background: var(--gradient-card); }
+
   .shadow-soft { box-shadow: var(--shadow-soft); }
   .shadow-card { box-shadow: var(--shadow-card); }
   .shadow-glow { box-shadow: var(--shadow-glow); }
+
   .text-balance { text-wrap: balance; }
-  .text-pretty { text-wrap: pretty; }
+  .text-pretty  { text-wrap: pretty; }
 
   @keyframes float-up {
     0%, 100% { transform: translateY(0); }
@@ -148,7 +169,21 @@
 
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
   }
   .animate-fade-up { animation: fade-up 0.7s ease-out both; }
+
+  @keyframes fade-in-slow {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .animate-fade-slow { animation: fade-in-slow 0.9s ease-out both; }
+
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card);
+  }
 }
