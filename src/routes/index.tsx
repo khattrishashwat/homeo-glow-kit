@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Section, SectionHeader } from "@/components/site/Section";
 import { GoogleReviews } from "@/components/site/GoogleReviews";
 import doctorImg from "@/assets/doctor-heros.png";
+// Doctor image intentionally used ONLY in the FAQ/doctor-profile block below.
 import productHair from "@/assets/product-hair.jpg";
 import heroBg from "@/assets/hero-clinic-bg.jpg";
 import mdLogo from "@/assets/md-logo.png";
