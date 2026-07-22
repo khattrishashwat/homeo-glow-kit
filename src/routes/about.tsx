@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Section, SectionHeader } from "@/components/site/Section";
 import godfatherImg from "@/assets/godfathers.jpeg";
-import doctorImg from "@/assets/doctor-heros.png";
+
 import clinicImg from "@/assets/clinic.jpg";
 import { Award, Users, ShieldCheck, Heart, Leaf, Microscope, Stethoscope, ClipboardList, Pill, CheckCircle2, Star, ArrowRight, Calendar } from "lucide-react";
 
@@ -134,9 +134,18 @@ function AboutPage() {
       <Section className="bg-sky-soft/40">
         <SectionHeader eyebrow="Meet the doctor" title="Dr. Parth Bhargava" subtitle="Senior Homeopath · BHMS, MD (Hom.) · 20+ years experience" />
         <div className="mt-10 grid lg:grid-cols-2 gap-10 items-center">
-          <div className="relative max-w-md mx-auto">
-            <div className="absolute -inset-4 bg-gradient-leaf opacity-20 blur-2xl rounded-full" />
-            <img src={doctorImg} alt="Dr. Parth Bhargava" className="relative rounded-3xl shadow-card aspect-square object-cover w-full" loading="lazy" />
+          <div className="relative max-w-md mx-auto w-full">
+            <div className="absolute -inset-4 bg-gradient-sky opacity-15 blur-2xl rounded-full" />
+            <div className="relative rounded-3xl shadow-card aspect-square w-full bg-gradient-hero grid place-items-center p-10 text-center">
+              <div>
+                <div className="mx-auto inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-sky text-primary-foreground shadow-glow">
+                  <CheckCircle2 className="h-9 w-9" />
+                </div>
+                <p className="mt-5 font-display text-3xl text-foreground">Dr. Parth Bhargava</p>
+                <p className="mt-1 text-sm text-muted-foreground">BHMS · Homoeopathic Consultant</p>
+                <p className="mt-4 text-xs uppercase tracking-wider text-primary font-semibold">5000+ Patients Treated</p>
+              </div>
+            </div>
           </div>
           <div>
             <p className="text-muted-foreground text-pretty">Dr. Parth Bhargava specializes in chronic conditions including PCOD, thyroid disorders, autoimmune diseases, and dermatological issues. His patient-first approach has helped thousands return to a life of balance and vitality.</p>

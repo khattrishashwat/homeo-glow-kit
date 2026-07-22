@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Section, SectionHeader } from "@/components/site/Section";
 import { GoogleReviews } from "@/components/site/GoogleReviews";
 import doctorImg from "@/assets/doctor-heros.png";
+// Doctor image intentionally used ONLY in the FAQ/doctor-profile block below.
 import productHair from "@/assets/product-hair.jpg";
 import heroBg from "@/assets/hero-clinic-bg.jpg";
 import mdLogo from "@/assets/md-logo.png";
@@ -211,8 +212,14 @@ function HomePage() {
               <Link to="/about">Read More <ArrowRight /></Link>
             </Button>
           </div>
-          <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-card">
-            <img src={doctorImg} alt="Doctor consultation" className="w-full h-full object-cover" loading="lazy" />
+          <div className="relative aspect-[4/3] rounded-3xl overflow-hidden shadow-card bg-gradient-hero grid place-items-center">
+            <div className="text-center p-8">
+              <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-sky text-primary-foreground shadow-glow">
+                <Stethoscope className="h-8 w-8" />
+              </div>
+              <p className="mt-4 font-display text-2xl text-foreground">Root-cause healing.</p>
+              <p className="mt-1 text-sm text-muted-foreground">Personalized homoeopathic care since 2019.</p>
+            </div>
           </div>
         </div>
       </Section>
