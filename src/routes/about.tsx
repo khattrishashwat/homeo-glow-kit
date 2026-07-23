@@ -21,7 +21,7 @@ export const Route = createFileRoute("/about")({
 function AboutPage() {
   return (
     <>
-      <section className="bg-gradient-hero">
+      <section style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
           <span className="inline-block px-4 py-1.5 rounded-full bg-card shadow-soft text-xs font-semibold text-primary uppercase tracking-wide">About Us</span>
           <h1 className="mt-5 font-display text-4xl md:text-6xl font-bold text-balance">20+ Years of Trusted Homoeopathy  Care</h1>

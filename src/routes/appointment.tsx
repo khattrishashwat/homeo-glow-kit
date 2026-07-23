@@ -155,7 +155,7 @@ function AppointmentPage() {
   );
 
   return (
-    <section className="bg-gradient-hero min-h-screen">
+    <section className="min-h-screen" style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}>
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 md:py-20">
         {/* Consultation Info Section */}
         <div className="text-center mb-10 animate-fade-up">
