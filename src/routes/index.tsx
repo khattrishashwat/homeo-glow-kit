@@ -395,38 +395,121 @@ function HomePage() {
         </div>
       </Section>
 
-      {/* FAQ */}
-      <Section className="bg-leaf-soft/40">
-        <SectionHeader eyebrow="FAQ" title="Frequently Asked Questions" />
-        <div className="mt-10 max-w-3xl mx-auto space-y-3">
-          {faqs.map((f, i)=> <Faq key={i} {...f} />)}
-        </div>
-      </Section>
+     {/* FAQ + DOCTOR PROFILE */}
+<Section className="bg-leaf-soft/40">
+  <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
 
-      {/* DOCTOR PROFILE */}
-      <Section className="bg-leaf-soft/40">
-        <SectionHeader eyebrow="Meet Your Doctor" title="Why We Started MD's HOMOEOPATHY" subtitle="Compassionate, root-cause homeopathic care led by an experienced homeopath." />
-        <div className="mt-12 grid lg:grid-cols-2 gap-10 items-center">
-          <div className="relative max-w-md mx-auto w-full">
-            <div className="absolute -inset-4 bg-gradient-leaf opacity-20 blur-2xl rounded-full" />
-            <img src={doctorImg} alt="Dr. Parth Bhargava" className="relative rounded-3xl shadow-card aspect-square object-cover w-full" loading="lazy" />
-          </div>
-          <div>
-            <h3 className="font-display text-3xl font-bold">Dr. Parth Bhargava</h3>
-            <p className="mt-1 text-primary font-semibold">BHMS · Homoeopathic Consultant</p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-1.5 text-sm font-medium shadow-soft"><Award className="h-4 w-4 text-primary" /> Qualified BHMS</span>
-              <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-1.5 text-sm font-medium shadow-soft"><Users className="h-4 w-4 text-primary" /> 5000+ Patients Treated</span>
-            </div>
-            <p className="mt-5 text-muted-foreground text-pretty">
-              Dr. Parth Bhargava founded MD's HOMOEOPATHY with a single belief — that medicine should heal the root cause, not just mask symptoms. With deep expertise in chronic conditions like thyroid, nasal, gynecological, neuro, osteo and digestive disorders, he provides personalized, side-effect-free treatment with genuine care and compassion.
+    {/* LEFT - FAQ */}
+    <div>
+      <SectionHeader
+        eyebrow="FAQ"
+        title="Frequently Asked Questions"
+      />
+
+      <div className="mt-8 space-y-3">
+        {faqs.map((f, i) => (
+          <Faq key={i} {...f} />
+        ))}
+      </div>
+    </div>
+
+    {/* RIGHT - DOCTOR PROFILE */}
+    <div>
+      <div className="grid sm:grid-cols-[1fr_220px] gap-6 items-end">
+
+        {/* Doctor Content */}
+        <div className="py-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+            Meet Your Doctor
+          </p>
+
+          <h2 className="mt-2 font-display text-2xl lg:text-3xl font-bold leading-tight">
+            Why We Started
+            <br />
+            MD's HOMOEOPATHY
+          </h2>
+
+          <p className="mt-3 text-sm text-muted-foreground">
+            Compassionate, root-cause homeopathic care led by an experienced
+            homeopath.
+          </p>
+
+          <div className="mt-5">
+            <h3 className="font-display text-xl font-bold">
+              Dr. Parth Bhargava
+            </h3>
+
+            <p className="mt-1 text-sm text-primary font-semibold">
+              BHMS · Homoeopathic Consultant
             </p>
-            <Button asChild variant="hero" size="lg" className="mt-7">
-              <Link to="/appointment"><Calendar /> Book a Consultation</Link>
-            </Button>
           </div>
+
+          {/* Badges */}
+          <div className="mt-4 flex flex-wrap gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-medium shadow-soft">
+              <Award className="h-3.5 w-3.5 text-primary" />
+              Qualified BHMS
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-medium shadow-soft">
+              <Users className="h-3.5 w-3.5 text-primary" />
+              5000+ Patients Treated
+            </span>
+          </div>
+
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+            Dr. Parth Bhargava founded MD's HOMOEOPATHY with a single belief —
+            that medicine should heal the root cause, not just mask symptoms.
+            With deep expertise in chronic conditions, he provides personalized
+            treatment with genuine care and compassion.
+          </p>
+
+          <Button
+            asChild
+            variant="hero"
+            size="sm"
+            className="mt-5"
+          >
+            <Link to="/appointment">
+              <Calendar className="h-4 w-4" />
+              Book a Consultation
+            </Link>
+          </Button>
         </div>
-      </Section>
+
+        {/* Doctor Image */}
+        <div className="relative hidden sm:flex self-stretch items-end justify-center">
+          <div className="absolute bottom-0 w-full h-[80%] bg-primary/5 rounded-t-[100px]" />
+
+          <img
+            src={doctorImg}
+            alt="Dr. Parth Bhargava"
+            className="
+              relative z-10
+              w-full
+              max-h-[430px]
+              object-contain
+              object-bottom
+            "
+            loading="lazy"
+          />
+        </div>
+
+      </div>
+
+      {/* Mobile Doctor Image */}
+      <div className="sm:hidden mt-6 flex justify-center">
+        <img
+          src={doctorImg}
+          alt="Dr. Parth Bhargava"
+          className="w-52 h-auto object-contain"
+          loading="lazy"
+        />
+      </div>
+    </div>
+
+  </div>
+</Section>
     </>
   );
 }
