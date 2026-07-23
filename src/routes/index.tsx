@@ -427,41 +427,6 @@ function HomePage() {
           </div>
         </div>
       </Section>
-
-      {/* TEST REPORTS CHECK */}
-      <TestReports />
-
-      {/* REACH US */}
-      <Section className="bg-sky-soft/30">
-        <SectionHeader eyebrow="Visit Us" title="Reach Us" subtitle="Walk in to our clinic or connect with us online — we're here to help." />
-        <div className="mt-12 grid lg:grid-cols-2 gap-6">
-          <div className="rounded-3xl bg-card p-7 shadow-soft">
-            <div className="flex gap-4">
-              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-leaf text-primary-foreground"><MapPin className="h-6 w-6" /></div>
-              <div>
-                <h3 className="font-display text-lg font-bold">Clinic Address</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  1262/3A, Deeg Gali, Shahganj Darwaza, Mathura, Uttar Pradesh – 281001, India
-                </p>
-              </div>
-            </div>
-            <div className="mt-6 grid sm:grid-cols-2 gap-3">
-              <a href="tel:+917668610031" className="flex items-center gap-2 rounded-2xl bg-leaf-soft/60 px-4 py-3 text-sm font-medium hover:bg-leaf-soft transition">
-                <Phone className="h-4 w-4 text-primary" /> +91 76686 10031
-              </a>
-            </div>
-          </div>
-          <div className="overflow-hidden rounded-3xl shadow-soft min-h-[260px]">
-            <iframe
-              title="MD's Homoeopathy Clinic Location"
-              src="https://www.google.com/maps?q=Shahganj%20Darwaza%2C%20Mathura%2C%20Uttar%20Pradesh%20281001&output=embed"
-              className="h-full w-full min-h-[260px] border-0"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
-          </div>
-        </div>
-      </Section>
     </>
   );
 }
