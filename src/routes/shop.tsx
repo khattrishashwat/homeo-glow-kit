@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useProducts } from "@/hooks/useProducts";
 import { assetUrl, discountPercent, formatINR, productMrp, productSummary, type Product } from "@/services/api";
+import heroBg from "@/assets/hero-clinic-bg.jpg";
 
 export const Route = createFileRoute("/shop")({
   component: ShopPage,
@@ -107,13 +108,15 @@ function ShopPage() {
          <title>Shop Homoeopathy  Treatment Kits | MD's Homoeopathy </title>
        </Helmet>
 
-      <Section className="pt-12 pb-8 bg-gradient-hero">
-        <SectionHeader
-          eyebrow="Shop"
-          title="Doctor-Recommended Treatment Kits"
-          subtitle="100% natural homeopathic kits, formulated by expert doctors and delivered to your door."
-        />
-      </Section>
+      <section className="pt-12 pb-8" style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            eyebrow="Shop"
+            title="Doctor-Recommended Treatment Kits"
+            subtitle="100% natural homeopathic kits, formulated by expert doctors and delivered to your door."
+          />
+        </div>
+      </section>
 
       <Section className="py-10">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
