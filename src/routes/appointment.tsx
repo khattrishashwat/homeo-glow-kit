@@ -10,6 +10,7 @@ import {
   Calendar, Clock, Phone, User, MapPin, Loader2, ArrowDown, Stethoscope,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import heroBg from "@/assets/hero-clinic-bg.jpg";
 import { z } from "zod";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";

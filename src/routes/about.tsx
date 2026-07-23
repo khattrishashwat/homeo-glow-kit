@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Section, SectionHeader } from "@/components/site/Section";
+import heroBg from "@/assets/hero-clinic-bg.jpg";
 import godfatherImg from "@/assets/godfathers.jpeg";
 
 import clinicImg from "@/assets/clinic.jpg";
