@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Section, SectionHeader } from "@/components/site/Section";
+import heroBg from "@/assets/hero-clinic-bg.jpg";
 import { Scissors, Flower2, Activity, Sparkles, Brain, HeartPulse, Bone, Wind, Baby, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/services")({
@@ -30,7 +31,7 @@ const services = [
 function ServicesPage() {
   return (
     <>
-      <section className="bg-gradient-hero">
+      <section style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
           <span className="inline-block px-4 py-1.5 rounded-full bg-card shadow-soft text-xs font-semibold text-primary uppercase tracking-wide">Services</span>
           <h1 className="mt-5 font-display text-4xl md:text-6xl font-bold text-balance">Specialized Homeopathic Treatments</h1>

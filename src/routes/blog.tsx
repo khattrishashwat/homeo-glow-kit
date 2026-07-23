@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { ArrowRight, Calendar, Clock } from "lucide-react";
 import { Section } from "@/components/site/Section";
 import { Button } from "@/components/ui/button";
+import heroBg from "@/assets/hero-clinic-bg.jpg";
 import { blogPosts, blogCategories, formatBlogDate } from "@/data/blogs";
 
 export const Route = createFileRoute("/blog")({
@@ -29,7 +30,7 @@ export default function BlogPage() {
       </Helmet>
 
       {/* Hero */}
-      <section className="bg-gradient-hero">
+      <section style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
           <span className="inline-block px-4 py-1.5 rounded-full bg-card shadow-soft text-xs font-semibold text-primary uppercase tracking-wide">
             Health Journal
