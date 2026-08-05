@@ -1,4 +1,3 @@
-
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -156,14 +155,23 @@ function AppointmentPage() {
   );
 
   return (
-    <section className="min-h-screen" style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}>
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+    <section className="relative overflow-hidden min-h-screen">
+      {/* 1. Background Image */}
+      <div
+        className="absolute inset-0 bg-cover bg-bottom bg-no-repeat"
+        style={{ backgroundImage: `url(${heroBg})` }}
+      />
+      {/* 2. Soft Gradient Overlay for Readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/75 to-background/60" />
+
+      {/* 3. Main Content */}
+      <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 md:py-20">
         {/* Consultation Info Section */}
         <div className="text-center mb-10 animate-fade-up">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-card shadow-soft text-xs font-semibold text-primary">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-leaf-soft/80 shadow-soft text-xs font-semibold text-primary">
             <Stethoscope className="h-3.5 w-3.5" /> Expert Homeopathic Care
           </span>
-          <h1 className="mt-4 font-display text-3xl md:text-5xl font-bold text-balance">Schedule an Appointment</h1>
+          <h1 className="mt-4 font-display text-3xl md:text-5xl font-bold text-balance text-foreground">Schedule an Appointment</h1>
           <p className="mt-2 text-lg md:text-xl font-medium text-foreground/80">Consult with Expert Doctors</p>
           <p className="mt-3 text-muted-foreground max-w-xl mx-auto text-pretty">
             Get in touch with us, schedule your appointment and consult with doctors.
@@ -174,7 +182,7 @@ function AppointmentPage() {
         {/* Consultation Cards */}
         <div className="grid sm:grid-cols-2 gap-4 md:gap-6 mb-12 animate-fade-up">
           {/* Online Card */}
-          <div className="bg-card rounded-3xl p-6 md:p-8 shadow-card border border-border flex flex-col">
+          <div className="bg-card/90 backdrop-blur rounded-3xl p-6 md:p-8 shadow-card border border-border flex flex-col">
             <div className="flex items-center gap-3 mb-4">
               <div className="grid h-10 w-10 place-items-center rounded-xl bg-sky-soft shadow-soft">
                 <Video className="h-5 w-5 text-secondary" />
@@ -191,7 +199,7 @@ function AppointmentPage() {
           </div>
 
           {/* Offline Card */}
-          <div className="bg-card rounded-3xl p-6 md:p-8 shadow-card border border-border flex flex-col">
+          <div className="bg-card/90 backdrop-blur rounded-3xl p-6 md:p-8 shadow-card border border-border flex flex-col">
             <div className="flex items-center gap-3 mb-4">
               <div className="grid h-10 w-10 place-items-center rounded-xl bg-leaf-soft shadow-soft">
                 <Building2 className="h-5 w-5 text-primary" />
@@ -221,10 +229,10 @@ function AppointmentPage() {
         {/* Existing Booking Form */}
         <div ref={bookingRef} id="booking-form">
           <div className="text-center mb-10">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-card shadow-soft text-xs font-semibold text-primary">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-leaf-soft/80 shadow-soft text-xs font-semibold text-primary">
               <ShieldCheck className="h-3.5 w-3.5" /> Trusted by 1000+ patients
             </span>
-            <h2 className="mt-4 font-display text-3xl md:text-5xl font-bold text-balance">Book Your Consultation</h2>
+            <h2 className="mt-4 font-display text-3xl md:text-5xl font-bold text-balance text-foreground">Book Your Consultation</h2>
             <p className="mt-3 text-muted-foreground">Just 5 quick steps. No payment required.</p>
           </div>
 
@@ -239,7 +247,7 @@ function AppointmentPage() {
             </div>
           </div>
 
-          <div className="bg-card rounded-3xl p-6 md:p-10 shadow-card">
+          <div className="bg-card/95 backdrop-blur rounded-3xl p-6 md:p-10 shadow-card">
             {done ? (
               <div className="text-center py-10 animate-fade-up">
                 <div className="mx-auto h-20 w-20 grid place-items-center rounded-full bg-success/15">

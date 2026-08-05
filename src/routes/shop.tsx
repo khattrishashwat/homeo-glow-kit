@@ -108,8 +108,18 @@ function ShopPage() {
          <title>Shop Homoeopathy  Treatment Kits | MD's Homoeopathy </title>
        </Helmet>
 
-      <section className="pt-12 pb-8" style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      {/* HERO SECTION WITH HOMEPAGE EXACT BACKGROUND */}
+      <section className="relative overflow-hidden pt-12 pb-10 md:pt-16 md:pb-12">
+        {/* 1. Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-bottom bg-no-repeat"
+          style={{ backgroundImage: `url(${heroBg})` }}
+        />
+        {/* 2. Soft Gradient overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/75 to-background/60" />
+
+        {/* 3. Hero Content */}
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             eyebrow="Shop"
             title="Doctor-Recommended Treatment Kits"

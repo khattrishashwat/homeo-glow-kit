@@ -19,11 +19,27 @@ export const Route = createFileRoute("/treatments")({
 function TreatmentsPage() {
   return (
     <>
-      <section style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-card shadow-soft text-xs font-semibold text-primary uppercase tracking-wide">Treatments Overview</span>
-          <h1 className="mt-5 font-display text-4xl md:text-6xl font-bold text-balance">Specialized Homeopathic Treatments</h1>
-          <p className="mt-5 max-w-2xl mx-auto text-lg text-muted-foreground text-pretty">From chronic to acute — care designed around the unique constitution of every patient.</p>
+      {/* HERO SECTION WITH HOMEPAGE EXACT BACKGROUND */}
+      <section className="relative overflow-hidden">
+        {/* 1. Background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-bottom bg-no-repeat"
+          style={{ backgroundImage: `url(${heroBg})` }}
+        />
+        {/* 2. Soft Gradient overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/75 to-background/60" />
+
+        {/* 3. Hero Content */}
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-leaf-soft/80 shadow-soft text-xs font-semibold text-primary uppercase tracking-wide">
+            Treatments Overview
+          </span>
+          <h1 className="mt-5 font-display text-4xl md:text-6xl font-bold text-balance text-foreground">
+            Specialized Homeopathic Treatments
+          </h1>
+          <p className="mt-5 max-w-2xl mx-auto text-lg text-muted-foreground text-pretty">
+            From chronic to acute — care designed around the unique constitution of every patient.
+          </p>
         </div>
       </section>
 

@@ -108,9 +108,7 @@ function HomePage() {
               <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-leaf-soft/80 text-xs sm:text-sm font-bold uppercase tracking-wide text-primary shadow-soft">
                 <Leaf className="h-4 w-4" /> A DESTINATION FOR PERMANENT CURE AND PERFECT CARE.
               </span>
-              {/* <h1 className="mt-6 font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.02] tracking-tight text-primary text-balance">
-                MD's<br />HOMOEOPATHY 
-              </h1> */}
+             
               <p className="mt-4 font-display text-xl sm:text-2xl text-foreground/80 font-medium">
                 We Heal Immunity and Improve Your Health.
               </p>
