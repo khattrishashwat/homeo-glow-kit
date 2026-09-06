@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
+import { useBlogs } from "@/hooks/useBlogs";
 import { assetUrl, formatINR, productMrp, productSummary } from "@/services/api";
 import { conditions } from "@/data/conditions";
 import { blogPosts, formatBlogDate } from "@/data/blogs";
@@ -80,6 +81,16 @@ const getPlainTextExcerpt = (html: string, maxLength: number = 120): string => {
 function HomePage() {
   const { data: productResponse, isLoading: loadingProducts } = useProducts({ limit: 2 });
   const homeProducts = productResponse?.data || [];
+  const { data: blogResponse } = useBlogs({ limit: 3 });
+  const liveBlogs = (blogResponse?.data || []).map((b) => ({
+    slug: b.slug,
+    title: b.title,
+    excerpt: b.excerpt,
+    featuredImage: b.featured_image ? assetUrl(b.featured_image) : "/placeholder.jpg",
+    category: typeof b.category === "object" && b.category ? b.category.name : (b.category as string) || "Health",
+    publishDate: b.published_at || b.createdAt || new Date().toISOString(),
+  }));
+  const displayBlogs = liveBlogs.length > 0 ? liveBlogs : blogPosts.slice(0, 3);
 
   return (
     <>
@@ -376,7 +387,7 @@ function HomePage() {
       <Section>
         <SectionHeader eyebrow="Learn" title="From Our Health Journal" subtitle="Insights from our doctors on healing, naturally." />
         <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {blogPosts.slice(0, 5).map((b) => (
+          {displayBlogs.map((b) => (
             <Link key={b.slug} to="/blog/$slug" params={{ slug: b.slug }} className="group bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition hover:-translate-y-1">
               <div className="aspect-[16/10] overflow-hidden relative">
                 <img src={b.featuredImage} alt={b.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />

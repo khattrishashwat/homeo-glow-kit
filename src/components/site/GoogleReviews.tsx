@@ -1,10 +1,11 @@
 import { Star } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  googleReviews,
-  googleReviewsRating,
-  googleReviewsTotal,
+  googleReviews as staticReviews,
+  googleReviewsRating as staticRating,
+  googleReviewsTotal as staticTotal,
 } from "@/data/reviews";
+import { useGoogleReviews } from "@/hooks/useGoogleReviews";
 
 const initials = (name: string) =>
   name
@@ -24,6 +25,12 @@ const GoogleGlyph = () => (
 );
 
 export function GoogleReviews() {
+  const { data: apiData, isLoading } = useGoogleReviews();
+
+  const reviews = apiData?.reviews && apiData.reviews.length > 0 ? apiData.reviews : staticReviews;
+  const rating = apiData?.rating || staticRating;
+  const totalReviews = apiData?.totalReviews || staticTotal;
+
   return (
     <>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground">
@@ -32,14 +39,14 @@ export function GoogleReviews() {
           <span className="font-semibold text-foreground">Google Reviews</span>
           <span className="inline-flex items-center gap-1 font-semibold text-foreground">
             <Star className="h-4 w-4 fill-warning text-warning" />
-            {googleReviewsRating.toFixed(1)}
+            {Number(rating).toFixed(1)}
           </span>
-          <span className="text-muted-foreground">({googleReviewsTotal})</span>
+          <span className="text-muted-foreground">({totalReviews})</span>
         </span>
       </div>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {googleReviews.map((review) => (
+        {reviews.map((review) => (
           <div
             key={review.id}
             className="flex flex-col rounded-3xl bg-card p-6 shadow-card transition hover:shadow-glow"
@@ -69,7 +76,7 @@ export function GoogleReviews() {
               </Avatar>
               <div>
                 <div className="text-sm font-semibold">{review.reviewerName}</div>
-                <div className="text-xs text-muted-foreground">{review.relativeTime}</div>
+                <div className="text-xs text-muted-foreground">{review.relativeTime || "Recent review"}</div>
               </div>
             </div>
           </div>

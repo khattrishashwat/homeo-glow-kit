@@ -260,6 +260,38 @@ export const ordersApi = {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+  track: (orderNumber: string, phone?: string) =>
+    apiRequest<Record<string, unknown>>(`/api/web/orders/track/${orderNumber}`, {}, { phone }),
+};
+
+export const productReviewsApi = {
+  list: (productSlug: string) =>
+    apiRequest<Array<{ id: string; productSlug: string; name: string; rating: number; message: string; date: string }>>(
+      `/api/products/${productSlug}/reviews`
+    ),
+  create: (payload: { productSlug: string; name: string; rating: number; message: string }) =>
+    apiRequest<{ id: string; productSlug: string; name: string; rating: number; message: string; date: string }>(
+      `/api/products/${payload.productSlug}/reviews`,
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }
+    ),
+};
+
+export const blogCommentsApi = {
+  list: (blogSlug: string) =>
+    apiRequest<Array<{ id: string; blogSlug: string; name: string; email?: string; comment: string; date: string }>>(
+      `/api/blog/${blogSlug}/comments`
+    ),
+  create: (payload: { blogSlug: string; name: string; email?: string; comment: string }) =>
+    apiRequest<{ id: string; blogSlug: string; name: string; email?: string; comment: string; date: string }>(
+      `/api/blog/${payload.blogSlug}/comments`,
+      {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }
+    ),
 };
 
 export const googleReviewsApi = {
@@ -269,3 +301,4 @@ export const googleReviewsApi = {
 export const settingsApi = {
   get: () => apiRequest<SiteSettings>("/api/web/settings"),
 };
+

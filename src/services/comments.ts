@@ -41,17 +41,39 @@ const write = (all: BlogComment[]) => {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
 };
 
-const delay = (ms = 400) => new Promise((r) => setTimeout(r, ms));
+import { apiRequest } from "@/services/api";
+
+const delay = (ms = 200) => new Promise((r) => setTimeout(r, ms));
 
 export const blogCommentsApi = {
   async list(blogSlug: string): Promise<BlogComment[]> {
-    await delay();
+    try {
+      const res = await apiRequest<BlogComment[]>(`/api/blog/${blogSlug}/comments`);
+      if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+        return res.data;
+      }
+    } catch (e) {
+      // Fall back to local storage
+    }
+    await delay(200);
     return read()
       .filter((c) => c.blogSlug === blogSlug)
       .sort((a, b) => +new Date(b.date) - +new Date(a.date));
   },
   async create(payload: NewBlogComment): Promise<BlogComment> {
-    await delay();
+    try {
+      const res = await apiRequest<BlogComment>(`/api/blog/${payload.blogSlug}/comments`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      if (res.data) {
+        write([res.data, ...read()]);
+        return res.data;
+      }
+    } catch (e) {
+      // Fall back to local storage
+    }
+    await delay(200);
     const comment: BlogComment = {
       id: `cmt-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       date: new Date().toISOString(),

@@ -18,6 +18,7 @@ import {
   Heart,
   Bookmark,
   Send,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,8 +29,10 @@ import {
   getAdjacentBlogs,
   formatBlogDate,
 } from "@/data/blogs";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BlogComments } from "@/components/site/BlogComments";
+import { useBlogBySlug } from "@/hooks/useBlogs";
+import { assetUrl } from "@/services/api";
 
 export const Route = createFileRoute("/blog_/$slug")({
   component: BlogDetailPage,
@@ -37,7 +40,29 @@ export const Route = createFileRoute("/blog_/$slug")({
 
 export default function BlogDetailPage() {
   const { slug } = Route.useParams();
-  const blog = getBlogBySlug(slug);
+  const { data: blogResponse, isLoading } = useBlogBySlug(slug);
+  const staticBlog = getBlogBySlug(slug);
+
+  const blog = useMemo(() => {
+    if (blogResponse?.data) {
+      const b = blogResponse.data;
+      return {
+        slug: b.slug,
+        title: b.title,
+        excerpt: b.excerpt,
+        content: b.content || "",
+        category: typeof b.category === "object" && b.category ? b.category.name : (b.category as string) || "Health",
+        author: b.author || "Homeopathy Team",
+        authorBio: b.author_bio || "Expert homeopathic physician and wellness researcher.",
+        publishDate: b.published_at || b.createdAt || new Date().toISOString(),
+        featuredImage: b.featured_image ? assetUrl(b.featured_image) : staticBlog?.featuredImage || "/placeholder.jpg",
+        tags: b.tags || [],
+        views: b.views || 0,
+      };
+    }
+    return staticBlog;
+  }, [blogResponse, staticBlog]);
+
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
 
@@ -72,6 +97,16 @@ export default function BlogDetailPage() {
     localStorage.setItem('likedPosts', JSON.stringify(newLikes));
     setIsLiked(!isLiked);
   };
+
+  if (isLoading && !blog) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4 py-24 text-center">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin text-primary" /> Loading article...
+        </div>
+      </div>
+    );
+  }
 
   if (!blog) {
     return (

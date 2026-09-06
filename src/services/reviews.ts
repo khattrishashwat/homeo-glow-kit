@@ -81,17 +81,39 @@ const write = (all: ProductReview[]) => {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
 };
 
-const delay = (ms = 400) => new Promise((r) => setTimeout(r, ms));
+import { apiRequest } from "@/services/api";
+
+const delay = (ms = 200) => new Promise((r) => setTimeout(r, ms));
 
 export const productReviewsApi = {
   async list(productSlug: string): Promise<ProductReview[]> {
-    await delay();
+    try {
+      const res = await apiRequest<ProductReview[]>(`/api/products/${productSlug}/reviews`);
+      if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+        return res.data;
+      }
+    } catch (e) {
+      // Fall back to local seed data
+    }
+    await delay(200);
     return read()
       .filter((r) => r.productSlug === productSlug)
       .sort((a, b) => +new Date(b.date) - +new Date(a.date));
   },
   async create(payload: NewProductReview): Promise<ProductReview> {
-    await delay();
+    try {
+      const res = await apiRequest<ProductReview>(`/api/products/${payload.productSlug}/reviews`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      if (res.data) {
+        write([res.data, ...read()]);
+        return res.data;
+      }
+    } catch (e) {
+      // Fall back to local storage
+    }
+    await delay(200);
     const review: ProductReview = {
       id: `rev-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       date: new Date().toISOString(),

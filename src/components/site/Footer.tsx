@@ -23,7 +23,6 @@ export function Footer() {
             height={1402}
           />
         </Link>
-            <span className="font-display text-lg font-bold">{siteName}</span>
           </div>
           <p className="text-sm text-muted-foreground text-pretty">
             {settings?.site_description || "Personalized Homoeopathy  treatment for chronic and acute conditions. Trusted by 1000+ patients."}

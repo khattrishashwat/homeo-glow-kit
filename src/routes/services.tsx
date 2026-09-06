@@ -274,7 +274,7 @@ function ServicesPage() {
       </Section>
 
       {/* 4. PREVENTIVE HEALTH CHECK-UP PACKAGES */}
-      <Section className="bg-sky-soft/30">
+      {/* <Section className="bg-sky-soft/30">
         <SectionHeader
           eyebrow="Preventive Care"
           title="Preventive Health Check-Up Packages"
@@ -294,7 +294,7 @@ function ServicesPage() {
             </div>
           ))}
         </div>
-      </Section>
+      </Section> */}
 
       {/* 5. PHARMACY & SPECIAL PROPRIETARY PRODUCTS */}
       <Section>
@@ -416,11 +416,11 @@ function ServicesPage() {
               </Link>
             </Button>
 
-            <Button asChild size="xl" variant="outline" className="rounded-full border-primary text-primary hover:bg-leaf-soft">
+            {/* <Button asChild size="xl" variant="outline" className="rounded-full border-primary text-primary hover:bg-leaf-soft">
               <a href="https://wa.me/917668610031?text=Hi%2C%20I%20want%20to%20know%20which%20diagnostic%20tests%20I%20should%20get%20done." target="_blank" rel="noreferrer">
                 <MessageCircle className="mr-2 h-4 w-4 text-whatsapp" /> Ask Doctor on WhatsApp
               </a>
-            </Button>
+            </Button> */}
           </div>
         </div>
       </Section>

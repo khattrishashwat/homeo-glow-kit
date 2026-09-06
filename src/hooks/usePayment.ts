@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-
-const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+import { API_URL } from '@/services/api';
 
 type PaymentOrderPayload = Record<string, unknown>;
 type VerifyPaymentPayload = {
