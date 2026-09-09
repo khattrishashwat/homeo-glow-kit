@@ -20,15 +20,15 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useProductBySlug, useProducts } from "@/hooks/useProducts";
 import { assetUrl, discountPercent, formatINR, productMrp } from "@/services/api";
 import { whatsappLink } from "@/components/site/FloatingActions";
-import { getFeaturedProduct } from "@/data/featuredProducts";
 import { ProductReviews } from "@/components/site/ProductReviews";
 
 export const Route = createFileRoute("/shop_/$slug")({
   component: ProductDetailPage,
   notFoundComponent: () => (
-    <Section>
-      <div className="text-center">
-        <p>Product not found. <Link to="/shop" className="text-primary underline">Back to shop</Link></p>
+    <Section className="py-20">
+      <div className="text-center max-w-md mx-auto">
+        <h2 className="text-2xl font-bold mb-2">Product Not Found</h2>
+        <p className="text-muted-foreground mb-6">Product not found. <Link to="/shop" className="text-primary underline">Back to shop</Link></p>
       </div>
     </Section>
   ),
@@ -43,8 +43,7 @@ function ProductDetailPage() {
   const [wishlist, setWishlist] = useState(false);
   const [lens, setLens] = useState({ visible: false, left: 0, top: 0, x: 50, y: 50 });
 
-  const staticProduct = getFeaturedProduct(slug);
-  const p = data?.data ?? staticProduct;
+  const p = data?.data;
 
   useEffect(() => {
     if (!p) return;
@@ -68,21 +67,25 @@ function ProductDetailPage() {
     }
   }, [gallery.length, selectedImageIndex]);
 
-  if (isLoading && !staticProduct) {
+  if (isLoading) {
     return (
       <Section className="py-20 text-center text-muted-foreground">
-        <Loader2 className="mx-auto mb-3 h-5 w-5 animate-spin" />Loading product...
+        <Loader2 className="mx-auto mb-3 h-5 w-5 animate-spin text-primary" />Loading product...
       </Section>
     );
   }
 
   if (!p) {
     return (
-      <Section>
-        <div className="text-center">
-          <p>
-            Product not found. <Link to="/shop" className="text-primary underline">Back to shop</Link>
+      <Section className="py-20">
+        <div className="text-center max-w-md mx-auto">
+          <h2 className="text-2xl font-bold mb-2">Product Not Found</h2>
+          <p className="text-muted-foreground mb-6">
+            The product you are looking for does not exist or has been moved.
           </p>
+          <Button asChild className="rounded-full">
+            <Link to="/shop">Back to Shop</Link>
+          </Button>
         </div>
       </Section>
     );

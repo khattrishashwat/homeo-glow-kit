@@ -1,12 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { ArrowRight, Calendar, Clock, Loader2, Search } from "lucide-react";
+import { ArrowRight, Calendar, Clock, Loader2, Search, BookOpen } from "lucide-react";
 import { Section } from "@/components/site/Section";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import heroBg from "@/assets/hero-clinic-bg.jpg";
-import { blogPosts, blogCategories, formatBlogDate } from "@/data/blogs";
 import { useBlogs } from "@/hooks/useBlogs";
 import { assetUrl } from "@/services/api";
 
@@ -14,31 +13,37 @@ export const Route = createFileRoute("/blog")({
   component: BlogPage,
 });
 
+const formatBlogDate = (dateStr?: string) => {
+  if (!dateStr) return "";
+  try {
+    return new Date(dateStr).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" });
+  } catch {
+    return dateStr;
+  }
+};
+
 export default function BlogPage() {
   const [q, setQ] = useState("");
   const [category, setCategory] = useState("All");
 
-  const { data: blogResponse, isLoading, error } = useBlogs({ limit: 50 });
+  const { data: blogResponse, isLoading } = useBlogs({ limit: 50 });
   const backendBlogs = blogResponse?.data || [];
 
   const allBlogs = useMemo(() => {
-    if (backendBlogs.length > 0) {
-      return backendBlogs.map((b) => ({
-        slug: b.slug,
-        title: b.title,
-        excerpt: b.excerpt,
-        category: typeof b.category === "object" && b.category ? b.category.name : (b.category as string) || "General",
-        featuredImage: b.featured_image ? assetUrl(b.featured_image) : "/placeholder.jpg",
-        publishDate: b.published_at || b.createdAt || new Date().toISOString(),
-        readingTime: b.reading_time || 5,
-      }));
-    }
-    return blogPosts;
+    return backendBlogs.map((b) => ({
+      slug: b.slug,
+      title: b.title,
+      excerpt: b.excerpt,
+      category: typeof b.category === "object" && b.category ? b.category.name : (b.category as string) || "General",
+      featuredImage: b.featured_image ? assetUrl(b.featured_image) : "/placeholder.jpg",
+      publishDate: b.published_at || b.createdAt || new Date().toISOString(),
+      readingTime: b.reading_time || 5,
+    }));
   }, [backendBlogs]);
 
   const categories = useMemo(() => {
     const fromBlogs = Array.from(new Set(allBlogs.map((b) => b.category).filter(Boolean)));
-    return ["All", ...Array.from(new Set([...fromBlogs, ...blogCategories.filter((c) => c !== "All")]))];
+    return ["All", ...fromBlogs];
   }, [allBlogs]);
 
   const filtered = useMemo(() => {
@@ -55,10 +60,10 @@ export default function BlogPage() {
   return (
     <>
       <Helmet>
-        <title>Health & Wellness Blog | MD's Homoeopathy </title>
+        <title>Health & Wellness Blog | MD's Homoeopathy</title>
         <meta
           name="description"
-          content="Insights from our doctors on natural healing, women's health, nutrition and lifestyle. Read the MD's Homoeopathy  health journal."
+          content="Insights from our doctors on natural healing, women's health, nutrition and lifestyle. Read the MD's Homoeopathy health journal."
         />
       </Helmet>
 
@@ -81,7 +86,7 @@ export default function BlogPage() {
             Insights for Natural Healing
           </h1>
           <p className="mt-5 max-w-2xl mx-auto text-lg text-muted-foreground text-pretty">
-            Expert advice on Homoeopathy , wellness, women's health and everyday
+            Expert advice on Homoeopathy, wellness, women's health and everyday
             habits for a healthier life.
           </p>
         </div>
@@ -100,31 +105,46 @@ export default function BlogPage() {
             />
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setCategory(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                  category.toLowerCase() === cat.toLowerCase()
-                    ? "bg-primary text-primary-foreground shadow-soft"
-                    : "bg-muted text-muted-foreground hover:bg-accent"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+          {categories.length > 1 && (
+            <div className="flex flex-wrap gap-2">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setCategory(cat)}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                    category.toLowerCase() === cat.toLowerCase()
+                      ? "bg-primary text-primary-foreground shadow-soft"
+                      : "bg-muted text-muted-foreground hover:bg-accent"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Loading state */}
-        {isLoading && !allBlogs.length ? (
-          <div className="flex items-center justify-center gap-2 py-16 text-muted-foreground">
-            <Loader2 className="h-5 w-5 animate-spin" /> Loading articles...
+        {isLoading ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="animate-pulse rounded-3xl bg-card p-5 border border-border">
+                <div className="aspect-[16/10] rounded-2xl bg-muted" />
+                <div className="mt-4 h-5 w-3/4 rounded bg-muted" />
+                <div className="mt-2 h-4 w-full rounded bg-muted" />
+                <div className="mt-4 h-8 w-24 rounded-full bg-muted" />
+              </div>
+            ))}
+          </div>
+        ) : allBlogs.length === 0 ? (
+          <div className="py-20 text-center flex flex-col items-center justify-center border rounded-3xl bg-card">
+            <BookOpen className="h-12 w-12 text-muted-foreground mb-3" />
+            <h3 className="text-lg font-semibold">No articles published yet</h3>
+            <p className="text-sm text-muted-foreground mt-1">Our doctors are preparing new insights. Check back soon!</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="py-16 text-center text-muted-foreground">
-            No articles match your search or filter.
+            No articles match your search &ldquo;{q}&rdquo; or selected filter.
           </div>
         ) : (
           /* Blog grid */
@@ -137,7 +157,7 @@ export default function BlogPage() {
                 <Link
                   to="/blog/$slug"
                   params={{ slug: blog.slug }}
-                  className="relative block aspect-[16/10] overflow-hidden"
+                  className="relative block aspect-[16/10] overflow-hidden bg-leaf-soft"
                 >
                   <img
                     src={blog.featuredImage}

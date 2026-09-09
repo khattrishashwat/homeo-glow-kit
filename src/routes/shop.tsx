@@ -34,7 +34,7 @@ function ProductCard({ p }: { p: Product }) {
             {off}% OFF
           </span>
         )}
-        {p.attributes?.recommended && (
+        {(p.recommended || p.attributes?.recommended) && (
           <span className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-card/95 backdrop-blur text-primary text-[10px] font-bold px-2.5 py-1 shadow-soft">
             <ShieldCheck className="h-3 w-3" /> Doctor Recommended
           </span>

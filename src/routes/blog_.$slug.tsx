@@ -23,16 +23,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Section } from "@/components/site/Section";
-import {
-  getBlogBySlug,
-  getRelatedBlogs,
-  getAdjacentBlogs,
-  formatBlogDate,
-} from "@/data/blogs";
 import { useState, useEffect, useMemo } from "react";
 import { BlogComments } from "@/components/site/BlogComments";
-import { useBlogBySlug } from "@/hooks/useBlogs";
+import { useBlogBySlug, useBlogs } from "@/hooks/useBlogs";
 import { assetUrl } from "@/services/api";
+
+const formatBlogDate = (dateStr?: string) => {
+  if (!dateStr) return "";
+  try {
+    return new Date(dateStr).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" });
+  } catch {
+    return dateStr;
+  }
+};
 
 export const Route = createFileRoute("/blog_/$slug")({
   component: BlogDetailPage,
@@ -41,7 +44,7 @@ export const Route = createFileRoute("/blog_/$slug")({
 export default function BlogDetailPage() {
   const { slug } = Route.useParams();
   const { data: blogResponse, isLoading } = useBlogBySlug(slug);
-  const staticBlog = getBlogBySlug(slug);
+  const { data: allBlogsResponse } = useBlogs({ limit: 12 });
 
   const blog = useMemo(() => {
     if (blogResponse?.data) {
@@ -55,13 +58,13 @@ export default function BlogDetailPage() {
         author: b.author || "Homeopathy Team",
         authorBio: b.author_bio || "Expert homeopathic physician and wellness researcher.",
         publishDate: b.published_at || b.createdAt || new Date().toISOString(),
-        featuredImage: b.featured_image ? assetUrl(b.featured_image) : staticBlog?.featuredImage || "/placeholder.jpg",
+        featuredImage: b.featured_image ? assetUrl(b.featured_image) : "/placeholder.jpg",
         tags: b.tags || [],
         views: b.views || 0,
       };
     }
-    return staticBlog;
-  }, [blogResponse, staticBlog]);
+    return null;
+  }, [blogResponse]);
 
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -127,8 +130,37 @@ export default function BlogDetailPage() {
     );
   }
 
-  const related = getRelatedBlogs(blog.slug, 3);
-  const { prev, next } = getAdjacentBlogs(blog.slug);
+  const allOtherBlogs = useMemo(() => {
+    return (allBlogsResponse?.data || [])
+      .filter((b) => b.slug !== slug)
+      .map((b) => ({
+        slug: b.slug,
+        title: b.title,
+        excerpt: b.excerpt,
+        category: typeof b.category === "object" && b.category ? b.category.name : (b.category as string) || "Health",
+        featuredImage: b.featured_image ? assetUrl(b.featured_image) : "/placeholder.jpg",
+        publishDate: b.published_at || b.createdAt || new Date().toISOString(),
+      }));
+  }, [allBlogsResponse, slug]);
+
+  const related = useMemo(() => {
+    const matching = allOtherBlogs.filter((b) => b.category === blog.category);
+    if (matching.length >= 3) return matching.slice(0, 3);
+    const others = allOtherBlogs.filter((b) => b.category !== blog.category);
+    return [...matching, ...others].slice(0, 3);
+  }, [allOtherBlogs, blog.category]);
+
+  const { prev, next } = useMemo(() => {
+    const list = allBlogsResponse?.data || [];
+    const idx = list.findIndex((b) => b.slug === slug);
+    if (idx === -1) return { prev: null, next: null };
+    const prevItem = idx > 0 ? list[idx - 1] : null;
+    const nextItem = idx < list.length - 1 ? list[idx + 1] : null;
+    return {
+      prev: prevItem ? { slug: prevItem.slug, title: prevItem.title, publishDate: prevItem.published_at || prevItem.createdAt } : null,
+      next: nextItem ? { slug: nextItem.slug, title: nextItem.title, publishDate: nextItem.published_at || nextItem.createdAt } : null,
+    };
+  }, [allBlogsResponse, slug]);
   const shareUrl =
     typeof window !== "undefined" ? window.location.href : `/blog/${blog.slug}`;
   const shareText = encodeURIComponent(blog.title);

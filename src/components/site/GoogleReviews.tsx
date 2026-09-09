@@ -1,10 +1,5 @@
 import { Star } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  googleReviews as staticReviews,
-  googleReviewsRating as staticRating,
-  googleReviewsTotal as staticTotal,
-} from "@/data/reviews";
 import { useGoogleReviews } from "@/hooks/useGoogleReviews";
 
 const initials = (name: string) =>
@@ -27,61 +22,96 @@ const GoogleGlyph = () => (
 export function GoogleReviews() {
   const { data: apiData, isLoading } = useGoogleReviews();
 
-  const reviews = apiData?.reviews && apiData.reviews.length > 0 ? apiData.reviews : staticReviews;
-  const rating = apiData?.rating || staticRating;
-  const totalReviews = apiData?.totalReviews || staticTotal;
+  const reviews = apiData?.reviews || [];
+  const rating = apiData?.rating || (reviews.length > 0 ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length) : 5.0);
+  const totalReviews = apiData?.totalReviews || reviews.length;
 
   return (
     <>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm text-muted-foreground">
         <span className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 shadow-soft">
           <GoogleGlyph />
-          <span className="font-semibold text-foreground">Google Reviews</span>
-          <span className="inline-flex items-center gap-1 font-semibold text-foreground">
-            <Star className="h-4 w-4 fill-warning text-warning" />
-            {Number(rating).toFixed(1)}
-          </span>
-          <span className="text-muted-foreground">({totalReviews})</span>
+          <span className="font-semibold text-foreground">Google & Patient Reviews</span>
+          {totalReviews > 0 && (
+            <>
+              <span className="inline-flex items-center gap-1 font-semibold text-foreground">
+                <Star className="h-4 w-4 fill-warning text-warning" />
+                {Number(rating).toFixed(1)}
+              </span>
+              <span className="text-muted-foreground">({totalReviews})</span>
+            </>
+          )}
         </span>
       </div>
 
-      <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {reviews.map((review) => (
-          <div
-            key={review.id}
-            className="flex flex-col rounded-3xl bg-card p-6 shadow-card transition hover:shadow-glow"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex gap-1">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={
-                      i < Math.round(review.rating)
-                        ? "h-4 w-4 fill-warning text-warning"
-                        : "h-4 w-4 text-muted-foreground/30"
-                    }
-                  />
-                ))}
+      {isLoading ? (
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="animate-pulse rounded-3xl bg-card p-6 shadow-card">
+              <div className="flex justify-between items-center">
+                <div className="h-4 w-24 rounded bg-muted" />
+                <div className="h-5 w-5 rounded bg-muted" />
               </div>
-              <GoogleGlyph />
-            </div>
-            <p className="mt-4 flex-1 text-pretty text-sm text-foreground/90">
-              "{review.text}"
-            </p>
-            <div className="mt-5 flex items-center gap-3 border-t border-border/60 pt-4">
-              <Avatar>
-                <AvatarImage src={review.profileImage} alt={review.reviewerName} />
-                <AvatarFallback>{initials(review.reviewerName)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <div className="text-sm font-semibold">{review.reviewerName}</div>
-                <div className="text-xs text-muted-foreground">{review.relativeTime || "Recent review"}</div>
+              <div className="mt-4 space-y-2">
+                <div className="h-3 w-full rounded bg-muted" />
+                <div className="h-3 w-5/6 rounded bg-muted" />
+                <div className="h-3 w-4/6 rounded bg-muted" />
+              </div>
+              <div className="mt-5 flex items-center gap-3 border-t border-border/60 pt-4">
+                <div className="h-10 w-10 rounded-full bg-muted" />
+                <div className="space-y-1">
+                  <div className="h-3 w-20 rounded bg-muted" />
+                  <div className="h-2.5 w-14 rounded bg-muted" />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : reviews.length === 0 ? (
+        <div className="mt-10 text-center py-12 rounded-3xl bg-card border border-border/50 max-w-lg mx-auto p-6">
+          <p className="text-sm text-muted-foreground">
+            Patient reviews and verified Google testimonials will appear here.
+          </p>
+        </div>
+      ) : (
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {reviews.map((review) => (
+            <div
+              key={review.id}
+              className="flex flex-col rounded-3xl bg-card p-6 shadow-card transition hover:shadow-glow"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={
+                        i < Math.round(review.rating)
+                          ? "h-4 w-4 fill-warning text-warning"
+                          : "h-4 w-4 text-muted-foreground/30"
+                      }
+                    />
+                  ))}
+                </div>
+                <GoogleGlyph />
+              </div>
+              <p className="mt-4 flex-1 text-pretty text-sm text-foreground/90">
+                &ldquo;{review.text}&rdquo;
+              </p>
+              <div className="mt-5 flex items-center gap-3 border-t border-border/60 pt-4">
+                <Avatar>
+                  <AvatarImage src={review.profileImage} alt={review.reviewerName} />
+                  <AvatarFallback>{initials(review.reviewerName || "Patient")}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <div className="text-sm font-semibold">{review.reviewerName}</div>
+                  <div className="text-xs text-muted-foreground">{review.relativeTime || "Verified Patient"}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </>
   );
 }

@@ -30,6 +30,7 @@ export type Product = {
   gallery?: { url: string; alt: string }[];
   active?: boolean;
   featured?: boolean;
+  recommended?: boolean;
   sku?: string;
    attributes?: {
      shortDescription?: string;
@@ -300,5 +301,30 @@ export const googleReviewsApi = {
 
 export const settingsApi = {
   get: () => apiRequest<SiteSettings>("/api/web/settings"),
+};
+
+export type ChatConfig = {
+  enabled: boolean;
+  welcome_message: string;
+  suggested_questions: string[];
+};
+
+export type ChatMessageResponse = {
+  reply: string;
+  suggestions?: string[];
+  action?: {
+    type: "appointment" | "products" | "call" | "blog";
+    label: string;
+    url: string;
+  };
+};
+
+export const chatApi = {
+  getConfig: () => apiRequest<ChatConfig>("/api/web/chat/config"),
+  sendMessage: (payload: { message: string; history?: Array<{ role: "user" | "assistant"; content: string }> }) =>
+    apiRequest<ChatMessageResponse>("/api/web/chat/message", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
 };
 

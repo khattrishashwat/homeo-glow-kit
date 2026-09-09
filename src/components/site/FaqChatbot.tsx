@@ -1,68 +1,143 @@
-import { useState, useRef, useEffect, useMemo } from "react";
-import { MessageCircle, X, Send, Search, ChevronLeft, Bot } from "lucide-react";
-import { faqData, faqCategories, type FaqItem } from "@/data/faqChatbot";
+import { useState, useRef, useEffect } from "react";
+import { Link } from "@tanstack/react-router";
+import { MessageCircle, X, Send, Bot, Calendar, ShoppingBag, Phone, ArrowRight } from "lucide-react";
+import { chatApi, type ChatConfig, type ChatMessageResponse } from "@/services/api";
 
 type ChatMessage = {
   id: string;
   from: "bot" | "user";
   text: string;
+  suggestions?: string[];
+  action?: ChatMessageResponse["action"];
 };
 
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
-const WELCOME =
-  "Hi! 👋 Welcome to MD's Homoeopathy. I'm here to help. Pick a category below or search a question.";
-
 export function FaqChatbot() {
   const [open, setOpen] = useState(false);
   const [typing, setTyping] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { id: uid(), from: "bot", text: WELCOME },
-  ]);
+  const [inputMessage, setInputMessage] = useState("");
+  const [config, setConfig] = useState<ChatConfig | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const typingTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
+  // Load chatbot configuration from backend
+  useEffect(() => {
+    chatApi
+      .getConfig()
+      .then((res) => {
+        if (res.data) {
+          setConfig(res.data);
+          if (res.data.enabled !== false) {
+            setMessages([
+              {
+                id: uid(),
+                from: "bot",
+                text: res.data.welcome_message || "Hi! 👋 Welcome to MD's Homoeopathy. How can I help you today?",
+                suggestions: res.data.suggested_questions || [
+                  "How do I book an appointment?",
+                  "What remedies work for hair fall?",
+                  "Where is the clinic located?",
+                ],
+              },
+            ]);
+          }
+        }
+      })
+      .catch(() => {
+        // Fallback default
+        setConfig({
+          enabled: true,
+          welcome_message: "Hi! 👋 Welcome to MD's Homoeopathy. How can I help you today?",
+          suggested_questions: [
+            "How do I book an appointment?",
+            "What remedies work for hair fall?",
+            "Are homeopathic medicines safe?",
+          ],
+        });
+        setMessages([
+          {
+            id: uid(),
+            from: "bot",
+            text: "Hi! 👋 Welcome to MD's Homoeopathy. How can I help you today?",
+            suggestions: [
+              "How do I book an appointment?",
+              "What remedies work for hair fall?",
+              "Are homeopathic medicines safe?",
+            ],
+          },
+        ]);
+      });
+  }, []);
+
+  // Auto-scroll on new messages
   useEffect(() => {
     if (open && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, typing, open]);
 
-  useEffect(() => () => clearTimeout(typingTimer.current), []);
+  const sendMessage = async (textToSend?: string) => {
+    const text = (textToSend || inputMessage).trim();
+    if (!text || typing) return;
 
-  const searchResults = useMemo<FaqItem[]>(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return [];
-    return faqData
-      .filter(
-        (f) =>
-          f.question.toLowerCase().includes(q) ||
-          f.answer.toLowerCase().includes(q) ||
-          f.category.toLowerCase().includes(q),
-      )
-      .slice(0, 6);
-  }, [search]);
+    setInputMessage("");
 
-  const categoryQuestions = useMemo<FaqItem[]>(
-    () => (activeCategory ? faqData.filter((f) => f.category === activeCategory) : []),
-    [activeCategory],
-  );
-
-  const suggested = useMemo(() => faqData.slice(0, 3), []);
-
-  const askQuestion = (item: FaqItem) => {
-    setSearch("");
-    setMessages((m) => [...m, { id: uid(), from: "user", text: item.question }]);
+    // Add user message to state
+    const userMsg: ChatMessage = { id: uid(), from: "user", text };
+    setMessages((prev) => [...prev, userMsg]);
     setTyping(true);
-    clearTimeout(typingTimer.current);
-    typingTimer.current = setTimeout(() => {
+
+    // Prepare history for backend
+    const history = messages.slice(-6).map((m) => ({
+      role: m.from === "user" ? ("user" as const) : ("assistant" as const),
+      content: m.text,
+    }));
+
+    try {
+      const res = await chatApi.sendMessage({ message: text, history });
+      const replyData = res.data;
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: uid(),
+          from: "bot",
+          text: replyData.reply,
+          suggestions: replyData.suggestions,
+          action: replyData.action,
+        },
+      ]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: uid(),
+          from: "bot",
+          text: "I apologize, but I'm having trouble connecting right now. Please feel free to call our clinic directly or book an appointment online.",
+          action: {
+            type: "appointment",
+            label: "Book Appointment",
+            url: "/appointment",
+          },
+        },
+      ]);
+    } finally {
       setTyping(false);
-      setMessages((m) => [...m, { id: uid(), from: "bot", text: item.answer }]);
-    }, 700);
+    }
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  if (config && config.enabled === false) {
+    return null;
+  }
 
   return (
     <>
@@ -81,21 +156,15 @@ export function FaqChatbot() {
         <div className="fixed bottom-40 right-5 z-50 flex w-[calc(100vw-2.5rem)] max-w-sm origin-bottom-right flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-glow animate-fade-up md:bottom-24">
           {/* Header */}
           <div className="flex items-center gap-3 bg-gradient-leaf px-4 py-3 text-primary-foreground">
-            {activeCategory && (
-              <button
-                onClick={() => setActiveCategory(null)}
-                aria-label="Back to categories"
-                className="grid h-8 w-8 place-items-center rounded-full bg-white/20 transition hover:bg-white/30"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-            )}
             <div className="grid h-9 w-9 place-items-center rounded-full bg-white/20">
               <Bot className="h-5 w-5" />
             </div>
             <div className="flex-1">
               <div className="text-sm font-bold leading-tight">MD's Assistant</div>
-              <div className="text-[11px] opacity-90">Ask me anything about MD's Homoeopathy</div>
+              <div className="text-[11px] opacity-90 flex items-center gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 animate-pulse" />
+                Live Homeopathic Guide
+              </div>
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -107,24 +176,70 @@ export function FaqChatbot() {
           </div>
 
           {/* Messages */}
-          <div ref={scrollRef} className="max-h-72 min-h-[9rem] space-y-3 overflow-y-auto px-4 py-4">
+          <div ref={scrollRef} className="max-h-80 min-h-[12rem] space-y-3 overflow-y-auto px-4 py-4">
             {messages.map((m) => (
-              <div key={m.id} className={`flex ${m.from === "user" ? "justify-end" : "justify-start"}`}>
-                <div
-                  className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-sm ${
-                    m.from === "user"
-                      ? "rounded-br-sm bg-primary text-primary-foreground"
-                      : "rounded-bl-sm bg-muted text-foreground"
-                  }`}
-                >
-                  {m.text}
+              <div key={m.id} className="space-y-2">
+                <div className={`flex ${m.from === "user" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
+                      m.from === "user"
+                        ? "rounded-br-sm bg-primary text-primary-foreground"
+                        : "rounded-bl-sm bg-muted text-foreground border border-border/50"
+                    }`}
+                  >
+                    {m.text}
+                  </div>
                 </div>
+
+                {/* Call-to-action button if provided */}
+                {m.action && (
+                  <div className="flex justify-start pl-2">
+                    {m.action.url.startsWith("http") || m.action.url.startsWith("tel:") ? (
+                      <a
+                        href={m.action.url}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary px-3.5 py-1.5 text-xs font-semibold transition"
+                      >
+                        {m.action.type === "call" ? <Phone className="h-3 w-3" /> : <ArrowRight className="h-3 w-3" />}
+                        {m.action.label}
+                      </a>
+                    ) : (
+                      <Link
+                        to={m.action.url}
+                        className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary px-3.5 py-1.5 text-xs font-semibold transition"
+                      >
+                        {m.action.type === "appointment" ? (
+                          <Calendar className="h-3 w-3" />
+                        ) : m.action.type === "products" ? (
+                          <ShoppingBag className="h-3 w-3" />
+                        ) : (
+                          <ArrowRight className="h-3 w-3" />
+                        )}
+                        {m.action.label}
+                      </Link>
+                    )}
+                  </div>
+                )}
+
+                {/* Suggestions chips */}
+                {m.suggestions && m.suggestions.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 pl-1 pt-1">
+                    {m.suggestions.map((suggestion, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => sendMessage(suggestion)}
+                        className="rounded-full border border-primary/30 bg-leaf-soft/60 px-3 py-1 text-left text-[11px] font-medium text-primary hover:bg-leaf-soft transition"
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
 
             {typing && (
               <div className="flex justify-start" aria-label="Assistant is typing">
-                <div className="flex items-center gap-1 rounded-2xl rounded-bl-sm bg-muted px-4 py-3">
+                <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-sm bg-muted px-4 py-3">
                   <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/60 [animation-delay:-0.3s]" />
                   <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/60 [animation-delay:-0.15s]" />
                   <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/60" />
@@ -133,91 +248,30 @@ export function FaqChatbot() {
             )}
           </div>
 
-          {/* Interaction area */}
-          <div className="space-y-3 border-t border-border px-4 py-3">
-            {/* Search */}
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          {/* User Input Field */}
+          <div className="border-t border-border p-3 bg-card">
+            <div className="flex items-center gap-2">
               <input
                 type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search FAQs..."
-                aria-label="Search frequently asked questions"
-                className="w-full rounded-full border border-border bg-background py-2 pl-9 pr-3 text-sm outline-none transition focus:border-primary focus-visible:ring-2 focus-visible:ring-ring"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Type your question..."
+                aria-label="Ask assistant a question"
+                className="flex-1 rounded-full border border-border bg-background py-2 px-4 text-sm outline-none transition focus:border-primary focus-visible:ring-2 focus-visible:ring-ring"
               />
-            </div>
-
-            <div className="max-h-40 space-y-2 overflow-y-auto">
-              {search.trim() ? (
-                /* Search results */
-                searchResults.length ? (
-                  searchResults.map((item, i) => (
-                    <QuickReply key={`${item.question}-${i}`} onClick={() => askQuestion(item)}>
-                      {item.question}
-                    </QuickReply>
-                  ))
-                ) : (
-                  <p className="px-1 py-2 text-center text-xs text-muted-foreground">
-                    No results found. Try a different keyword.
-                  </p>
-                )
-              ) : activeCategory ? (
-                /* Questions in a category */
-                categoryQuestions.map((item, i) => (
-                  <QuickReply key={`${item.question}-${i}`} onClick={() => askQuestion(item)}>
-                    {item.question}
-                  </QuickReply>
-                ))
-              ) : (
-                /* Categories + suggested questions */
-                <div className="space-y-3">
-                  <div>
-                    <div className="mb-1.5 px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                      Categories
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {faqCategories.map((cat) => (
-                        <button
-                          key={cat}
-                          onClick={() => setActiveCategory(cat)}
-                          className="rounded-full border border-primary/30 bg-leaf-soft/60 px-3 py-1.5 text-[11px] font-semibold text-primary transition hover:bg-leaf-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                        >
-                          {cat}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="mb-1.5 px-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                      Suggested
-                    </div>
-                    <div className="space-y-2">
-                      {suggested.map((item, i) => (
-                        <QuickReply key={`s-${i}`} onClick={() => askQuestion(item)}>
-                          {item.question}
-                        </QuickReply>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
+              <button
+                onClick={() => sendMessage()}
+                disabled={!inputMessage.trim() || typing}
+                aria-label="Send message"
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground disabled:opacity-50 transition hover:scale-105 active:scale-95"
+              >
+                <Send className="h-4 w-4" />
+              </button>
             </div>
           </div>
         </div>
       )}
     </>
-  );
-}
-
-function QuickReply({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex w-full items-center gap-2 rounded-2xl border border-border bg-background px-3 py-2 text-left text-xs font-medium text-foreground transition hover:border-primary hover:bg-leaf-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      <Send className="h-3.5 w-3.5 shrink-0 text-primary" />
-      <span>{children}</span>
-    </button>
   );
 }
