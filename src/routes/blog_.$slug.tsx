@@ -101,6 +101,39 @@ export default function BlogDetailPage() {
     setIsLiked(!isLiked);
   };
 
+  const allOtherBlogs = useMemo(() => {
+    return (allBlogsResponse?.data || [])
+      .filter((b) => b.slug !== slug)
+      .map((b) => ({
+        slug: b.slug,
+        title: b.title,
+        excerpt: b.excerpt,
+        category: typeof b.category === "object" && b.category ? b.category.name : (b.category as string) || "Health",
+        featuredImage: b.featured_image ? assetUrl(b.featured_image) : "/placeholder.jpg",
+        publishDate: b.published_at || b.createdAt || new Date().toISOString(),
+      }));
+  }, [allBlogsResponse, slug]);
+
+  const related = useMemo(() => {
+    if (!blog) return [];
+    const matching = allOtherBlogs.filter((b) => b.category === blog.category);
+    if (matching.length >= 3) return matching.slice(0, 3);
+    const others = allOtherBlogs.filter((b) => b.category !== blog.category);
+    return [...matching, ...others].slice(0, 3);
+  }, [allOtherBlogs, blog]);
+
+  const { prev, next } = useMemo(() => {
+    const list = allBlogsResponse?.data || [];
+    const idx = list.findIndex((b) => b.slug === slug);
+    if (idx === -1) return { prev: null, next: null };
+    const prevItem = idx > 0 ? list[idx - 1] : null;
+    const nextItem = idx < list.length - 1 ? list[idx + 1] : null;
+    return {
+      prev: prevItem ? { slug: prevItem.slug, title: prevItem.title, publishDate: prevItem.published_at || prevItem.createdAt } : null,
+      next: nextItem ? { slug: nextItem.slug, title: nextItem.title, publishDate: nextItem.published_at || nextItem.createdAt } : null,
+    };
+  }, [allBlogsResponse, slug]);
+
   if (isLoading && !blog) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-4 py-24 text-center">
@@ -129,38 +162,6 @@ export default function BlogDetailPage() {
       </div>
     );
   }
-
-  const allOtherBlogs = useMemo(() => {
-    return (allBlogsResponse?.data || [])
-      .filter((b) => b.slug !== slug)
-      .map((b) => ({
-        slug: b.slug,
-        title: b.title,
-        excerpt: b.excerpt,
-        category: typeof b.category === "object" && b.category ? b.category.name : (b.category as string) || "Health",
-        featuredImage: b.featured_image ? assetUrl(b.featured_image) : "/placeholder.jpg",
-        publishDate: b.published_at || b.createdAt || new Date().toISOString(),
-      }));
-  }, [allBlogsResponse, slug]);
-
-  const related = useMemo(() => {
-    const matching = allOtherBlogs.filter((b) => b.category === blog.category);
-    if (matching.length >= 3) return matching.slice(0, 3);
-    const others = allOtherBlogs.filter((b) => b.category !== blog.category);
-    return [...matching, ...others].slice(0, 3);
-  }, [allOtherBlogs, blog.category]);
-
-  const { prev, next } = useMemo(() => {
-    const list = allBlogsResponse?.data || [];
-    const idx = list.findIndex((b) => b.slug === slug);
-    if (idx === -1) return { prev: null, next: null };
-    const prevItem = idx > 0 ? list[idx - 1] : null;
-    const nextItem = idx < list.length - 1 ? list[idx + 1] : null;
-    return {
-      prev: prevItem ? { slug: prevItem.slug, title: prevItem.title, publishDate: prevItem.published_at || prevItem.createdAt } : null,
-      next: nextItem ? { slug: nextItem.slug, title: nextItem.title, publishDate: nextItem.published_at || nextItem.createdAt } : null,
-    };
-  }, [allBlogsResponse, slug]);
   const shareUrl =
     typeof window !== "undefined" ? window.location.href : `/blog/${blog.slug}`;
   const shareText = encodeURIComponent(blog.title);
