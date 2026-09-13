@@ -30,42 +30,40 @@ export function FaqChatbot() {
         if (res.data) {
           setConfig(res.data);
           if (res.data.enabled !== false) {
+            const welcome =
+              res.data.welcome_message ||
+              res.data.welcomeMessage ||
+              "Hi! 👋 Welcome to MD's Homoeopathy. How can I help you today?";
+            const suggestions =
+              res.data.suggested_questions && res.data.suggested_questions.length > 0
+                ? res.data.suggested_questions
+                : res.data.suggestedQuestions && res.data.suggestedQuestions.length > 0
+                ? res.data.suggestedQuestions
+                : [];
+
             setMessages([
               {
                 id: uid(),
                 from: "bot",
-                text: res.data.welcome_message || "Hi! 👋 Welcome to MD's Homoeopathy. How can I help you today?",
-                suggestions: res.data.suggested_questions || [
-                  "How do I book an appointment?",
-                  "What remedies work for hair fall?",
-                  "Where is the clinic located?",
-                ],
+                text: welcome,
+                suggestions: suggestions.length > 0 ? suggestions : undefined,
               },
             ]);
           }
         }
       })
       .catch(() => {
-        // Fallback default
+        // Safe fallback if network error occurs
         setConfig({
           enabled: true,
           welcome_message: "Hi! 👋 Welcome to MD's Homoeopathy. How can I help you today?",
-          suggested_questions: [
-            "How do I book an appointment?",
-            "What remedies work for hair fall?",
-            "Are homeopathic medicines safe?",
-          ],
+          suggested_questions: [],
         });
         setMessages([
           {
             id: uid(),
             from: "bot",
             text: "Hi! 👋 Welcome to MD's Homoeopathy. How can I help you today?",
-            suggestions: [
-              "How do I book an appointment?",
-              "What remedies work for hair fall?",
-              "Are homeopathic medicines safe?",
-            ],
           },
         ]);
       });

@@ -303,10 +303,30 @@ export const settingsApi = {
   get: () => apiRequest<SiteSettings>("/api/web/settings"),
 };
 
+export type Faq = {
+  _id: string;
+  question: string;
+  answer: string;
+  category?: string;
+  order?: number;
+  active?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export const faqsApi = {
+  list: (params?: Record<string, string | number | boolean | undefined>) =>
+    apiRequest<Faq[]>("/api/web/faqs", {}, params),
+};
+
 export type ChatConfig = {
   enabled: boolean;
-  welcome_message: string;
-  suggested_questions: string[];
+  welcome_message?: string;
+  welcomeMessage?: string;
+  suggested_questions?: string[];
+  suggestedQuestions?: string[];
+  phone?: string;
+  siteName?: string;
 };
 
 export type ChatMessageResponse = {

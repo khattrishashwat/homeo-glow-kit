@@ -14,9 +14,10 @@ import {
   MapPin, X, ImageIcon, Star, Package
 } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useProducts } from "@/hooks/useProducts";
 import { useBlogs } from "@/hooks/useBlogs";
-import { assetUrl, formatINR, productMrp, productSummary } from "@/services/api";
+import { assetUrl, formatINR, productMrp, productSummary, faqsApi } from "@/services/api";
 import { conditions } from "@/data/conditions";
 import { FeaturedProducts } from "@/components/site/FeaturedProducts";
 
@@ -66,14 +67,6 @@ const why = [
   "Doorstep medicine delivery",
 ];
 
-const faqs = [
-  { q: "How long does Homoeopathy treatment take?", a: "The duration of treatment completely depends upon the pathogenicity, severity, and condition of the disease. Every patient responds differently, therefore treatment duration may vary from case to case." },
-  { q: "How long does homeopathic treatment take?", a: "Duration depends on the condition — chronic issues typically need 3–6 months, acute conditions resolve faster. We share a personalized timeline after consultation." },
-  { q: "Are there any side effects?", a: "Homoeopathy  is 100% natural and free of side effects when prescribed by a qualified doctor. Safe for all ages, including children and pregnant women." },
-  { q: "How is the medicine delivered?", a: "After consultation, your personalized medicine is shipped via express courier across India, typically within 2–4 business days." },
-  { q: "Can I consult online?", a: "Yes! We offer secure video consultations. You'll receive a prescription and medicines at your doorstep." },
-];
-
 // Helper function to strip HTML and get plain text excerpt
 const getPlainTextExcerpt = (html: string, maxLength: number = 120): string => {
   // Remove HTML tags
@@ -95,6 +88,12 @@ function HomePage() {
 
   const { data: blogResponse, isLoading: loadingBlogs } = useBlogs({ limit: 3 });
   const blogs = blogResponse?.data || [];
+
+  const { data: faqsResponse, isLoading: loadingFaqs } = useQuery({
+    queryKey: ["web-faqs"],
+    queryFn: () => faqsApi.list(),
+  });
+  const faqs = faqsResponse?.data || [];
 
   return (
     <>
@@ -450,9 +449,21 @@ function HomePage() {
       />
 
       <div className="mt-8 space-y-3">
-        {faqs.map((f, i) => (
-          <Faq key={i} {...f} />
-        ))}
+        {loadingFaqs ? (
+          <div className="space-y-3">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="bg-card rounded-2xl p-5 animate-pulse h-16" />
+            ))}
+          </div>
+        ) : faqs.length > 0 ? (
+          faqs.map((f) => (
+            <Faq key={f._id} q={f.question} a={f.answer} />
+          ))
+        ) : (
+          <p className="text-sm text-muted-foreground italic">
+            No FAQs currently listed. Please feel free to contact us with any questions.
+          </p>
+        )}
       </div>
     </div>
 
