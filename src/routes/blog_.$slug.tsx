@@ -61,6 +61,7 @@ export default function BlogDetailPage() {
         featuredImage: b.featured_image ? assetUrl(b.featured_image) : "/placeholder.jpg",
         tags: b.tags || [],
         views: b.views || 0,
+        videoUrl: (b as any).video_url || (b as any).videoUrl || undefined,
       };
     }
     return null;

@@ -150,8 +150,44 @@ export type AppointmentPayload = {
   email?: string;
   slotId: string;
   reason: string;
+  concern?: string;
+  customConcern?: string;
+  city?: string;
+  age?: number | string;
   consultation_type: "online" | "offline";
+  paymentMethod?: "online" | "offline";
+  amount?: number;
   notes?: string;
+};
+
+export type RazorpayOrderInfo = {
+  orderId: string;
+  amount: number;
+  currency: string;
+  key: string;
+  paymentId?: string;
+};
+
+export type AppointmentBookingResponse = {
+  _id: string;
+  patientName: string;
+  patientPhone: string;
+  patientEmail?: string;
+  status: string;
+  payment_status: string;
+  paymentMethod: string;
+  consultation_type: string;
+  concern?: string;
+  customConcern?: string;
+  city?: string;
+  age?: number;
+  slot?: Slot;
+  amount?: number;
+  razorpayOrderId?: string;
+};
+
+export type BookingResult = ApiResponse<AppointmentBookingResponse> & {
+  razorpayOrder?: RazorpayOrderInfo;
 };
 
 export type OrderPayload = {
@@ -241,7 +277,17 @@ export const slotsApi = {
 
 export const appointmentsApi = {
   create: (payload: AppointmentPayload) =>
-    apiRequest<unknown>("/api/web/appointments", {
+    apiRequest<AppointmentBookingResponse>("/api/web/appointments", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }) as Promise<BookingResult>,
+  verifyPayment: (payload: {
+    appointmentId: string;
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+  }) =>
+    apiRequest<AppointmentBookingResponse>("/api/web/appointments/verify-payment", {
       method: "POST",
       body: JSON.stringify(payload),
     }),
