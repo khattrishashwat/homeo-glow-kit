@@ -106,11 +106,6 @@ export default function CategoryPage() {
             </div>
           )}
           <h1 className="text-4xl font-bold">{category.name}</h1>
-          {category.description && (
-            <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-              {category.description}
-            </p>
-          )}
           <div className="mt-6 flex justify-center gap-4">
             <Badge variant="outline">{products.length} Products</Badge>
             <Badge variant="outline">{blogs.length} Articles</Badge>

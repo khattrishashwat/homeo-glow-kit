@@ -132,13 +132,6 @@ function CheckoutPage() {
               />
               <div className="flex-1 min-w-0">
                 <div className="font-semibold">{product.name}</div>
-                <div className="text-sm text-muted-foreground mt-1 break-words product-summary-html">
-                  {hasHtmlContent ? (
-                    sanitizeAndRenderHTML(summaryContent)
-                  ) : (
-                    summaryContent
-                  )}
-                </div>
                 <div className="mt-2 text-primary font-bold">{formatINR(product.price)}</div>
               </div>
               <div className="flex items-center rounded-full border border-border flex-shrink-0">

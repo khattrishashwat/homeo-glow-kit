@@ -172,17 +172,6 @@ function HomePage() {
                 <div className="text-xs sm:text-sm text-muted-foreground">Thousands of patients healed with care and compassion.</div>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex -space-x-2">
-                {[1,2,3,4,5,6].map(i => (
-                  <div key={i} className="h-9 w-9 rounded-full border-2 border-background bg-gradient-to-br from-leaf-soft to-sky-soft" />
-                ))}
-              </div>
-              <div>
-                <div className="font-display font-extrabold text-xl text-primary leading-none">5000+</div>
-                <div className="text-xs text-muted-foreground">Happy Patients</div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -191,19 +180,40 @@ function HomePage() {
       <Section>
         <SectionHeader eyebrow="What we treat" title="Conditions We Heal Naturally" subtitle="Specialized homeopathic care for the most common chronic and acute conditions." />
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {conditions.map((d) => (
-            <div key={d.slug} className="group bg-card rounded-3xl p-6 shadow-soft hover:shadow-glow transition-all hover:-translate-y-1">
-              <div className={`h-14 w-14 grid place-items-center rounded-2xl bg-gradient-to-br ${d.color} text-white shadow-soft`}>
-                <d.icon className="h-6 w-6" />
-              </div>
-              <h3 className="mt-5 font-display text-xl font-bold">{d.name}</h3>
-              <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{d.shortDescription}</p>
-              <Link to="/conditions/$slug" params={{ slug: d.slug }} className="mt-5 inline-flex text-sm font-semibold text-primary items-center gap-1 group-hover:gap-2 transition-all">
-                Learn More <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-          ))}
-        </div>
+  {conditions.map((d) => (
+    <div
+      key={d.slug}
+      className="group bg-card rounded-3xl p-6 shadow-soft hover:shadow-glow transition-all hover:-translate-y-1"
+    >
+      <div
+        className={`h-14 w-14 grid place-items-center rounded-2xl bg-gradient-to-br ${d.color} shadow-soft overflow-hidden`}
+      >
+        <img
+          src={d.image}
+          alt={d.name}
+          className="h-full w-full object-contain"
+        />
+      </div>
+
+      <h3 className="mt-5 font-display text-xl font-bold">
+        {d.name}
+      </h3>
+
+      <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+        {d.shortDescription}
+      </p>
+
+      <Link
+        to="/conditions/$slug"
+        params={{ slug: d.slug }}
+        className="mt-5 inline-flex text-sm font-semibold text-primary items-center gap-1 group-hover:gap-2 transition-all"
+      >
+        Learn More
+        <ArrowRight className="h-4 w-4" />
+      </Link>
+    </div>
+  ))}
+</div>
       </Section>
 
       {/* ABOUT PREVIEW */}

@@ -1,4 +1,9 @@
-import { Activity, Wind, Flower2, Brain, Bone, Pill, type LucideIcon } from "lucide-react";
+import thyroidImage from "../assets/condition/thyroid.jpeg";
+import nasalDisordersImage from "../assets/condition/nasal-disorders.jpeg";
+import obgGynImage from "../assets/condition/obg-gyn.jpeg";
+import neuroDisordersImage from "../assets/condition/neuro-disorders.jpeg";
+import osteoDisordersImage from "../assets/condition/osteo-disorders.jpeg";
+import gitDisordersImage from "../assets/condition/git-disorders.jpeg";
 
 export type ConditionVideo = {
   title: string;
@@ -9,7 +14,7 @@ export type Condition = {
   slug: string;
   name: string;
   shortDescription: string;
-  icon: LucideIcon;
+  image: string;
   color: string;
   banner: string;
   detailedDescription: string;
@@ -24,8 +29,9 @@ export const conditions: Condition[] = [
   {
     slug: "thyroid",
     name: "Thyroid",
-    shortDescription: "Balance hypo & hyperthyroid naturally and restore your energy levels.",
-    icon: Activity,
+    shortDescription:
+      "Balance hypo & hyperthyroid naturally and restore your energy levels.",
+    image: thyroidImage,
     color: "from-amber-400 to-amber-600",
     banner:
       "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&w=1600&q=80",
@@ -33,8 +39,14 @@ export const conditions: Condition[] = [
       "Thyroid disorders disrupt the body's metabolism, energy and mood. Our homeopathic approach addresses the underlying glandular imbalance rather than only managing hormone numbers. Through detailed case-taking we identify the constitutional remedy that helps your thyroid function return to its natural rhythm — supporting both hypothyroid and hyperthyroid presentations safely, without dependency or side effects.",
     videoUrl: "https://www.youtube.com/embed/DrysMOa6-7E",
     videos: [
-      { title: "Hyperthyroidism", url: "https://www.youtube.com/embed/DrysMOa6-7E" },
-      { title: "Hypothyroidism", url: "https://www.youtube.com/embed/WMKCKzdwebQ" },
+      {
+        title: "Hyperthyroidism",
+        url: "https://www.youtube.com/embed/DrysMOa6-7E",
+      },
+      {
+        title: "Hypothyroidism",
+        url: "https://www.youtube.com/embed/WMKCKzdwebQ",
+      },
     ],
     treatments: [
       "Constitutional remedies tailored to your symptom picture",
@@ -49,19 +61,24 @@ export const conditions: Condition[] = [
       "Zero side effects, safe for long-term care",
     ],
   },
+
   {
     slug: "nasal-disorders",
     name: "Nasal Disorders",
-    shortDescription: "Lasting relief from sinusitis, allergic rhinitis and nasal polyps.",
-    icon: Wind,
+    shortDescription:
+      "Lasting relief from sinusitis, allergic rhinitis and nasal polyps.",
+    image: nasalDisordersImage,
     color: "from-sky-400 to-sky-600",
     banner:
       "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&w=1600&q=80",
     detailedDescription:
-      "Chronic sinusitis, allergic rhinitis, recurrent colds and nasal polyps respond remarkably well to Homoeopathy . Instead of suppressing symptoms with decongestants, our remedies strengthen your respiratory immunity and reduce hypersensitivity to allergens, so episodes become milder and far less frequent over time.",
+      "Chronic sinusitis, allergic rhinitis, recurrent colds and nasal polyps respond remarkably well to Homoeopathy. Instead of suppressing symptoms with decongestants, our remedies strengthen your respiratory immunity and reduce hypersensitivity to allergens, so episodes become milder and far less frequent over time.",
     videoUrl: "https://www.youtube.com/embed/RjTdB-Bs8kE",
     videos: [
-      { title: "Nasal Polyp", url: "https://www.youtube.com/embed/RjTdB-Bs8kE" },
+      {
+        title: "Nasal Polyp",
+        url: "https://www.youtube.com/embed/RjTdB-Bs8kE",
+      },
     ],
     treatments: [
       "Immunity-building constitutional treatment",
@@ -76,11 +93,13 @@ export const conditions: Condition[] = [
       "Long-term respiratory immunity",
     ],
   },
+
   {
     slug: "obg-gyn",
     name: "OBG & GYN",
-    shortDescription: "Holistic care for PCOD, menstrual & hormonal women's health concerns.",
-    icon: Flower2,
+    shortDescription:
+      "Holistic care for PCOD, menstrual & hormonal women's health concerns.",
+    image: obgGynImage,
     color: "from-rose-400 to-rose-600",
     banner:
       "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1600&q=80",
@@ -88,7 +107,10 @@ export const conditions: Condition[] = [
       "From PCOD/PCOS and irregular periods to menopausal complaints, women's health needs gentle, individualized care. Our homeopathic treatment works to restore natural hormonal balance, regulate cycles and ease symptoms — supporting fertility and overall wellbeing without hormonal side effects.",
     videoUrl: "https://www.youtube.com/embed/Jbd4DWAR11Y",
     videos: [
-      { title: "Uterine Fibroid", url: "https://www.youtube.com/embed/Jbd4DWAR11Y" },
+      {
+        title: "Uterine Fibroid",
+        url: "https://www.youtube.com/embed/Jbd4DWAR11Y",
+      },
     ],
     treatments: [
       "Hormonal balance for PCOD/PCOS",
@@ -103,16 +125,18 @@ export const conditions: Condition[] = [
       "Safe, non-hormonal treatment",
     ],
   },
+
   {
     slug: "neuro-disorders",
     name: "Neuro Disorders",
-    shortDescription: "Natural management of migraine, anxiety, vertigo and nerve health.",
-    icon: Brain,
+    shortDescription:
+      "Natural management of migraine, anxiety, vertigo and nerve health.",
+    image: neuroDisordersImage,
     color: "from-violet-400 to-violet-600",
     banner:
       "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?auto=format&fit=crop&w=1600&q=80",
     detailedDescription:
-      "Migraines, anxiety, vertigo, neuralgia and stress-related conditions are deeply individual. Homoeopathy  addresses both the physical and emotional dimensions of neurological health, calming the nervous system and reducing the frequency and intensity of episodes — gently and without sedation or dependency.",
+      "Migraines, anxiety, vertigo, neuralgia and stress-related conditions are deeply individual. Homoeopathy addresses both the physical and emotional dimensions of neurological health, calming the nervous system and reducing the frequency and intensity of episodes — gently and without sedation or dependency.",
     videoUrl: "",
     videos: [],
     comingSoon: true,
@@ -129,11 +153,13 @@ export const conditions: Condition[] = [
       "No drowsiness or dependency",
     ],
   },
+
   {
     slug: "osteo-disorders",
     name: "Osteo Disorders",
-    shortDescription: "Relief from arthritis, joint pain, back pain and bone health issues.",
-    icon: Bone,
+    shortDescription:
+      "Relief from arthritis, joint pain, back pain and bone health issues.",
+    image: osteoDisordersImage,
     color: "from-orange-400 to-orange-600",
     banner:
       "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1600&q=80",
@@ -141,7 +167,10 @@ export const conditions: Condition[] = [
       "Arthritis, joint pain, back pain, cervical spondylosis and osteoporosis can limit everyday life. Our homeopathic remedies reduce inflammation, ease stiffness and improve mobility while supporting bone and cartilage health — offering sustained relief without the long-term risks of painkillers.",
     videoUrl: "https://www.youtube.com/embed/ojPydM5NGHM",
     videos: [
-      { title: "Osteoarthritis", url: "https://www.youtube.com/embed/ojPydM5NGHM" },
+      {
+        title: "Osteoarthritis",
+        url: "https://www.youtube.com/embed/ojPydM5NGHM",
+      },
     ],
     treatments: [
       "Anti-inflammatory constitutional remedies",
@@ -156,19 +185,24 @@ export const conditions: Condition[] = [
       "Better long-term joint health",
     ],
   },
+
   {
     slug: "git-disorders",
     name: "GIT Disorders",
-    shortDescription: "Heal acidity, IBS, constipation and chronic digestive problems.",
-    icon: Pill,
+    shortDescription:
+      "Heal acidity, IBS, constipation and chronic digestive problems.",
+    image: gitDisordersImage,
     color: "from-emerald-400 to-emerald-600",
     banner:
       "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?auto=format&fit=crop&w=1600&q=80",
     detailedDescription:
-      "Acidity, IBS, constipation, bloating and chronic gastritis often stem from deeper digestive imbalances. Homoeopathy  restores healthy gut function by treating the root cause, improving digestion and reducing recurring discomfort — paired with practical diet guidance for lasting results.",
+      "Acidity, IBS, constipation, bloating and chronic gastritis often stem from deeper digestive imbalances. Homoeopathy restores healthy gut function by treating the root cause, improving digestion and reducing recurring discomfort — paired with practical diet guidance for lasting results.",
     videoUrl: "https://www.youtube.com/embed/LQxMwBGU7SM",
     videos: [
-      { title: "Acidity", url: "https://www.youtube.com/embed/LQxMwBGU7SM" },
+      {
+        title: "Acidity",
+        url: "https://www.youtube.com/embed/LQxMwBGU7SM",
+      },
     ],
     treatments: [
       "Root-cause treatment for acidity and IBS",
@@ -186,4 +220,4 @@ export const conditions: Condition[] = [
 ];
 
 export const getConditionBySlug = (slug: string) =>
-  conditions.find((c) => c.slug === slug);
+  conditions.find((condition) => condition.slug === slug);

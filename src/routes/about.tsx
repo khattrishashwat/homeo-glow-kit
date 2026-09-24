@@ -438,18 +438,6 @@ function AboutPage() {
           </div>
         </div>
 
-        {/* CHECKUP PACKAGES GRID */}
-        <div className="mt-12">
-          <h3 className="font-display text-2xl font-bold text-center mb-8">Preventive Health Check-Up Packages</h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {checkupPackages.map((pkg) => (
-              <div key={pkg.name} className="bg-card p-5 rounded-2xl shadow-soft border border-border/80 hover:shadow-card transition">
-                <h4 className="font-bold text-foreground">{pkg.name}</h4>
-                <p className="mt-1 text-xs text-muted-foreground">{pkg.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
       </Section>
 
       {/* 6. HOMEOPATHIC PHARMACY & PROPRIETARY PRODUCTS */}

@@ -367,7 +367,7 @@ function ServicesPage() {
               <p className="mt-1 text-xs text-muted-foreground">We advise only essential tests relevant to your root condition, preventing unneeded lab expenses.</p>
             </div>
 
-            <div className="bg-card p-5 rounded-2xl shadow-soft border border-border">
+            {/* <div className="bg-card p-5 rounded-2xl shadow-soft border border-border">
               <div className="grid h-10 w-10 place-items-center rounded-xl bg-sky-500/10 text-sky-600 mb-3">
                 <Building2 className="h-5 w-5" />
               </div>
@@ -389,7 +389,7 @@ function ServicesPage() {
               </div>
               <h3 className="font-bold text-foreground text-sm">Detailed Report Analysis</h3>
               <p className="mt-1 text-xs text-muted-foreground">Our doctors explain your test reports line-by-line so you clearly understand your health parameters.</p>
-            </div>
+            </div> */}
           </div>
 
           {/* Supported Tests List */}
