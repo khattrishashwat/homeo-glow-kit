@@ -20,6 +20,8 @@ export type Product = {
   slug: string;
   short_description?: string;
   description?: string;
+  whyWeChooseThis?: string;
+  why_we_choose_this?: string;
   price: number;
   compare_price?: number;
   category?: { _id: string; name: string; slug: string } | string;
