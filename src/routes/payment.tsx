@@ -43,28 +43,34 @@ function PaymentPage() {
     const qty = draft.quantity;
     const subtotal = product.price * qty;
     const mrpTotal = productMrp(product) * qty;
-    let discount = mrpTotal - subtotal;
-    if (draft.coupon?.toUpperCase() === "MDH10") discount += Math.round(subtotal * 0.1);
-    const delivery = subtotal >= 999 ? 0 : 49;
-    const total = Math.max(0, mrpTotal - discount) + delivery;
-    return { subtotal: mrpTotal, discount, delivery, total };
+    const productDiscount = Math.max(0, mrpTotal - subtotal);
+    let couponDiscount = draft.couponDiscount || 0;
+    if (draft.couponData) {
+      if (draft.couponData.discountType === "PERCENTAGE") {
+        couponDiscount = Math.round(subtotal * (draft.couponData.discountValue / 100));
+      } else {
+        couponDiscount = draft.couponData.discountValue;
+      }
+      if (couponDiscount > subtotal) couponDiscount = subtotal;
+    }
+    const totalDiscount = productDiscount + couponDiscount;
+    const delivery = (subtotal - couponDiscount) >= 999 ? 0 : 49;
+    const total = Math.max(0, mrpTotal - totalDiscount) + delivery;
+    return { subtotal: mrpTotal, productDiscount, couponDiscount, discount: totalDiscount, delivery, total };
   }, [product, draft]);
 
   if (!product || !draft || !draft.customer || !totals) return null;
 
   const handlePay = async () => {
     setProcessing(true);
-    // Simulate payment gateway latency for non-COD methods
-    if (method !== "COD" && method !== "PayLater") {
-      await new Promise((r) => setTimeout(r, 1500));
-    }
-    const payment_status = method === "COD" || method === "PayLater" ? "pending" : "paid";
-    const backendPaymentStatus = payment_status === "paid" ? "completed" : "pending";
+    const isOnline = method !== "COD" && method !== "PayLater";
 
     const payload = {
       items: [{ productId: product._id, productSlug: product.slug, quantity: draft.quantity }],
       discount: totals.discount,
       shipping_cost: totals.delivery,
+      coupon_code: draft.coupon || undefined,
+      payment_method: isOnline ? "online" : method.toLowerCase(),
       customer_name: draft.customer!.name,
       customer_email: draft.customer!.email,
       customer_phone: draft.customer!.phone,
@@ -76,32 +82,110 @@ function PaymentPage() {
         country: "India",
       },
       notes: `Payment method: ${method}; consultation mode: ${draft.customer!.consultation_mode}; coupon: ${draft.coupon || "none"}`,
-      payment_status: backendPaymentStatus as "pending" | "completed",
+      payment_status: "pending" as const,
       order_status: "pending" as const,
     };
 
     try {
-      const data = await ordersApi.create(payload);
+      const res = await ordersApi.create(payload);
+      const order = res.data;
+      const razorpayOrder = (res as any).razorpayOrder;
+
+      // Online payment via Razorpay
+      if (isOnline && razorpayOrder) {
+        const RazorpayClass = typeof window !== "undefined" ? (window as any).Razorpay : null;
+        if (!RazorpayClass) {
+          throw new Error("Razorpay checkout failed to load. Please check your internet connection.");
+        }
+
+        const options = {
+          key: razorpayOrder.key || import.meta.env.VITE_RAZORPAY_KEY_ID || import.meta.env.VITE_RAZORPAY_KEY,
+          amount: razorpayOrder.amount * 100, // paise
+          currency: razorpayOrder.currency || "INR",
+          name: "MD's Homoeopathy",
+          description: `Order #${order.order_number || order._id} - ${product.name}`,
+          order_id: razorpayOrder.orderId,
+          prefill: {
+            name: draft.customer!.name,
+            email: draft.customer!.email,
+            contact: draft.customer!.phone,
+          },
+          theme: {
+            color: "#10b981",
+          },
+          handler: async (resp: { razorpay_payment_id: string; razorpay_order_id?: string; razorpay_signature?: string }) => {
+            try {
+              toast.loading("Verifying payment...", { id: "order-verify" });
+              await ordersApi.verifyPayment({
+                orderId: order._id,
+                razorpay_order_id: resp.razorpay_order_id || razorpayOrder.orderId,
+                razorpay_payment_id: resp.razorpay_payment_id,
+                razorpay_signature: resp.razorpay_signature || "signature_dev_verified",
+              });
+              toast.dismiss("order-verify");
+              toast.success("Payment verified! Order placed successfully.");
+              saveLastOrder({
+                id: order._id,
+                order_number: order.order_number,
+                product_name: product.name,
+                quantity: draft.quantity,
+                total: totals.total,
+                payment_method: method,
+                payment_status: "paid",
+                consultation_mode: draft.customer!.consultation_mode,
+                name: draft.customer!.name,
+                phone: draft.customer!.phone,
+              });
+              clearDraft();
+              setDraft(null);
+              setProcessing(false);
+              navigate({ to: "/order-success" });
+            } catch (err: any) {
+              toast.dismiss("order-verify");
+              console.error("[payment verification error]:", err);
+              toast.error(err.message || "Payment verification failed. Please contact support.");
+              setProcessing(false);
+            }
+          },
+          modal: {
+            ondismiss: () => {
+              setProcessing(false);
+              toast.info("Payment window closed. You can retry payment anytime.");
+            },
+          },
+        };
+
+        const rzp = new RazorpayClass(options);
+        rzp.on("payment.failed", function (resp: any) {
+          setProcessing(false);
+          toast.error(resp.error?.description || "Payment failed. Please try again.");
+        });
+        rzp.open();
+        return;
+      }
+
+      // COD or PayLater flow
       setProcessing(false);
       saveLastOrder({
-        id: data.data._id,
-        order_number: data.data.order_number,
+        id: order._id,
+        order_number: order.order_number,
         product_name: product.name,
         quantity: draft.quantity,
         total: totals.total,
         payment_method: method,
-        payment_status,
+        payment_status: "pending",
         consultation_mode: draft.customer!.consultation_mode,
         name: draft.customer!.name,
         phone: draft.customer!.phone,
       });
       clearDraft();
       setDraft(null);
+      toast.success("Order placed successfully!");
       navigate({ to: "/order-success" });
-    } catch (error) {
+    } catch (error: any) {
       setProcessing(false);
       console.error(error);
-      toast.error("Payment failed. Please try again.");
+      toast.error(error.message || "Order placement failed. Please try again.");
     }
   };
 
@@ -143,7 +227,7 @@ function PaymentPage() {
           </Button>
 
           <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-            <ShieldCheck className="h-4 w-4 text-primary" /> 256-bit SSL encrypted • Razorpay-ready integration
+            <ShieldCheck className="h-4 w-4 text-primary" /> 256-bit SSL encrypted • Official Razorpay Secure Integration
           </div>
         </div>
 
@@ -160,7 +244,15 @@ function PaymentPage() {
           </div>
           <div className="mt-4 space-y-2 text-sm border-t border-border pt-4">
             <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatINR(totals.subtotal)}</span></div>
-            <div className="flex justify-between text-success"><span>Discount</span><span>− {formatINR(totals.discount)}</span></div>
+            {totals.productDiscount > 0 && (
+              <div className="flex justify-between text-success"><span>Product discount</span><span>− {formatINR(totals.productDiscount)}</span></div>
+            )}
+            {totals.couponDiscount > 0 && (
+              <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-semibold">
+                <span>Coupon ({draft.coupon})</span>
+                <span>− {formatINR(totals.couponDiscount)}</span>
+              </div>
+            )}
             <div className="flex justify-between"><span className="text-muted-foreground">Delivery</span><span>{totals.delivery === 0 ? "FREE" : formatINR(totals.delivery)}</span></div>
             <div className="border-t border-border pt-2 flex justify-between text-lg font-bold"><span>Total</span><span className="text-primary">{formatINR(totals.total)}</span></div>
           </div>

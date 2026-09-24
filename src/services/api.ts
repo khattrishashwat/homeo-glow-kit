@@ -196,6 +196,8 @@ export type OrderPayload = {
   items: Array<{ productId?: string; productSlug?: string; quantity: number }>;
   shipping_cost: number;
   discount: number;
+  coupon_code?: string;
+  payment_method?: string;
   customer_name: string;
   customer_email: string;
   customer_phone: string;
@@ -209,6 +211,22 @@ export type OrderPayload = {
   notes?: string;
   order_status: "pending" | "processing";
   payment_status: "pending" | "completed";
+};
+
+export type CouponValidationResult = {
+  success: boolean;
+  couponCode: string;
+  couponId: string;
+  description?: string;
+  discountType: "PERCENTAGE" | "FIXED";
+  discountValue: number;
+  discountAmount: number;
+  subtotal: number;
+  finalAmount: number;
+  usageCount: number;
+  perCustomerLimit: number;
+  remainingUsage: number;
+  message?: string;
 };
 
 const buildUrl = (path: string, params?: Record<string, string | number | boolean | undefined>) => {
@@ -303,9 +321,33 @@ export const contactApi = {
     }),
 };
 
+export const couponsApi = {
+  validate: (payload: {
+    code: string;
+    email?: string;
+    mobile?: string;
+    items?: Array<{ productId?: string; productSlug?: string; quantity?: number; price?: number }>;
+    subtotal?: number;
+  }) =>
+    apiRequest<CouponValidationResult>("/api/web/coupons/validate", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+};
+
 export const ordersApi = {
   create: (payload: OrderPayload) =>
-    apiRequest<{ _id: string; order_number: string }>("/api/web/orders", {
+    apiRequest<{ _id: string; order_number: string } & { razorpayOrder?: RazorpayOrderInfo }>("/api/web/orders", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }) as Promise<ApiResponse<{ _id: string; order_number: string }> & { razorpayOrder?: RazorpayOrderInfo }>,
+  verifyPayment: (payload: {
+    orderId: string;
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+  }) =>
+    apiRequest<Record<string, unknown>>("/api/web/orders/verify-payment", {
       method: "POST",
       body: JSON.stringify(payload),
     }),

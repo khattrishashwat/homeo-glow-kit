@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MessageCircle, Minus, Plus, Tag, ShieldCheck } from "lucide-react";
+import { MessageCircle, Minus, Plus, Tag, ShieldCheck, Loader2, X } from "lucide-react";
 import { Section } from "@/components/site/Section";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useProductBySlug, useProducts } from "@/hooks/useProducts";
-import { assetUrl, formatINR, productMrp, productSummary } from "@/services/api";
+import { assetUrl, formatINR, productMrp, productSummary, couponsApi, type CouponValidationResult } from "@/services/api";
 import { saveDraft, loadDraft } from "@/lib/order-store";
 import { whatsappLink } from "@/components/site/FloatingActions";
 import { toast } from "sonner";
@@ -66,6 +66,9 @@ function CheckoutPage() {
   const [qty, setQty] = useState(search.qty || draft?.quantity || 1);
   const [coupon, setCoupon] = useState(draft?.coupon || "");
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(draft?.coupon || null);
+  const [couponDiscount, setCouponDiscount] = useState<number>(draft?.couponDiscount || 0);
+  const [couponData, setCouponData] = useState<CouponValidationResult["data"] | null>(draft?.couponData || null);
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
 
   const form = useForm<CustomerForm>({
     resolver: zodResolver(customerSchema),
@@ -79,26 +82,88 @@ function CheckoutPage() {
     if (!product) return null;
     const subtotal = product.price * qty;
     const mrpTotal = productMrp(product) * qty;
-    let discount = mrpTotal - subtotal;
-    if (appliedCoupon?.toUpperCase() === "MDH10") discount += Math.round(subtotal * 0.1);
-    const delivery = subtotal >= 999 ? 0 : 49;
-    const total = Math.max(0, mrpTotal - discount) + delivery;
-    return { subtotal: mrpTotal, discount, delivery, total };
-  }, [product, qty, appliedCoupon]);
-
-  const applyCoupon = () => {
-    if (!coupon.trim()) return;
-    if (coupon.trim().toUpperCase() === "MDH10") {
-      setAppliedCoupon(coupon.trim());
-      toast.success("Coupon applied: 10% extra off");
-    } else {
-      toast.error("Invalid coupon code");
+    const productDiscount = Math.max(0, mrpTotal - subtotal);
+    
+    // Calculate coupon discount
+    let cDiscount = 0;
+    if (couponData) {
+      if (couponData.discountType === "PERCENTAGE") {
+        cDiscount = Math.round(subtotal * (couponData.discountValue / 100));
+        if (couponData.maximumDiscount && cDiscount > couponData.maximumDiscount) {
+          cDiscount = couponData.maximumDiscount;
+        }
+      } else {
+        cDiscount = couponData.discountValue;
+      }
+      if (cDiscount > subtotal) {
+        cDiscount = subtotal;
+      }
+    } else if (couponDiscount > 0) {
+      cDiscount = couponDiscount;
     }
+
+    const totalDiscount = productDiscount + cDiscount;
+    const delivery = (subtotal - cDiscount) >= 999 ? 0 : 49;
+    const total = Math.max(0, mrpTotal - totalDiscount) + delivery;
+    return { subtotal: mrpTotal, productDiscount, couponDiscount: cDiscount, discount: totalDiscount, delivery, total };
+  }, [product, qty, couponData, couponDiscount]);
+
+  const applyCoupon = async () => {
+    if (!coupon.trim()) return;
+    if (!product) return;
+
+    const email = form.getValues("email")?.trim();
+    const phone = form.getValues("phone")?.trim();
+    const subtotal = product.price * qty;
+
+    try {
+      setValidatingCoupon(true);
+      const res = await couponsApi.validate({
+        code: coupon.trim().toUpperCase(),
+        email: email || undefined,
+        mobile: phone || undefined,
+        items: [{ productId: product._id, productSlug: product.slug, quantity: qty, price: product.price }],
+        subtotal,
+      });
+
+      if (res.success && res.data) {
+        setAppliedCoupon(res.data.couponCode);
+        setCouponDiscount(res.data.discountAmount);
+        setCouponData(res.data);
+        toast.success(`Coupon applied! You saved ${formatINR(res.data.discountAmount)}`);
+      } else {
+        toast.error(res.message || "Invalid coupon code");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to apply coupon");
+    } finally {
+      setValidatingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setCouponData(null);
+    setCoupon("");
+    toast.info("Coupon removed");
   };
 
   const onSubmit = (values: CustomerForm) => {
     if (!product) return;
-    saveDraft({ productSlug: product.slug, quantity: qty, coupon: appliedCoupon || undefined, customer: values });
+    saveDraft({
+      productSlug: product.slug,
+      quantity: qty,
+      coupon: appliedCoupon || undefined,
+      couponDiscount: totals?.couponDiscount || 0,
+      couponData: couponData ? {
+        couponCode: couponData.couponCode,
+        discountType: couponData.discountType,
+        discountValue: couponData.discountValue,
+        discountAmount: totals?.couponDiscount || couponData.discountAmount,
+      } : undefined,
+      customer: values,
+    });
     navigate({ to: "/payment" });
   };
 
@@ -259,30 +324,80 @@ function CheckoutPage() {
         <aside className="lg:sticky lg:top-24 h-fit rounded-3xl bg-card border border-border shadow-card p-6 space-y-4">
           <h2 className="font-display text-xl font-bold">Price Details</h2>
 
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                value={coupon} 
-                onChange={(e) => setCoupon(e.target.value)} 
-                placeholder="Coupon code (try MDH10)" 
-                className="pl-9" 
-              />
+          {appliedCoupon ? (
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
+              <div className="flex items-center gap-2.5">
+                <div className="h-8 w-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                  <Tag className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5 font-mono font-bold text-sm text-emerald-700 dark:text-emerald-300">
+                    <span>{appliedCoupon}</span>
+                    <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-200/70 dark:bg-emerald-800/60 px-1.5 py-0.5 rounded-full">
+                      APPLIED
+                    </span>
+                  </div>
+                  <div className="text-xs text-emerald-600 dark:text-emerald-400">
+                    Extra {formatINR(totals.couponDiscount)} discount
+                  </div>
+                </div>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={removeCoupon}
+                className="h-8 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive px-2"
+              >
+                <X className="h-3.5 w-3.5 mr-1" /> Remove
+              </Button>
             </div>
-            <Button type="button" variant="soft" onClick={applyCoupon}>
-              Apply
-            </Button>
-          </div>
+          ) : (
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  value={coupon} 
+                  onChange={(e) => setCoupon(e.target.value.toUpperCase())} 
+                  placeholder="Enter coupon code" 
+                  className="pl-9 uppercase font-mono tracking-wider" 
+                  disabled={validatingCoupon}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      applyCoupon();
+                    }
+                  }}
+                />
+              </div>
+              <Button 
+                type="button" 
+                variant="soft" 
+                onClick={applyCoupon}
+                disabled={validatingCoupon || !coupon.trim()}
+              >
+                {validatingCoupon ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply"}
+              </Button>
+            </div>
+          )}
 
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Product total</span>
               <span>{formatINR(totals.subtotal)}</span>
             </div>
-            <div className="flex justify-between text-success">
-              <span>Discount</span>
-              <span>− {formatINR(totals.discount)}</span>
-            </div>
+            {totals.productDiscount > 0 && (
+              <div className="flex justify-between text-success">
+                <span>Product discount</span>
+                <span>− {formatINR(totals.productDiscount)}</span>
+              </div>
+            )}
+            {totals.couponDiscount > 0 && (
+              <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-semibold">
+                <span>Coupon discount ({appliedCoupon})</span>
+                <span>− {formatINR(totals.couponDiscount)}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span className="text-muted-foreground">Delivery</span>
               <span>{totals.delivery === 0 ? "FREE" : formatINR(totals.delivery)}</span>

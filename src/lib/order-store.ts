@@ -3,6 +3,13 @@ export type CheckoutDraft = {
   productSlug: string;
   quantity: number;
   coupon?: string;
+  couponDiscount?: number;
+  couponData?: {
+    code: string;
+    discountType: string;
+    discountValue: number;
+    discountAmount: number;
+  };
   customer?: {
     name: string;
     phone: string;
