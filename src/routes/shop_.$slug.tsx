@@ -21,6 +21,7 @@ import { useProductBySlug, useProducts } from "@/hooks/useProducts";
 import { assetUrl, discountPercent, formatINR, productMrp } from "@/services/api";
 import { whatsappLink } from "@/components/site/FloatingActions";
 import { ProductReviews } from "@/components/site/ProductReviews";
+import ReactMarkdown from "react-markdown";
 
 export const Route = createFileRoute("/shop_/$slug")({
   component: ProductDetailPage,
@@ -297,16 +298,17 @@ function ProductDetailPage() {
           <div className="space-y-6">
             <div className="rounded-[2rem] border border-border bg-card p-8">
               <h2 className="font-display text-2xl font-bold">Product Overview</h2>
-              {p.description ? (
-                <div 
-                  className="mt-4 prose prose-sm prose-gray max-w-none [&_ul]:list-disc [&_ul]:pl-5 [&_li]:mb-1 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-4 [&_h3]:mb-2 [&_strong]:text-foreground"
-                  dangerouslySetInnerHTML={{ __html: p.description }}
-                />
-              ) : (
-                <p className="mt-4 text-sm leading-7 text-muted-foreground">
-                  No description available.
-                </p>
-              )}
+             {p.description ? (
+  <div className="mt-4 prose prose-sm prose-gray max-w-none">
+    <ReactMarkdown>
+      {p.description}
+    </ReactMarkdown>
+  </div>
+) : (
+  <p className="mt-4 text-sm leading-7 text-muted-foreground">
+    No description available.
+  </p>
+)}
               
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
                 <div className="rounded-3xl bg-leaf-soft p-5">
