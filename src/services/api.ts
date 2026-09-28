@@ -292,7 +292,8 @@ export const categoriesApi = {
 };
 
 export const slotsApi = {
-  available: () => apiRequest<Slot[]>("/api/web/slots"),
+  available: (params?: { type?: string; date?: string; daysAhead?: number }) =>
+    apiRequest<Slot[]>("/api/web/slots", {}, params),
 };
 
 export const appointmentsApi = {

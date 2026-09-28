@@ -63,7 +63,7 @@ const why = [
   "Root cause approach, not just symptoms",
   "Zero side effects, 100% natural",
   "Experienced & certified doctors",
-  "Online consultation across India",
+  "Online consultation across Global",
   "Doorstep medicine delivery",
 ];
 

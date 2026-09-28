@@ -13,6 +13,12 @@ type ChatMessage = {
 
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
+export function openChatbot(initialMessage?: string) {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("open-faq-chatbot", { detail: { message: initialMessage } }));
+  }
+}
+
 export function FaqChatbot() {
   const [open, setOpen] = useState(false);
   const [typing, setTyping] = useState(false);
@@ -21,6 +27,26 @@ export function FaqChatbot() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Listen for programmatic open requests from other components
+  useEffect(() => {
+    const handleOpen = (e: Event) => {
+      setOpen(true);
+      const customEvent = e as CustomEvent<{ message?: string }>;
+      if (customEvent?.detail?.message) {
+        setInputMessage(customEvent.detail.message);
+      }
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    };
+
+    window.addEventListener("open-faq-chatbot", handleOpen);
+    return () => {
+      window.removeEventListener("open-faq-chatbot", handleOpen);
+    };
+  }, []);
 
   // Load chatbot configuration from backend
   useEffect(() => {
@@ -250,6 +276,7 @@ export function FaqChatbot() {
           <div className="border-t border-border p-3 bg-card">
             <div className="flex items-center gap-2">
               <input
+                ref={inputRef}
                 type="text"
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}

@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MessageCircle, Minus, Plus, Tag, ShieldCheck, Loader2, X } from "lucide-react";
+import { Bot, Minus, Plus, Tag, ShieldCheck, Loader2, X } from "lucide-react";
 import { Section } from "@/components/site/Section";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useProductBySlug, useProducts } from "@/hooks/useProducts";
 import { assetUrl, formatINR, productMrp, productSummary, couponsApi, type CouponValidationResult } from "@/services/api";
 import { saveDraft, loadDraft } from "@/lib/order-store";
-import { whatsappLink } from "@/components/site/FloatingActions";
+import { openChatbot } from "@/components/site/FaqChatbot";
 import { toast } from "sonner";
 
 const searchSchema = z.object({
@@ -310,10 +310,14 @@ function CheckoutPage() {
                 <Button type="submit" variant="hero" size="lg" className="flex-1">
                   Continue to Payment
                 </Button>
-                <Button asChild variant="whatsapp" size="lg" type="button">
-                  <a href={whatsappLink("Hi, I need help with my order checkout.")} target="_blank" rel="noreferrer">
-                    <MessageCircle className="h-4 w-4" /> WhatsApp Support
-                  </a>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  onClick={() => openChatbot("Hi, I need help with my order checkout.")}
+                  className="gap-2 border-primary/30 text-foreground hover:bg-leaf-soft hover:text-primary transition-colors"
+                >
+                  <Bot className="h-4 w-4 text-primary" /> Chatbot Support
                 </Button>
               </div>
             </form>

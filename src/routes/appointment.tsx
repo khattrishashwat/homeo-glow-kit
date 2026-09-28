@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,6 +44,18 @@ const bookingSchema = z
       message: "Please describe your custom concern",
       path: ["customConcern"],
     }
+  )
+  .refine(
+    (val) => {
+      if (val.mode === "Online" && val.paymentMethod === "offline") {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Online Consultation requires online payment via Razorpay",
+      path: ["paymentMethod"],
+    }
   );
 
 export const Route = createFileRoute("/appointment")({
@@ -69,8 +81,30 @@ const problems = [
   { icon: HelpCircle, name: "Other" },
 ];
 
-const formatDay = (value: string) =>
-  new Intl.DateTimeFormat("en-IN", { weekday: "short", day: "numeric", month: "short" }).format(new Date(value));
+const getTodayIST = () =>
+  new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
+
+const formatDay = (value: string) => {
+  if (!value) return "";
+  const parts = value.split("-").map(Number);
+  if (parts.length !== 3) return value;
+  const [y, m, d] = parts;
+  const date = new Date(y, m - 1, d);
+
+  const todayStr = getTodayIST();
+  const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  const tomorrowStr = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(tomorrow);
+
+  const formatted = new Intl.DateTimeFormat("en-IN", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  }).format(date);
+
+  if (value === todayStr) return `Today (${formatted})`;
+  if (value === tomorrowStr) return `Tomorrow (${formatted})`;
+  return formatted;
+};
 
 const formatTime = (value: string) =>
   new Intl.DateTimeFormat("en-IN", { hour: "numeric", minute: "2-digit", hour12: true }).format(new Date(value));
@@ -138,29 +172,78 @@ function AppointmentPage() {
   const [done, setDone] = useState(false);
   const bookingRef = useRef<HTMLDivElement>(null);
 
+  const consultationType = data.mode === "Online" ? "online" : "offline";
+
   const { data: slotResponse, isLoading: loadingSlots, error: slotsError } = useQuery({
-    queryKey: ["available-slots"],
+    queryKey: ["available-slots", consultationType],
     queryFn: async () => {
-      const response = await slotsApi.available();
+      const response = await slotsApi.available({ type: consultationType });
       return response.data;
     },
     refetchInterval: 15000,
   });
 
-  const slotsByDay = (slotResponse || []).reduce<Record<string, Slot[]>>((acc, slot) => {
-    const day = new Date(slot.startTime).toISOString().slice(0, 10);
-    acc[day] = [...(acc[day] || []), slot].sort(
-      (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
-    );
-    return acc;
-  }, {});
-  const days = Object.keys(slotsByDay).sort().slice(0, 7);
+  const slotsByDay = useMemo(() => {
+    const now = Date.now();
+    return (slotResponse || []).reduce<Record<string, Slot[]>>((acc, slot) => {
+      // Exclude past slots or unavailable slots
+      if (new Date(slot.startTime).getTime() <= now || !slot.available) {
+        return acc;
+      }
+      // Group by Indian local date (YYYY-MM-DD)
+      const day = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date(slot.startTime));
+      acc[day] = [...(acc[day] || []), slot].sort(
+        (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+      );
+      return acc;
+    }, {});
+  }, [slotResponse]);
+
+  // All available dates starting from current date onwards
+  const days = useMemo(() => {
+    const todayStr = getTodayIST();
+    return Object.keys(slotsByDay)
+      .filter((day) => day >= todayStr)
+      .sort();
+  }, [slotsByDay]);
+
+  // Automatically pre-select the current date (or first available upcoming date)
+  useEffect(() => {
+    if (days.length > 0 && (!data.day || !days.includes(data.day))) {
+      setData((prev) => ({
+        ...prev,
+        day: days[0],
+        slot: "",
+        slotId: "",
+      }));
+    }
+  }, [days, data.day]);
 
   const update = (k: string, v: string) =>
-    setData((d) => (k === "day" ? { ...d, day: v, slot: "", slotId: "" } : { ...d, [k]: v }));
+    setData((d) => {
+      if (k === "mode") {
+        const isOnline = v === "Online";
+        return {
+          ...d,
+          mode: v as "Online" | "Clinic Visit",
+          day: "",
+          slot: "",
+          slotId: "",
+          paymentMethod: isOnline ? "online" : d.paymentMethod,
+        };
+      }
+      return k === "day" ? { ...d, day: v, slot: "", slotId: "" } : { ...d, [k]: v };
+    });
 
   const handleSelectInitialMode = (mode: "Online" | "Clinic Visit") => {
-    setData((d) => ({ ...d, mode }));
+    setData((d) => ({
+      ...d,
+      mode,
+      day: "",
+      slot: "",
+      slotId: "",
+      paymentMethod: mode === "Online" ? "online" : d.paymentMethod,
+    }));
     setHasChosenInitialMode(true);
     setTimeout(() => {
       bookingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -184,7 +267,12 @@ function AppointmentPage() {
     }
     if (step === 3) return data.mode === "Online" || data.mode === "Clinic Visit";
     if (step === 4) return !!data.day && !!data.slot && !!data.slotId;
-    if (step === 5) return data.paymentMethod === "online" || data.paymentMethod === "offline";
+    if (step === 5) {
+      if (data.mode === "Online") {
+        return data.paymentMethod === "online";
+      }
+      return data.paymentMethod === "online" || data.paymentMethod === "offline";
+    }
     return true;
   };
 
@@ -700,29 +788,47 @@ function AppointmentPage() {
                       </p>
 
                       <div className="mt-6">
-                        <Label className="text-xs uppercase tracking-wide text-muted-foreground">Select Date</Label>
-                        <div className="mt-2 flex gap-2 overflow-x-auto pb-2">
+                        <div className="flex items-center justify-between mb-2">
+                          <Label className="text-xs uppercase tracking-wide text-muted-foreground">Select Date</Label>
+                          {days.length > 0 && (
+                            <span className="text-[11px] text-muted-foreground font-medium">
+                              {days.length} available date{days.length === 1 ? "" : "s"}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
                           {loadingSlots && (
-                            <span className="px-5 py-3 text-sm text-muted-foreground">Loading dates...</span>
+                            <span className="px-5 py-3 text-sm text-muted-foreground">Loading available dates...</span>
                           )}
                           {slotsError && (
                             <span className="px-5 py-3 text-sm text-destructive">Slots unavailable</span>
                           )}
-                          {days.map((d) => (
-                            <button
-                              key={d}
-                              type="button"
-                              onClick={() => update("day", d)}
-                              className={cn(
-                                "px-5 py-3 rounded-xl border-2 text-sm font-semibold whitespace-nowrap transition",
-                                data.day === d
-                                  ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                                  : "border-border hover:border-primary/40"
-                              )}
-                            >
-                              {formatDay(d)}
-                            </button>
-                          ))}
+                          {days.map((d) => {
+                            const count = (slotsByDay[d] || []).length;
+                            return (
+                              <button
+                                key={d}
+                                type="button"
+                                onClick={() => update("day", d)}
+                                className={cn(
+                                  "px-5 py-2.5 rounded-xl border-2 text-sm font-semibold whitespace-nowrap transition cursor-pointer flex flex-col items-center min-w-[125px]",
+                                  data.day === d
+                                    ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                                    : "border-border bg-card hover:border-primary/40 text-foreground"
+                                )}
+                              >
+                                <span>{formatDay(d)}</span>
+                                <span
+                                  className={cn(
+                                    "text-[11px] font-normal mt-0.5",
+                                    data.day === d ? "text-primary-foreground/90" : "text-muted-foreground"
+                                  )}
+                                >
+                                  {count} slot{count === 1 ? "" : "s"}
+                                </span>
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
 
@@ -772,7 +878,9 @@ function AppointmentPage() {
                     <div className="animate-fade-up">
                       <h2 className="font-display text-2xl font-bold">Payment Method</h2>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Select how you would like to complete payment for your appointment.
+                        {data.mode === "Online"
+                          ? "Online video consultations require pre-payment via secure Razorpay checkout."
+                          : "Select how you would like to complete payment for your appointment."}
                       </p>
 
                       <div className="mt-6 grid sm:grid-cols-2 gap-4">
@@ -783,7 +891,8 @@ function AppointmentPage() {
                             "p-6 rounded-2xl border-2 text-left cursor-pointer transition-all hover:-translate-y-1 flex flex-col justify-between",
                             data.paymentMethod === "online"
                               ? "border-primary bg-leaf-soft shadow-glow"
-                              : "border-border hover:border-primary/40"
+                              : "border-border hover:border-primary/40",
+                            data.mode === "Online" && "sm:col-span-2"
                           )}
                         >
                           <div>
@@ -804,34 +913,43 @@ function AppointmentPage() {
                           </div>
                         </div>
 
-                        {/* Offline Payment Option */}
-                        <div
-                          onClick={() => update("paymentMethod", "offline")}
-                          className={cn(
-                            "p-6 rounded-2xl border-2 text-left cursor-pointer transition-all hover:-translate-y-1 flex flex-col justify-between",
-                            data.paymentMethod === "offline"
-                              ? "border-primary bg-leaf-soft shadow-glow"
-                              : "border-border hover:border-primary/40"
-                          )}
-                        >
-                          <div>
-                            <div className="flex items-center justify-between">
-                              <Building2 className={cn("h-7 w-7", data.paymentMethod === "offline" ? "text-primary" : "text-muted-foreground")} />
-                              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-                                Pay Later
-                              </span>
+                        {/* Offline Payment Option: ONLY FOR CLINIC VISIT */}
+                        {data.mode === "Clinic Visit" && (
+                          <div
+                            onClick={() => update("paymentMethod", "offline")}
+                            className={cn(
+                              "p-6 rounded-2xl border-2 text-left cursor-pointer transition-all hover:-translate-y-1 flex flex-col justify-between",
+                              data.paymentMethod === "offline"
+                                ? "border-primary bg-leaf-soft shadow-glow"
+                                : "border-border hover:border-primary/40"
+                            )}
+                          >
+                            <div>
+                              <div className="flex items-center justify-between">
+                                <Building2 className={cn("h-7 w-7", data.paymentMethod === "offline" ? "text-primary" : "text-muted-foreground")} />
+                                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                                  Pay at Clinic
+                                </span>
+                              </div>
+                              <h3 className="mt-3 font-semibold text-lg">Pay at Clinic (Offline)</h3>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                Reserve your slot now and pay during your in-person clinic visit.
+                              </p>
                             </div>
-                            <h3 className="mt-3 font-semibold text-lg">Offline Payment</h3>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              Reserve your slot now and pay during your consultation or in-person at clinic visit.
-                            </p>
+                            <div className="mt-4 pt-3 border-t border-border/60 flex items-center justify-between text-xs">
+                              <span className="font-semibold text-foreground">Payable at Clinic:</span>
+                              <span className="font-bold text-foreground text-base">₹{fee}</span>
+                            </div>
                           </div>
-                          <div className="mt-4 pt-3 border-t border-border/60 flex items-center justify-between text-xs">
-                            <span className="font-semibold text-foreground">Payable at Consultation:</span>
-                            <span className="font-bold text-foreground text-base">₹{fee}</span>
-                          </div>
-                        </div>
+                        )}
                       </div>
+
+                      {data.mode === "Online" && (
+                        <div className="mt-4 p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 flex items-center gap-2 text-xs text-amber-800 dark:text-amber-300">
+                          <ShieldCheck className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                          <span>Note: Offline / cash payment is not available for online consultations. Video consultation appointments are confirmed immediately upon online payment.</span>
+                        </div>
+                      )}
                     </div>
                   )}
 

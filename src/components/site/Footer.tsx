@@ -25,7 +25,7 @@ export function Footer() {
         </Link>
           </div>
           <p className="text-sm text-muted-foreground text-pretty">
-            {settings?.site_description || "Personalized Homoeopathy  treatment for chronic and acute conditions. Trusted by 1000+ patients."}
+            {settings?.site_description || "Personalized Homoeopathy  treatment for chronic and acute conditions. Trusted by 50000+ patients."}
           </p>
           <div className="flex gap-3 mt-5">
             {[

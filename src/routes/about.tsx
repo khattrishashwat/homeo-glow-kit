@@ -19,7 +19,7 @@ export const Route = createFileRoute("/about")({
       { title: "About MD's HOMOEOPATHY — 20+ Years of Trusted Care" },
       { name: "description", content: "Learn about our leadership, 16 medical specialties, diagnostics, pharmacy & root-cause approach to homeopathic healing." },
       { property: "og:title", content: "About MD's HOMOEOPATHY" },
-      { property: "og:description", content: "20+ years, 1000+ patients. Multi-specialty Homoeopathy with integrated diagnostics." },
+      { property: "og:description", content: "20+ years, 50000+ patients. Multi-specialty Homoeopathy with integrated diagnostics." },
     ],
   }),
   component: AboutPage,
@@ -458,6 +458,7 @@ function AboutPage() {
               <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> Mother Tinctures</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> BR Oil (Scalp Formulations)</div>
               <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> Scalp Vital Spray</div>
+              <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> Psora Dermal spary</div>
             </div>
           </div>
           <div className="bg-card rounded-3xl p-6 shadow-card border border-border space-y-4">
@@ -476,8 +477,8 @@ function AboutPage() {
         <div className="mt-12 grid md:grid-cols-3 gap-6">
           {[
             { i: Microscope, t: "Root-Cause Diagnosis", d: "We dig deeper to understand triggers, lifestyle, and emotional health." },
-            { i: Heart, t: "Personalized Care", d: "Every patient gets a remedy mix tailored to their unique constitution." },
-            { i: Leaf, t: "Gentle & Natural", d: "Zero side effects. Safe for children, elderly, and pregnant women." },
+            { i: Heart, t: "Personalized Care & Fast Recovery + Healthy Lifestyle", d: "Every patient gets a remedy mix tailored to their unique constitution." },
+            { i: Leaf, t: "Gentle & Natural + No Side Effects", d: "Zero side effects. Safe for children, elderly, and pregnant women." },
           ].map(({ i: Ic, t, d }) => (
             <div key={t} className="bg-card rounded-3xl p-6 shadow-soft">
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-leaf text-white"><Ic className="h-5 w-5" /></div>

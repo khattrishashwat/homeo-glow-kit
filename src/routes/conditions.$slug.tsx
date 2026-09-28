@@ -41,7 +41,6 @@ function ConditionDetailPage() {
     );
   }
 
-  const Icon = condition.icon;
   const others = conditions.filter((c) => c.slug !== condition.slug).slice(0, 3);
 
   return (
@@ -71,9 +70,17 @@ function ConditionDetailPage() {
           
           <div className="flex items-center gap-4">
             <div
-              className={`grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-br ${condition.color} text-white shadow-glow`}
+              className={`grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-br ${condition.color} text-white shadow-glow overflow-hidden p-2.5`}
             >
-              <Icon className="h-8 w-8" />
+              {condition.image ? (
+                <img
+                  src={condition.image}
+                  alt={condition.name}
+                  className="h-full w-full object-contain"
+                />
+              ) : (
+                <FlaskConical className="h-8 w-8" />
+              )}
             </div>
             <span className="rounded-full bg-leaf-soft px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-primary shadow-soft">
               Conditions We Heal Naturally
@@ -92,11 +99,6 @@ function ConditionDetailPage() {
               <Link to="/appointment">
                 <Calendar /> Book Appointment
               </Link>
-            </Button>
-            <Button asChild size="xl" variant="outline" className="rounded-full bg-card hover:bg-card text-whatsapp border-card shadow-soft">
-              <a href="https://wa.me/917668610031" target="_blank" rel="noreferrer">
-                <MessageCircle /> Consult on WhatsApp
-              </a>
             </Button>
           </div>
         </div>
@@ -238,30 +240,35 @@ function ConditionDetailPage() {
           Other Conditions We Treat Naturally
         </h2>
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
-          {others.map((c) => {
-            const OIcon = c.icon;
-            return (
-              <Link
-                key={c.slug}
-                to="/conditions/$slug"
-                params={{ slug: c.slug }}
-                className="group rounded-3xl bg-card p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-glow border border-border/60"
+          {others.map((c) => (
+            <Link
+              key={c.slug}
+              to="/conditions/$slug"
+              params={{ slug: c.slug }}
+              className="group rounded-3xl bg-card p-6 shadow-soft transition hover:-translate-y-1 hover:shadow-glow border border-border/60"
+            >
+              <div
+                className={`grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br ${c.color} text-white shadow-soft overflow-hidden p-2`}
               >
-                <div
-                  className={`grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br ${c.color} text-white shadow-soft`}
-                >
-                  <OIcon className="h-6 w-6" />
-                </div>
-                <h3 className="mt-4 font-semibold text-foreground">{c.name}</h3>
-                <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
-                  {c.shortDescription}
-                </p>
-                <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary">
-                  Learn more <ArrowRight className="h-3 w-3" />
-                </span>
-              </Link>
-            );
-          })}
+                {c.image ? (
+                  <img
+                    src={c.image}
+                    alt={c.name}
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <FlaskConical className="h-6 w-6" />
+                )}
+              </div>
+              <h3 className="mt-4 font-semibold text-foreground">{c.name}</h3>
+              <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                {c.shortDescription}
+              </p>
+              <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary">
+                Learn more <ArrowRight className="h-3 w-3" />
+              </span>
+            </Link>
+          ))}
         </div>
       </Section>
     </>

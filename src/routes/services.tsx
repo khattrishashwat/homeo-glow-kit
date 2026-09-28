@@ -132,7 +132,6 @@ const allSpecialties = [
     id: "cancer",
     title: "14. Cancer Supportive Care",
     desc: "Supportive homeopathic care alongside conventional therapy.",
-    disclaimer: "Homeopathy is offered as supportive care and not as a replacement for cancer treatment.",
     icon: ShieldCheck,
     color: "bg-emerald-600/10 text-emerald-700",
     tags: ["Symptom Relief", "Chemo & Radiation Support", "Pain & Fatigue", "Appetite Improvement"],
@@ -315,7 +314,8 @@ function ServicesPage() {
                 "Pure Mother Tinctures & Biochemic Formulations",
                 "BR Oil — Special Scalp Nourishment Formula",
                 "Scalp Vital Spray — Natural Hair Regrowth Support",
-                "Express Doorstep Delivery Across India",
+                "Express Doorstep Delivery Across Global",
+                "Psora Dermal Spray — For Skin & Scalp Health",
               ].map((item) => (
                 <div key={item} className="flex items-center gap-2 text-sm font-medium text-foreground">
                   <Check className="h-4 w-4 text-primary shrink-0" />
@@ -326,7 +326,7 @@ function ServicesPage() {
           </div>
 
           <div className="bg-card rounded-3xl p-8 shadow-card border border-border text-center space-y-4">
-            <h3 className="font-display text-2xl font-bold text-foreground">Need Customized Medicine?</h3>
+            <h3 className="font-display text-2xl font-bold text-foreground">Need Personalized Medicine?</h3>
             <p className="text-xs text-muted-foreground">Consult with our homeopathic doctors to receive your personalized treatment kit delivered right to your doorstep.</p>
             <div className="pt-2 flex flex-col sm:flex-row gap-3">
               <Button asChild variant="hero" className="flex-1 rounded-full">

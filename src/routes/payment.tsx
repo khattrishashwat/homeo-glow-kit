@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ShieldCheck, Loader2, CreditCard, Smartphone, Building2, Wallet, Banknote } from "lucide-react";
 import { Section } from "@/components/site/Section";
 import { Button } from "@/components/ui/button";
@@ -17,8 +17,6 @@ const METHODS = [
   { id: "UPI", label: "UPI", desc: "GPay, PhonePe, Paytm", icon: Smartphone },
   { id: "Card", label: "Card", desc: "Credit / Debit card", icon: CreditCard },
   { id: "NetBanking", label: "Net Banking", desc: "All major banks", icon: Building2 },
-  { id: "COD", label: "Cash on Delivery", desc: "Pay when you receive", icon: Banknote },
-  { id: "PayLater", label: "Pay Later", desc: "Pay after consultation", icon: Wallet },
 ] as const;
 
 function PaymentPage() {
@@ -29,7 +27,10 @@ function PaymentPage() {
   const [orderId] = useState(() => "MDH-" + Math.random().toString(36).slice(2, 8).toUpperCase());
   const { data: productData } = useProductBySlug(draft?.productSlug);
 
+  const isNavigatingRef = useRef(false);
+
   useEffect(() => {
+    if (isNavigatingRef.current) return;
     if (!draft || !draft.customer) {
       toast.error("Please complete checkout first");
       navigate({ to: "/checkout" });
@@ -92,19 +93,30 @@ function PaymentPage() {
       const razorpayOrder = (res as any).razorpayOrder;
 
       // Online payment via Razorpay
-      if (isOnline && razorpayOrder) {
+      if (isOnline) {
         const RazorpayClass = typeof window !== "undefined" ? (window as any).Razorpay : null;
         if (!RazorpayClass) {
           throw new Error("Razorpay checkout failed to load. Please check your internet connection.");
         }
 
+        const razorpayKey = (
+          razorpayOrder?.key ||
+          import.meta.env.VITE_RAZORPAY_KEY_ID ||
+          import.meta.env.VITE_RAZORPAY_KEY ||
+          ""
+        ).trim();
+
+        if (!razorpayKey) {
+          throw new Error("Razorpay Key is missing. Please contact support or try Cash on Delivery.");
+        }
+
         const options = {
-          key: razorpayOrder.key || import.meta.env.VITE_RAZORPAY_KEY_ID || import.meta.env.VITE_RAZORPAY_KEY,
-          amount: razorpayOrder.amount * 100, // paise
-          currency: razorpayOrder.currency || "INR",
+          key: razorpayKey,
+          amount: (razorpayOrder?.amount ?? totals.total) * 100, // paise
+          currency: razorpayOrder?.currency || "INR",
           name: "MD's Homoeopathy",
           description: `Order #${order.order_number || order._id} - ${product.name}`,
-          order_id: razorpayOrder.orderId,
+          ...(razorpayOrder?.orderId ? { order_id: razorpayOrder.orderId } : {}),
           prefill: {
             name: draft.customer!.name,
             email: draft.customer!.email,
@@ -118,7 +130,7 @@ function PaymentPage() {
               toast.loading("Verifying payment...", { id: "order-verify" });
               await ordersApi.verifyPayment({
                 orderId: order._id,
-                razorpay_order_id: resp.razorpay_order_id || razorpayOrder.orderId,
+                razorpay_order_id: resp.razorpay_order_id || razorpayOrder?.orderId || "direct_pay",
                 razorpay_payment_id: resp.razorpay_payment_id,
                 razorpay_signature: resp.razorpay_signature || "signature_dev_verified",
               });
@@ -136,6 +148,7 @@ function PaymentPage() {
                 name: draft.customer!.name,
                 phone: draft.customer!.phone,
               });
+              isNavigatingRef.current = true;
               clearDraft();
               setDraft(null);
               setProcessing(false);
@@ -165,7 +178,7 @@ function PaymentPage() {
       }
 
       // COD or PayLater flow
-      setProcessing(false);
+      isNavigatingRef.current = true;
       saveLastOrder({
         id: order._id,
         order_number: order.order_number,
@@ -180,6 +193,7 @@ function PaymentPage() {
       });
       clearDraft();
       setDraft(null);
+      setProcessing(false);
       toast.success("Order placed successfully!");
       navigate({ to: "/order-success" });
     } catch (error: any) {
