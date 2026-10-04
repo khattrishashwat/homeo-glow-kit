@@ -55,7 +55,7 @@ function PaymentPage() {
       if (couponDiscount > subtotal) couponDiscount = subtotal;
     }
     const totalDiscount = productDiscount + couponDiscount;
-    const delivery = (subtotal - couponDiscount) >= 999 ? 0 : 49;
+    const delivery = 80;
     const total = Math.max(0, mrpTotal - totalDiscount) + delivery;
     return { subtotal: mrpTotal, productDiscount, couponDiscount, discount: totalDiscount, delivery, total };
   }, [product, draft]);
@@ -64,14 +64,14 @@ function PaymentPage() {
 
   const handlePay = async () => {
     setProcessing(true);
-    const isOnline = method !== "COD" && method !== "PayLater";
+    const isOnline = true;
 
     const payload = {
       items: [{ productId: product._id, productSlug: product.slug, quantity: draft.quantity }],
       discount: totals.discount,
-      shipping_cost: totals.delivery,
+      shipping_cost: 80,
       coupon_code: draft.coupon || undefined,
-      payment_method: isOnline ? "online" : method.toLowerCase(),
+      payment_method: "online",
       customer_name: draft.customer!.name,
       customer_email: draft.customer!.email,
       customer_phone: draft.customer!.phone,
@@ -93,22 +93,21 @@ function PaymentPage() {
       const razorpayOrder = (res as any).razorpayOrder;
 
       // Online payment via Razorpay
-      if (isOnline) {
-        const RazorpayClass = typeof window !== "undefined" ? (window as any).Razorpay : null;
-        if (!RazorpayClass) {
-          throw new Error("Razorpay checkout failed to load. Please check your internet connection.");
-        }
+      const RazorpayClass = typeof window !== "undefined" ? (window as any).Razorpay : null;
+      if (!RazorpayClass) {
+        throw new Error("Razorpay checkout failed to load. Please check your internet connection.");
+      }
 
-        const razorpayKey = (
-          razorpayOrder?.key ||
-          import.meta.env.VITE_RAZORPAY_KEY_ID ||
-          import.meta.env.VITE_RAZORPAY_KEY ||
-          ""
-        ).trim();
+      const razorpayKey = (
+        razorpayOrder?.key ||
+        import.meta.env.VITE_RAZORPAY_KEY_ID ||
+        import.meta.env.VITE_RAZORPAY_KEY ||
+        ""
+      ).trim();
 
-        if (!razorpayKey) {
-          throw new Error("Razorpay Key is missing. Please contact support or try Cash on Delivery.");
-        }
+      if (!razorpayKey) {
+        throw new Error("Razorpay payment gateway key is missing. Please contact clinic support.");
+      }
 
         const options = {
           key: razorpayKey,
@@ -174,28 +173,6 @@ function PaymentPage() {
           toast.error(resp.error?.description || "Payment failed. Please try again.");
         });
         rzp.open();
-        return;
-      }
-
-      // COD or PayLater flow
-      isNavigatingRef.current = true;
-      saveLastOrder({
-        id: order._id,
-        order_number: order.order_number,
-        product_name: product.name,
-        quantity: draft.quantity,
-        total: totals.total,
-        payment_method: method,
-        payment_status: "pending",
-        consultation_mode: draft.customer!.consultation_mode,
-        name: draft.customer!.name,
-        phone: draft.customer!.phone,
-      });
-      clearDraft();
-      setDraft(null);
-      setProcessing(false);
-      toast.success("Order placed successfully!");
-      navigate({ to: "/order-success" });
     } catch (error: any) {
       setProcessing(false);
       console.error(error);
@@ -234,9 +211,7 @@ function PaymentPage() {
 
           <Button onClick={handlePay} disabled={processing} variant="hero" size="lg" className="w-full mt-6">
             {processing ? (<><Loader2 className="h-4 w-4 animate-spin" /> Processing payment...</>) : (
-              method === "COD" ? `Place Order — ${formatINR(totals.total)}` :
-              method === "PayLater" ? `Confirm Order — Pay Later` :
-              `Pay ${formatINR(totals.total)} Securely`
+              `Pay ${formatINR(totals.total)} Securely Online`
             )}
           </Button>
 

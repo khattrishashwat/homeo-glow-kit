@@ -42,7 +42,7 @@ type CustomerForm = z.infer<typeof customerSchema>;
 // Utility function to sanitize and render HTML safely
 const sanitizeAndRenderHTML = (html: string) => {
   if (!html) return null;
-  
+
   // Basic sanitization - remove script tags and dangerous attributes
   const sanitized = html
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
@@ -51,7 +51,7 @@ const sanitizeAndRenderHTML = (html: string) => {
     .replace(/javascript:/gi, '')
     .replace(/vbscript:/gi, '')
     .replace(/data:text\/html/gi, '');
-  
+
   return <span dangerouslySetInnerHTML={{ __html: sanitized }} />;
 };
 
@@ -67,8 +67,15 @@ function CheckoutPage() {
   const [coupon, setCoupon] = useState(draft?.coupon || "");
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(draft?.coupon || null);
   const [couponDiscount, setCouponDiscount] = useState<number>(draft?.couponDiscount || 0);
-  const [couponData, setCouponData] = useState<CouponValidationResult["data"] | null>(draft?.couponData || null);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [couponData, setCouponData] = useState<CouponValidationResult | null>(
+    draft?.couponData ? ({
+      couponCode: draft.couponData.code,
+      discountType: draft.couponData.discountType as any,
+      discountValue: draft.couponData.discountValue,
+      discountAmount: draft.couponData.discountAmount,
+    } as any) : null
+  );
 
   const form = useForm<CustomerForm>({
     resolver: zodResolver(customerSchema),
@@ -83,7 +90,7 @@ function CheckoutPage() {
     const subtotal = product.price * qty;
     const mrpTotal = productMrp(product) * qty;
     const productDiscount = Math.max(0, mrpTotal - subtotal);
-    
+
     // Calculate coupon discount
     let cDiscount = 0;
     if (couponData) {
@@ -103,7 +110,7 @@ function CheckoutPage() {
     }
 
     const totalDiscount = productDiscount + cDiscount;
-    const delivery = (subtotal - cDiscount) >= 999 ? 0 : 49;
+    const delivery = 80;
     const total = Math.max(0, mrpTotal - totalDiscount) + delivery;
     return { subtotal: mrpTotal, productDiscount, couponDiscount: cDiscount, discount: totalDiscount, delivery, total };
   }, [product, qty, couponData, couponDiscount]);
@@ -157,7 +164,7 @@ function CheckoutPage() {
       coupon: appliedCoupon || undefined,
       couponDiscount: totals?.couponDiscount || 0,
       couponData: couponData ? {
-        couponCode: couponData.couponCode,
+        code: couponData.couponCode,
         discountType: couponData.discountType,
         discountValue: couponData.discountValue,
         discountAmount: totals?.couponDiscount || couponData.discountAmount,
@@ -190,26 +197,26 @@ function CheckoutPage() {
           <div className="rounded-3xl bg-card border border-border shadow-card p-6">
             <h2 className="font-display text-xl font-bold mb-4">Order Summary</h2>
             <div className="flex gap-4 items-start">
-              <img 
-                src={assetUrl(product.image || product.gallery?.[0]?.url)} 
-                alt={product.name} 
-                className="h-20 w-20 rounded-xl object-cover bg-leaf-soft flex-shrink-0" 
+              <img
+                src={assetUrl(product.image || product.gallery?.[0]?.url)}
+                alt={product.name}
+                className="h-20 w-20 rounded-xl object-cover bg-leaf-soft flex-shrink-0"
               />
               <div className="flex-1 min-w-0">
                 <div className="font-semibold">{product.name}</div>
                 <div className="mt-2 text-primary font-bold">{formatINR(product.price)}</div>
               </div>
               <div className="flex items-center rounded-full border border-border flex-shrink-0">
-                <button 
-                  onClick={() => setQty(Math.max(1, qty - 1))} 
+                <button
+                  onClick={() => setQty(Math.max(1, qty - 1))}
                   className="p-2 hover:bg-accent rounded-l-full transition-colors"
                   aria-label="Decrease quantity"
                 >
                   <Minus className="h-4 w-4" />
                 </button>
                 <span className="w-10 text-center text-sm font-bold">{qty}</span>
-                <button 
-                  onClick={() => setQty(Math.min(20, qty + 1))} 
+                <button
+                  onClick={() => setQty(Math.min(20, qty + 1))}
                   className="p-2 hover:bg-accent rounded-r-full transition-colors"
                   aria-label="Increase quantity"
                 >
@@ -294,7 +301,7 @@ function CheckoutPage() {
                   <FormLabel>Consultation Mode</FormLabel>
                   <FormControl>
                     <RadioGroup value={field.value} onValueChange={field.onChange} className="grid grid-cols-2 gap-3">
-                      {(["Online", "Offline"] as const).map((m) => (
+                      {(["Online"] as const).map((m) => (
                         <Label key={m} className={`flex items-center gap-3 rounded-2xl border-2 p-4 cursor-pointer transition ${field.value === m ? "border-primary bg-leaf-soft" : "border-border hover:border-primary/40"}`}>
                           <RadioGroupItem value={m} />
                           <span className="font-semibold">{m}</span>
@@ -360,11 +367,11 @@ function CheckoutPage() {
             <div className="flex gap-2">
               <div className="relative flex-1">
                 <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  value={coupon} 
-                  onChange={(e) => setCoupon(e.target.value.toUpperCase())} 
-                  placeholder="Enter coupon code" 
-                  className="pl-9 uppercase font-mono tracking-wider" 
+                <Input
+                  value={coupon}
+                  onChange={(e) => setCoupon(e.target.value.toUpperCase())}
+                  placeholder="Enter coupon code"
+                  className="pl-9 uppercase font-mono tracking-wider"
                   disabled={validatingCoupon}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -374,9 +381,9 @@ function CheckoutPage() {
                   }}
                 />
               </div>
-              <Button 
-                type="button" 
-                variant="soft" 
+              <Button
+                type="button"
+                variant="soft"
                 onClick={applyCoupon}
                 disabled={validatingCoupon || !coupon.trim()}
               >

@@ -154,7 +154,11 @@ export type AppointmentPayload = {
   reason: string;
   concern?: string;
   customConcern?: string;
+  address?: string;
   city?: string;
+  pincode?: string;
+  medicineDuration?: string;
+  courierCharge?: number;
   age?: number | string;
   consultation_type: "online" | "offline";
   paymentMethod?: "online" | "offline";

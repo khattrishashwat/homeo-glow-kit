@@ -18,20 +18,76 @@ import { useQuery } from "@tanstack/react-query";
 import { appointmentsApi, slotsApi, type Slot, type AppointmentBookingResponse, type AppointmentPayload } from "@/services/api";
 
 
+const cleanPhone = (val: string) => val.trim().replace(/[\s\-\(\)]/g, "");
+
+const normalizePhone = (val: string) => {
+  const cleaned = cleanPhone(val);
+  if (/^(\+91)[6-9]\d{9}$/.test(cleaned)) return cleaned.slice(3);
+  if (/^(91)[6-9]\d{9}$/.test(cleaned)) return cleaned.slice(2);
+  if (/^0[6-9]\d{9}$/.test(cleaned)) return cleaned.slice(1);
+  return cleaned;
+};
+
+export const MEDICINE_PLANS = [
+  {
+    id: "7_days",
+    label: "7 Days Course",
+    durationTitle: "7 Days Medicine",
+    daysCount: 7,
+    price: 500,
+    badge: "Starter Course",
+    description: "Introductory course for acute symptoms & initial assessment",
+  },
+  {
+    id: "15_days",
+    label: "15 Days Course",
+    durationTitle: "15 Days Medicine",
+    daysCount: 15,
+    price: 1000,
+    badge: "Most Popular",
+    description: "Recommended standard course for sustained recovery & deep relief",
+    popular: true,
+  },
+  {
+    id: "30_days",
+    label: "1 Month Course",
+    durationTitle: "1 Month (30 Days) Medicine",
+    daysCount: 30,
+    price: 3500,
+    badge: "Complete Healing",
+    description: "Comprehensive chronic care course with complete therapeutic protocol",
+  },
+] as const;
+
 const bookingSchema = z
   .object({
     problem: z.string().min(1, "Please select a health concern"),
     customConcern: z.string().optional(),
-    name: z.string().trim().min(2, "Name is too short").max(100),
-    phone: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian mobile number"),
-    email: z.string().email("Enter a valid email").optional().or(z.literal("")),
-    age: z.coerce.number().int().min(1).max(120),
-    city: z.string().trim().optional(),
+    name: z.string().trim().min(2, "Please enter your full name (minimum 2 characters)").max(100),
+    phone: z
+      .string()
+      .trim()
+      .min(1, "Please enter your mobile number")
+      .refine((val) => {
+        const cleaned = cleanPhone(val);
+        if (/^[6-9]\d{9}$/.test(cleaned)) return true;
+        if (/^(\+91|91)[6-9]\d{9}$/.test(cleaned)) return true;
+        if (/^0[6-9]\d{9}$/.test(cleaned)) return true;
+        if (/^\+?[0-9]{7,15}$/.test(cleaned)) return true;
+        return false;
+      }, "Enter a valid 10-digit mobile number")
+      .transform((val) => normalizePhone(val)),
+    age: z.coerce.number().int().min(1, "Please enter a valid age").max(120, "Age must be valid"),
+    email: z.string().trim().email("Please enter a valid email address").max(255),
+    address: z.string().trim().min(5, "Please enter your complete address for delivery").max(255),
+    city: z.string().trim().min(2, "Please enter your city").max(100),
+    pincode: z.string().trim().regex(/^[1-9][0-9]{5}$/, "Enter a valid 6-digit postal pincode"),
     mode: z.enum(["Online", "Clinic Visit"]),
     day: z.string().min(1, "Please select an appointment date"),
     slot: z.string().min(1, "Please select a time slot"),
     slotId: z.string().min(1, "Please select a time slot"),
-    paymentMethod: z.enum(["online", "offline"]),
+    medicineDuration: z.enum(["7_days", "15_days", "30_days"]),
+    paymentMethod: z.literal("online"),
   })
   .refine(
     (val) => {
@@ -43,18 +99,6 @@ const bookingSchema = z
     {
       message: "Please describe your custom concern",
       path: ["customConcern"],
-    }
-  )
-  .refine(
-    (val) => {
-      if (val.mode === "Online" && val.paymentMethod === "offline") {
-        return false;
-      }
-      return true;
-    },
-    {
-      message: "Online Consultation requires online payment via Razorpay",
-      path: ["paymentMethod"],
     }
   );
 
@@ -161,16 +205,25 @@ function AppointmentPage() {
     phone: "",
     email: "",
     age: "",
+    address: "",
     city: "",
+    pincode: "",
     mode: "Online" as "Online" | "Clinic Visit",
     day: "",
     slot: "",
     slotId: "",
-    paymentMethod: "online" as "online" | "offline",
+    medicineDuration: "7_days" as "7_days" | "15_days" | "30_days",
+    paymentMethod: "online" as const,
   });
   const [confirmedBooking, setConfirmedBooking] = useState<AppointmentBookingResponse | null>(null);
   const [done, setDone] = useState(false);
   const bookingRef = useRef<HTMLDivElement>(null);
+
+  const selectedPlan = MEDICINE_PLANS.find((m) => m.id === data.medicineDuration) || MEDICINE_PLANS[0];
+  const medicineFee = selectedPlan.price;
+  const courierCharge = data.mode === "Online" ? 60 : 0;
+  const totalFee = medicineFee + courierCharge;
+  const fee = totalFee;
 
   const consultationType = data.mode === "Online" ? "online" : "offline";
 
@@ -222,14 +275,13 @@ function AppointmentPage() {
   const update = (k: string, v: string) =>
     setData((d) => {
       if (k === "mode") {
-        const isOnline = v === "Online";
         return {
           ...d,
           mode: v as "Online" | "Clinic Visit",
           day: "",
           slot: "",
           slotId: "",
-          paymentMethod: isOnline ? "online" : d.paymentMethod,
+          paymentMethod: "online",
         };
       }
       return k === "day" ? { ...d, day: v, slot: "", slotId: "" } : { ...d, [k]: v };
@@ -242,7 +294,7 @@ function AppointmentPage() {
       day: "",
       slot: "",
       slotId: "",
-      paymentMethod: mode === "Online" ? "online" : d.paymentMethod,
+      paymentMethod: "online",
     }));
     setHasChosenInitialMode(true);
     setTimeout(() => {
@@ -258,26 +310,31 @@ function AppointmentPage() {
       return !!data.problem;
     }
     if (step === 2) {
+      const cleanP = cleanPhone(data.phone);
+      const isPhoneValid = cleanP.length >= 10;
+      const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email.trim());
+      const isAgeValid = Number(data.age) >= 1 && Number(data.age) <= 120;
+      const isAddressValid = data.address.trim().length >= 5;
+      const isCityValid = data.city.trim().length >= 2;
+      const isPincodeValid = /^[1-9][0-9]{5}$/.test(data.pincode.trim());
+
       return (
         data.name.trim().length >= 2 &&
-        /^[6-9]\d{9}$/.test(data.phone) &&
-        Number(data.age) >= 1 &&
-        Number(data.age) <= 120
+        isPhoneValid &&
+        isAgeValid &&
+        isEmailValid &&
+        isAddressValid &&
+        isCityValid &&
+        isPincodeValid
       );
     }
     if (step === 3) return data.mode === "Online" || data.mode === "Clinic Visit";
     if (step === 4) return !!data.day && !!data.slot && !!data.slotId;
-    if (step === 5) {
-      if (data.mode === "Online") {
-        return data.paymentMethod === "online";
-      }
-      return data.paymentMethod === "online" || data.paymentMethod === "offline";
-    }
+    if (step === 5) return !!data.medicineDuration && data.paymentMethod === "online";
     return true;
   };
 
   const totalSteps = 6;
-  const fee = data.mode === "Online" ? 500 : 200;
 
   const handleConfirm = async () => {
     const parsed = bookingSchema.safeParse(data);
@@ -295,17 +352,21 @@ function AppointmentPage() {
       const payload: AppointmentPayload = {
         name: parsed.data.name,
         phone: parsed.data.phone,
-        email: parsed.data.email ? parsed.data.email : undefined,
+        email: parsed.data.email,
         slotId: parsed.data.slotId,
         reason: finalConcern,
         concern: parsed.data.problem,
         customConcern: parsed.data.problem === "Other" ? parsed.data.customConcern : undefined,
-        city: parsed.data.city ? parsed.data.city : undefined,
+        address: parsed.data.address,
+        city: parsed.data.city,
+        pincode: parsed.data.pincode,
+        medicineDuration: parsed.data.medicineDuration,
+        courierCharge,
         age: parsed.data.age,
         consultation_type: parsed.data.mode === "Online" ? "online" : "offline",
-        paymentMethod: parsed.data.paymentMethod,
-        amount: fee,
-        notes: `Age: ${parsed.data.age}${parsed.data.city ? `; City: ${parsed.data.city}` : ""}`,
+        paymentMethod: "online",
+        amount: totalFee,
+        notes: `Medicine: ${selectedPlan.durationTitle} (₹${medicineFee}) + Courier: ₹${courierCharge}; Delivery Address: ${parsed.data.address}, ${parsed.data.city} - ${parsed.data.pincode}; Age: ${parsed.data.age}`,
       };
 
       const res = await appointmentsApi.create(payload);
@@ -385,7 +446,7 @@ function AppointmentPage() {
       : data.problem || "-";
 
   const waMessage = encodeURIComponent(
-    `Hi, I want to book a Homoeopathy consultation.\nName: ${data.name || "-"}\nPhone: ${data.phone || "-"}\nConcern: ${activeConcernDisplay}\nCity: ${data.city || "-"}\nMode: ${data.mode || "-"}\nWhen: ${data.day ? formatDay(data.day) : "-"} ${data.slot || ""}\nPayment: ${data.paymentMethod === "online" ? "Online Payment" : "Offline Payment"}`.trim()
+    `Hi, I want to book a Homoeopathy consultation.\nName: ${data.name || "-"}\nPhone: ${data.phone || "-"}\nEmail: ${data.email || "-"}\nConcern: ${activeConcernDisplay}\nAddress: ${data.address || "-"}\nCity: ${data.city || "-"}\nPincode: ${data.pincode || "-"}\nMode: ${data.mode || "-"}\nMedicine: ${selectedPlan.durationTitle} (₹${medicineFee})\nCourier: ₹${courierCharge}\nTotal: ₹${totalFee}\nWhen: ${data.day ? formatDay(data.day) : "-"} ${data.slot || ""}\nPayment: Online Payment (Razorpay)`.trim()
   );
 
   return (
@@ -449,7 +510,7 @@ function AppointmentPage() {
                 <span className="font-semibold text-foreground">Video Call from Anywhere</span> – Connect with senior doctors from home
               </p>
               <p>
-                <span className="font-semibold text-foreground">Consultation Fee</span> – ₹500 (Includes 14 Days of Medicine & Courier)
+                <span className="font-semibold text-foreground">Medicines & Courier</span> – 7 Days (₹500), 15 Days (₹1000), 1 Mo (₹3500) + ₹60 Delivery
               </p>
             </div>
             <Button
@@ -464,7 +525,7 @@ function AppointmentPage() {
             </Button>
           </div>
 
-          {/* Clinic Visit / Offline Card */}
+          {/* Clinic Visit Card */}
           <div
             onClick={() => handleSelectInitialMode("Clinic Visit")}
             className={cn(
@@ -494,7 +555,7 @@ function AppointmentPage() {
                 <span className="font-semibold text-foreground">In-Person Clinic Visit</span> – Detailed in-clinic physical examination
               </p>
               <p>
-                <span className="font-semibold text-foreground">Consultation Fee</span> – ₹200 (Includes 6 Days of Medicine)
+                <span className="font-semibold text-foreground">Medicines & Care</span> – ₹ 200
               </p>
             </div>
             <Button
@@ -575,18 +636,15 @@ function AppointmentPage() {
                     </div>
                     <div className="mt-3 space-y-1.5 text-xs text-muted-foreground">
                       <div>Patient: <strong className="text-foreground">{data.name}</strong></div>
+                      <div>Contact: <strong className="text-foreground">{data.phone}</strong> · {data.email}</div>
+                      <div>Delivery Address: <strong className="text-foreground">{data.address}, {data.city} - {data.pincode}</strong></div>
                       <div>Slot: <strong className="text-foreground">{data.day ? formatDay(data.day) : ""} at {data.slot}</strong></div>
+                      <div>Medicine Course: <strong className="text-foreground">{selectedPlan.durationTitle}</strong></div>
                       <div>
                         Payment Status:{" "}
-                        {data.paymentMethod === "online" ? (
-                          <span className="font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded">
-                            Paid Online (₹{fee})
-                          </span>
-                        ) : (
-                          <span className="font-semibold text-amber-600 bg-amber-50 dark:bg-amber-950 px-2 py-0.5 rounded">
-                            Offline (Pay ₹{fee} at Consultation)
-                          </span>
-                        )}
+                        <span className="font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded">
+                          Paid Online (₹{totalFee})
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -614,11 +672,14 @@ function AppointmentPage() {
                           phone: "",
                           email: "",
                           age: "",
+                          address: "",
                           city: "",
+                          pincode: "",
                           mode: "Online",
                           day: "",
                           slot: "",
                           slotId: "",
+                          medicineDuration: "7_days",
                           paymentMethod: "online",
                         });
                       }}
@@ -678,13 +739,13 @@ function AppointmentPage() {
                     </div>
                   )}
 
-                  {/* STEP 2: Patient Details */}
+                  {/* STEP 2: Patient & Delivery Details */}
                   {step === 2 && (
                     <div className="animate-fade-up space-y-5">
                       <div>
-                        <h2 className="font-display text-2xl font-bold">Tell us about you</h2>
+                        <h2 className="font-display text-2xl font-bold">Patient & Delivery Details</h2>
                         <p className="text-sm text-muted-foreground mt-1">
-                          Provide your contact details so our doctors can connect with you.
+                          Please enter your contact and delivery address. All fields marked with * are mandatory for consultation and medicine delivery.
                         </p>
                       </div>
                       <div className="grid sm:grid-cols-2 gap-4">
@@ -699,7 +760,13 @@ function AppointmentPage() {
                           icon={Phone}
                           label="Phone (WhatsApp) *"
                           value={data.phone}
-                          onChange={(v) => update("phone", v.replace(/\D/g, "").slice(0, 10))}
+                          onChange={(v) => {
+                            let cleaned = v.replace(/[^\d+]/g, "");
+                            if (cleaned.startsWith("+91")) cleaned = cleaned.slice(3);
+                            else if (cleaned.startsWith("91") && cleaned.length > 10) cleaned = cleaned.slice(2);
+                            else if (cleaned.startsWith("0") && cleaned.length > 10) cleaned = cleaned.slice(1);
+                            update("phone", cleaned.replace(/\D/g, "").slice(0, 10));
+                          }}
                           placeholder="9876543210"
                         />
                         <Field
@@ -710,22 +777,40 @@ function AppointmentPage() {
                           placeholder="32"
                         />
                         <Field
-                          icon={MapPin}
-                          label="City (Optional)"
-                          value={data.city}
-                          onChange={(v) => update("city", v)}
-                          placeholder="e.g. Mumbai, Delhi, Bengaluru"
-                        />
-                      </div>
-                      <div>
-                        <Field
                           icon={Mail}
-                          label="Email Address (Optional)"
+                          label="Email Address *"
                           value={data.email}
                           onChange={(v) => update("email", v)}
-                          placeholder="priya@example.com (For appointment receipts)"
+                          placeholder="priya@example.com (For invoice & reminders)"
                           type="email"
                         />
+                      </div>
+
+                      {/* Delivery Address Fields */}
+                      <div className="space-y-4 pt-2 border-t border-border/60">
+                        <Field
+                          icon={MapPin}
+                          label="Address (House / Flat No, Street, Colony, Landmark) *"
+                          value={data.address}
+                          onChange={(v) => update("address", v)}
+                          placeholder="e.g. Flat 301, Krishna Enclave, Opp. Civil Lines"
+                        />
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <Field
+                            icon={Building2}
+                            label="City *"
+                            value={data.city}
+                            onChange={(v) => update("city", v)}
+                            placeholder="e.g. Mathura, Delhi, Mumbai"
+                          />
+                          <Field
+                            icon={MapPin}
+                            label="Pincode (6 Digits) *"
+                            value={data.pincode}
+                            onChange={(v) => update("pincode", v.replace(/\D/g, "").slice(0, 6))}
+                            placeholder="e.g. 281001"
+                          />
+                        </div>
                       </div>
                     </div>
                   )}
@@ -743,15 +828,15 @@ function AppointmentPage() {
                             i: Video,
                             n: "Online",
                             title: "Online Consultation",
-                            d: "Secure video call consultation from anywhere with medicines delivered",
-                            fee: "₹500 (14 Days Medicine Included)",
+                            d: "Secure video call consultation from anywhere with doorstep medicine delivery",
+                            fee: "7 Days: ₹500 · 15 Days: ₹1000 · 1 Mo: ₹3500 (+₹60 Courier)",
                           },
                           {
                             i: Building2,
                             n: "Clinic Visit",
                             title: "Clinic Visit",
-                            d: "Meet Dr. in-person at the clinic for physical checkup",
-                            fee: "₹200 (6 Days Medicine Included)",
+                            d: "Meet Dr. in-person at Mathura clinic for physical checkup & remedies",
+                            fee: "7 Days: ₹500 · 15 Days: ₹1000 · 1 Mo: ₹3500 (In-Clinic Pickup)",
                           },
                         ].map((o) => (
                           <button
@@ -873,83 +958,121 @@ function AppointmentPage() {
                     </div>
                   )}
 
-                  {/* STEP 5: Payment Method */}
+                  {/* STEP 5: Medicine Duration & Payment Method */}
                   {step === 5 && (
-                    <div className="animate-fade-up">
-                      <h2 className="font-display text-2xl font-bold">Payment Method</h2>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {data.mode === "Online"
-                          ? "Online video consultations require pre-payment via secure Razorpay checkout."
-                          : "Select how you would like to complete payment for your appointment."}
-                      </p>
-
-                      <div className="mt-6 grid sm:grid-cols-2 gap-4">
-                        {/* Online Payment Option */}
-                        <div
-                          onClick={() => update("paymentMethod", "online")}
-                          className={cn(
-                            "p-6 rounded-2xl border-2 text-left cursor-pointer transition-all hover:-translate-y-1 flex flex-col justify-between",
-                            data.paymentMethod === "online"
-                              ? "border-primary bg-leaf-soft shadow-glow"
-                              : "border-border hover:border-primary/40",
-                            data.mode === "Online" && "sm:col-span-2"
-                          )}
-                        >
-                          <div>
-                            <div className="flex items-center justify-between">
-                              <CreditCard className={cn("h-7 w-7", data.paymentMethod === "online" ? "text-primary" : "text-muted-foreground")} />
-                              <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                                Instant Confirmed
-                              </span>
-                            </div>
-                            <h3 className="mt-3 font-semibold text-lg">Online Payment</h3>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              Pay via UPI (GPay, PhonePe, Paytm), Cards, or Netbanking using secure Razorpay checkout.
-                            </p>
-                          </div>
-                          <div className="mt-4 pt-3 border-t border-border/60 flex items-center justify-between text-xs">
-                            <span className="font-semibold text-foreground">Total Fee:</span>
-                            <span className="font-bold text-primary text-base">₹{fee}</span>
-                          </div>
-                        </div>
-
-                        {/* Offline Payment Option: ONLY FOR CLINIC VISIT */}
-                        {data.mode === "Clinic Visit" && (
-                          <div
-                            onClick={() => update("paymentMethod", "offline")}
-                            className={cn(
-                              "p-6 rounded-2xl border-2 text-left cursor-pointer transition-all hover:-translate-y-1 flex flex-col justify-between",
-                              data.paymentMethod === "offline"
-                                ? "border-primary bg-leaf-soft shadow-glow"
-                                : "border-border hover:border-primary/40"
-                            )}
-                          >
-                            <div>
-                              <div className="flex items-center justify-between">
-                                <Building2 className={cn("h-7 w-7", data.paymentMethod === "offline" ? "text-primary" : "text-muted-foreground")} />
-                                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-                                  Pay at Clinic
-                                </span>
-                              </div>
-                              <h3 className="mt-3 font-semibold text-lg">Pay at Clinic (Offline)</h3>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                Reserve your slot now and pay during your in-person clinic visit.
-                              </p>
-                            </div>
-                            <div className="mt-4 pt-3 border-t border-border/60 flex items-center justify-between text-xs">
-                              <span className="font-semibold text-foreground">Payable at Clinic:</span>
-                              <span className="font-bold text-foreground text-base">₹{fee}</span>
-                            </div>
-                          </div>
-                        )}
+                    <div className="animate-fade-up space-y-6">
+                      <div>
+                        <h2 className="font-display text-2xl font-bold">Select Medicine Duration & Payment</h2>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Choose the medicine course duration prescribed for your condition. The total payable amount is calculated below.
+                        </p>
                       </div>
 
-                      {data.mode === "Online" && (
-                        <div className="mt-4 p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 flex items-center gap-2 text-xs text-amber-800 dark:text-amber-300">
-                          <ShieldCheck className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
-                          <span>Note: Offline / cash payment is not available for online consultations. Video consultation appointments are confirmed immediately upon online payment.</span>
+                      {/* Medicine Duration Selection Cards */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <Label className="text-xs uppercase tracking-wide text-muted-foreground font-semibold">
+                            Select Medicine Course *
+                          </Label>
+                          <span className="text-primary font-semibold text-xs">Doctor Consultation Included</span>
                         </div>
-                      )}
+                        <div className="grid sm:grid-cols-3 gap-3.5">
+                          {MEDICINE_PLANS.map((plan) => {
+                            const isSelected = data.medicineDuration === plan.id;
+                            return (
+                              <button
+                                key={plan.id}
+                                type="button"
+                                onClick={() => update("medicineDuration", plan.id)}
+                                className={cn(
+                                  "relative p-5 rounded-2xl border-2 text-left transition-all hover:-translate-y-1 flex flex-col justify-between cursor-pointer",
+                                  isSelected
+                                    ? "border-primary bg-leaf-soft shadow-glow ring-2 ring-primary/20"
+                                    : "border-border bg-card hover:border-primary/40"
+                                )}
+                              >
+                                {plan.popular && (
+                                  <span className="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                                    {plan.badge}
+                                  </span>
+                                )}
+                                <div>
+                                  <div className="flex items-center justify-between">
+                                    <span className="font-bold text-base text-foreground">{plan.durationTitle}</span>
+                                    {isSelected ? (
+                                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                                    ) : (
+                                      <div className="h-5 w-5 rounded-full border-2 border-muted-foreground/30" />
+                                    )}
+                                  </div>
+                                  <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
+                                    {plan.description}
+                                  </p>
+                                </div>
+                                <div className="mt-4 pt-3 border-t border-border/60 flex items-baseline justify-between">
+                                  <span className="text-xs text-muted-foreground font-medium">Medicine Fee</span>
+                                  <span className="font-bold text-lg text-primary">₹{plan.price}</span>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Transparent Price Summary Card */}
+                      <div className="rounded-2xl border border-primary/20 bg-leaf-soft/50 p-5 space-y-2.5 text-sm">
+                        <div className="font-semibold text-xs uppercase tracking-wide text-primary">
+                          Payment Breakdown
+                        </div>
+                        <div className="flex justify-between items-center text-muted-foreground">
+                          <span>{selectedPlan.durationTitle} & Consultation</span>
+                          <span className="font-semibold text-foreground">₹{medicineFee}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-muted-foreground">
+                          <span className="flex items-center gap-1.5">
+                            Medicine Courier Delivery Charge
+                            {data.mode === "Online" ? (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">Doorstep</span>
+                            ) : (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-medium">In-Clinic</span>
+                            )}
+                          </span>
+                          <span className="font-semibold text-foreground">
+                            {courierCharge > 0 ? `₹${courierCharge}` : "Free (In-Clinic Pickup)"}
+                          </span>
+                        </div>
+                        <div className="pt-2 border-t border-border/70 flex justify-between items-center text-base font-bold">
+                          <span className="text-foreground">Final Payable Amount</span>
+                          <span className="text-primary text-xl font-display">₹{totalFee}</span>
+                        </div>
+                      </div>
+
+                      {/* Online Payment Method (Offline Removed) */}
+                      <div>
+                        <Label className="text-xs uppercase tracking-wide text-muted-foreground font-semibold">
+                          Payment Method
+                        </Label>
+                        <div className="mt-2.5 p-5 rounded-2xl border-2 border-primary bg-leaf-soft/70 shadow-sm flex items-start gap-4">
+                          <div className="grid h-11 w-11 place-items-center rounded-xl bg-primary text-primary-foreground shrink-0 shadow-soft">
+                            <CreditCard className="h-5 w-5" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold text-base">Instant Online Payment</h3>
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                100% Secure Razorpay
+                              </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Pay via UPI (Google Pay, PhonePe, Paytm), Cards (Credit/Debit), or Netbanking. Appointment is immediately confirmed.
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-xs text-muted-foreground block">Pay</span>
+                            <span className="font-bold text-lg text-primary">₹{totalFee}</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
 
@@ -958,31 +1081,30 @@ function AppointmentPage() {
                     <div className="animate-fade-up">
                       <h2 className="font-display text-2xl font-bold">Confirm your booking</h2>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Please review your consultation details before finalizing.
+                        Please review your consultation and medicine details before finalizing payment.
                       </p>
 
                       <div className="mt-6 space-y-3 bg-leaf-soft/60 rounded-2xl p-5 text-sm border border-primary/10">
                         <Row label="Health Concern" value={activeConcernDisplay} />
                         <Row label="Patient Name" value={data.name} />
                         <Row label="Phone" value={data.phone} />
-                        {data.email && <Row label="Email" value={data.email} />}
-                        <Row
-                          label="Age · City"
-                          value={`${data.age} yrs${data.city ? ` · ${data.city}` : " · (Not specified)"}`}
-                        />
+                        <Row label="Email" value={data.email} />
+                        <Row label="Age" value={`${data.age} yrs`} />
+                        <Row label="Delivery Address" value={`${data.address}, ${data.city} - ${data.pincode}`} />
                         <Row
                           label="Consultation Mode"
-                          value={data.mode === "Online" ? "Online Consultation" : "Clinic Visit"}
+                          value={data.mode === "Online" ? "Online Video Consultation" : "Clinic Visit"}
                         />
                         <Row label="Date & Time" value={`${data.day ? formatDay(data.day) : ""} at ${data.slot}`} />
+                        <Row label="Selected Medicine" value={`${selectedPlan.durationTitle} (₹${medicineFee})`} />
                         <Row
-                          label="Payment Method"
-                          value={
-                            data.paymentMethod === "online"
-                              ? `Online Payment (₹${fee})`
-                              : `Offline Payment (Pay ₹${fee} Later)`
-                          }
+                          label="Medicine Courier"
+                          value={courierCharge > 0 ? `₹${courierCharge} (Doorstep Express)` : "Free (In-Clinic Pickup)"}
                         />
+                        <div className="pt-2 border-t border-border/70 flex justify-between items-center text-base font-bold">
+                          <span className="text-foreground">Total Payable Amount</span>
+                          <span className="text-primary text-xl font-display">₹{totalFee}</span>
+                        </div>
                       </div>
 
                       <p className="mt-4 text-xs text-muted-foreground flex items-center gap-1.5">
@@ -1018,19 +1140,15 @@ function AppointmentPage() {
                         variant="hero"
                         disabled={submitting}
                         onClick={handleConfirm}
-                        className={cn(data.paymentMethod === "online" ? "bg-emerald-600 hover:bg-emerald-700" : "")}
+                        className="bg-emerald-600 hover:bg-emerald-700 font-semibold"
                       >
                         {submitting ? (
                           <>
                             <Loader2 className="mr-1.5 h-4 w-4 animate-spin" /> Processing...
                           </>
-                        ) : data.paymentMethod === "online" ? (
-                          <>
-                            <CreditCard className="mr-1.5 h-4 w-4" /> Pay ₹{fee} & Confirm
-                          </>
                         ) : (
                           <>
-                            Confirm Booking <CheckCircle2 className="ml-1.5 h-4 w-4" />
+                            <CreditCard className="mr-1.5 h-4 w-4" /> Pay ₹{totalFee} & Confirm
                           </>
                         )}
                       </Button>

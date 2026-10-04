@@ -32,11 +32,42 @@ export const Route = createFileRoute("/contact")({
   component: ContactPage,
 });
 
+const cleanPhone = (val: string) => val.trim().replace(/[\s\-\(\)]/g, "");
+
+const normalizePhone = (val: string) => {
+  const cleaned = cleanPhone(val);
+  if (/^(\+91)[6-9]\d{9}$/.test(cleaned)) return cleaned.slice(3);
+  if (/^(91)[6-9]\d{9}$/.test(cleaned)) return cleaned.slice(2);
+  if (/^0[6-9]\d{9}$/.test(cleaned)) return cleaned.slice(1);
+  return cleaned;
+};
+
 const contactSchema = z.object({
   name: z.string().trim().min(2, "Please enter your name").max(100),
-  phone: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number"),
-  email: z.string().trim().email("Enter a valid email").max(255).or(z.literal("")),
-  message: z.string().trim().min(5, "Message is too short").max(1000),
+  phone: z
+    .string()
+    .trim()
+    .min(1, "Please enter your mobile number")
+    .refine((val) => {
+      const cleaned = cleanPhone(val);
+      if (/^[6-9]\d{9}$/.test(cleaned)) return true;
+      if (/^(\+91|91)[6-9]\d{9}$/.test(cleaned)) return true;
+      if (/^0[6-9]\d{9}$/.test(cleaned)) return true;
+      if (/^\+?[0-9]{7,15}$/.test(cleaned)) return true;
+      return false;
+    }, "Enter a valid 10-digit mobile number")
+    .transform((val) => normalizePhone(val)),
+  email: z
+    .string()
+    .trim()
+    .max(255)
+    .refine(
+      (val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+      "Enter a valid email address"
+    )
+    .optional()
+    .or(z.literal("")),
+  message: z.string().trim().min(5, "Message is too short (min 5 characters)").max(1000),
 });
 
 function ContactPage() {
@@ -59,12 +90,16 @@ function ContactPage() {
     try {
       await contactApi.create(parsed.data);
       const msg = `Hi, I'd like to get in touch.\nName: ${parsed.data.name}\nPhone: ${parsed.data.phone}${parsed.data.email ? `\nEmail: ${parsed.data.email}` : ""}\nMessage: ${parsed.data.message}`;
-      window.open(whatsappLink(msg), "_blank");
-      toast.success("Message submitted. Opening WhatsApp for quick follow-up.");
+      try {
+        window.open(whatsappLink(msg), "_blank");
+      } catch (err) {
+        console.warn("Could not open WhatsApp popup:", err);
+      }
+      toast.success("Message submitted successfully! Opening WhatsApp for quick follow-up.");
       setForm({ name: "", phone: "", email: "", message: "" });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast.error("Could not submit your message. Please try WhatsApp or phone.");
+      toast.error(error?.message || "Could not submit your message. Please try WhatsApp or phone.");
     } finally {
       setSubmitting(false);
     }
@@ -147,13 +182,17 @@ function ContactPage() {
                   />
                 </div>
                 <div>
-                  <Label className="text-xs font-semibold uppercase tracking-wide">Phone</Label>
+                  <Label className="text-xs font-semibold uppercase tracking-wide">Phone *</Label>
                   <Input
                     value={form.phone}
-                    onChange={(e) => upd("phone", e.target.value.replace(/\D/g, "").slice(0, 10))}
-                    placeholder="9876543210"
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/[^\d+\-\s()]/g, "").slice(0, 18);
+                      upd("phone", val);
+                    }}
+                    placeholder="+91 98765 43210 or 9876543210"
                     className="mt-1.5 h-11 rounded-xl"
-                    inputMode="numeric"
+                    inputMode="tel"
+                    autoComplete="tel"
                   />
                 </div>
               </div>
@@ -193,7 +232,7 @@ function ContactPage() {
                   </>
                 ) : (
                   <>
-                    Send via WhatsApp <Send />
+                    Send via Message <Send />
                   </>
                 )}
               </Button>
