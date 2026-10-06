@@ -20,13 +20,16 @@ export function SectionHeader({
   eyebrow,
   title,
   subtitle,
+  description,
   center = true,
 }: {
   eyebrow?: string;
   title: string;
   subtitle?: string;
+  description?: string;
   center?: boolean;
 }) {
+  const sub = subtitle || description;
   return (
     <div className={cn("max-w-2xl", center && "mx-auto text-center")}>
       {eyebrow && (
@@ -35,7 +38,7 @@ export function SectionHeader({
         </span>
       )}
       <h2 className="font-display text-3xl md:text-5xl font-bold text-balance text-foreground">{title}</h2>
-      {subtitle && <p className="mt-4 text-base md:text-lg text-muted-foreground text-pretty">{subtitle}</p>}
+      {sub && <p className="mt-4 text-base md:text-lg text-muted-foreground text-pretty">{sub}</p>}
     </div>
   );
 }

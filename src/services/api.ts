@@ -157,13 +157,21 @@ export type AppointmentPayload = {
   address?: string;
   city?: string;
   pincode?: string;
+  bookingType: "ONLINE" | "OFFLINE";
+  planType?: "SEVEN_DAYS" | "ONE_MONTH" | null;
+  planDuration?: number | null;
+  baseAmount?: number;
+  deliveryCharge?: number;
+  totalAmount?: number;
   medicineDuration?: string;
   courierCharge?: number;
   age?: number | string;
-  consultation_type: "online" | "offline";
+  consultation_type?: "online" | "offline";
   paymentMethod?: "online" | "offline";
   amount?: number;
   notes?: string;
+  customerId?: string;
+  leadId?: string;
 };
 
 export type RazorpayOrderInfo = {
@@ -181,11 +189,20 @@ export type AppointmentBookingResponse = {
   patientEmail?: string;
   status: string;
   payment_status: string;
+  paymentStatus?: string;
   paymentMethod: string;
   consultation_type: string;
+  bookingType?: "ONLINE" | "OFFLINE" | string;
+  planType?: "SEVEN_DAYS" | "ONE_MONTH" | null | string;
+  planDuration?: number | null;
+  baseAmount?: number;
+  deliveryCharge?: number;
+  totalAmount?: number;
   concern?: string;
   customConcern?: string;
+  address?: string;
   city?: string;
+  pincode?: string;
   age?: number;
   slot?: Slot;
   amount?: number;
@@ -230,6 +247,7 @@ export type CouponValidationResult = {
   usageCount: number;
   perCustomerLimit: number;
   remainingUsage: number;
+  maximumDiscount?: number | null;
   message?: string;
 };
 
@@ -301,6 +319,8 @@ export const slotsApi = {
 };
 
 export const appointmentsApi = {
+  getPricing: () =>
+    apiRequest<any>("/api/web/appointments/pricing"),
   create: (payload: AppointmentPayload) =>
     apiRequest<AppointmentBookingResponse>("/api/web/appointments", {
       method: "POST",

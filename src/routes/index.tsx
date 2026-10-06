@@ -122,7 +122,7 @@ function HomePage() {
               <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-leaf-soft/80 text-xs sm:text-sm font-bold uppercase tracking-wide text-primary shadow-soft">
                 <Leaf className="h-4 w-4" /> A DESTINATION FOR PERMANENT CURE AND PERFECT CARE.
               </span>
-             
+
               <p className="mt-4 font-display text-xl sm:text-2xl text-foreground/80 font-medium">
                 We Heal Immunity and Improve Your Health.
               </p>
@@ -180,40 +180,40 @@ function HomePage() {
       <Section>
         <SectionHeader eyebrow="What we treat" title="Conditions We Heal Naturally" subtitle="Specialized homeopathic care for the most common chronic and acute conditions." />
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-  {conditions.map((d) => (
-    <div
-      key={d.slug}
-      className="group bg-card rounded-3xl p-6 shadow-soft hover:shadow-glow transition-all hover:-translate-y-1"
-    >
-      <div
-        className={`h-14 w-14 grid place-items-center rounded-2xl bg-gradient-to-br ${d.color} shadow-soft overflow-hidden`}
-      >
-        <img
-          src={d.image}
-          alt={d.name}
-          className="h-full w-full object-contain"
-        />
-      </div>
+          {conditions.map((d) => (
+            <div
+              key={d.slug}
+              className="group bg-card rounded-3xl p-6 shadow-soft hover:shadow-glow transition-all hover:-translate-y-1"
+            >
+              <div
+                className={`h-14 w-14 grid place-items-center rounded-2xl bg-gradient-to-br ${d.color} shadow-soft overflow-hidden`}
+              >
+                <img
+                  src={d.image}
+                  alt={d.name}
+                  className="h-full w-full object-contain"
+                />
+              </div>
 
-      <h3 className="mt-5 font-display text-xl font-bold">
-        {d.name}
-      </h3>
+              <h3 className="mt-5 font-display text-xl font-bold">
+                {d.name}
+              </h3>
 
-      <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-        {d.shortDescription}
-      </p>
+              <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                {d.shortDescription}
+              </p>
 
-      <Link
-        to="/conditions/$slug"
-        params={{ slug: d.slug }}
-        className="mt-5 inline-flex text-sm font-semibold text-primary items-center gap-1 group-hover:gap-2 transition-all"
-      >
-        Learn More
-        <ArrowRight className="h-4 w-4" />
-      </Link>
-    </div>
-  ))}
-</div>
+              <Link
+                to="/conditions/$slug"
+                params={{ slug: d.slug }}
+                className="mt-5 inline-flex text-sm font-semibold text-primary items-center gap-1 group-hover:gap-2 transition-all"
+              >
+                Learn More
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          ))}
+        </div>
       </Section>
 
       {/* ABOUT PREVIEW */}
@@ -226,7 +226,7 @@ function HomePage() {
               At MD's HOMOEOPATHY, we combine classical Homoeopathy  with modern diagnostics to deliver care that addresses the root cause — not just symptoms. Every treatment plan is built around you.
             </p>
             <div className="mt-6 grid grid-cols-2 gap-4">
-              {["Root-cause approach","Personalized care","Online consultations","Trusted by 1000+"].map(t=>(
+              {["Root-cause approach", "Personalized care", "Online consultations", "Trusted by 1000+"].map(t => (
                 <div key={t} className="flex gap-2 items-center text-sm"><CheckCircle2 className="h-4 w-4 text-primary" />{t}</div>
               ))}
             </div>
@@ -252,7 +252,7 @@ function HomePage() {
         <div className="mt-14 grid md:grid-cols-5 gap-4 relative">
           {steps.map((s, i) => (
             <div key={s.title} className="relative bg-card rounded-3xl p-6 shadow-soft hover:shadow-card transition">
-              <div className="absolute -top-4 left-6 text-xs font-bold bg-gradient-leaf text-primary-foreground rounded-full h-7 w-7 grid place-items-center shadow-soft">{i+1}</div>
+              <div className="absolute -top-4 left-6 text-xs font-bold bg-gradient-leaf text-primary-foreground rounded-full h-7 w-7 grid place-items-center shadow-soft">{i + 1}</div>
               <s.icon className="h-7 w-7 text-primary" />
               <h3 className="mt-3 font-semibold text-base">{s.title}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{s.desc}</p>
@@ -349,7 +349,7 @@ function HomePage() {
                         src={assetUrl(p.image)}
                         alt={p.name}
                         loading="lazy"
-                        className="h-48 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
+                      // className="h-48 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
                       <div className="flex flex-col items-center justify-center text-muted-foreground p-8">
@@ -447,133 +447,133 @@ function HomePage() {
         )}
       </Section>
 
-     {/* FAQ + DOCTOR PROFILE */}
-<Section className="bg-leaf-soft/40">
-  <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
+      {/* FAQ + DOCTOR PROFILE */}
+      <Section className="bg-leaf-soft/40">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
 
-    {/* LEFT - FAQ */}
-    <div>
-      <SectionHeader
-        eyebrow="FAQ"
-        title="Frequently Asked Questions"
-      />
+          {/* LEFT - FAQ */}
+          <div>
+            <SectionHeader
+              eyebrow="FAQ"
+              title="Frequently Asked Questions"
+            />
 
-      <div className="mt-8 space-y-3">
-        {loadingFaqs ? (
-          <div className="space-y-3">
-            {[1, 2, 3].map((n) => (
-              <div key={n} className="bg-card rounded-2xl p-5 animate-pulse h-16" />
-            ))}
-          </div>
-        ) : faqs.length > 0 ? (
-          faqs.map((f) => (
-            <Faq key={f._id} q={f.question} a={f.answer} />
-          ))
-        ) : (
-          <p className="text-sm text-muted-foreground italic">
-            No FAQs currently listed. Please feel free to contact us with any questions.
-          </p>
-        )}
-      </div>
-    </div>
-
-    {/* RIGHT - DOCTOR PROFILE */}
-    <div>
-      <div className="grid sm:grid-cols-[1fr_220px] gap-6 items-end">
-
-        {/* Doctor Content */}
-        <div className="py-2">
-          <p className="text-xs font-semibold uppercase tracking-wider text-primary">
-            Meet Your Doctor
-          </p>
-
-          <h2 className="mt-2 font-display text-2xl lg:text-3xl font-bold leading-tight">
-            Why We Started
-            <br />
-            MD's HOMOEOPATHY
-          </h2>
-
-          <p className="mt-3 text-sm text-muted-foreground">
-            Compassionate, root-cause homeopathic care led by an experienced
-            homeopath.
-          </p>
-
-          <div className="mt-5">
-            <h3 className="font-display text-xl font-bold">
-              Dr. Parth Bhargava
-            </h3>
-
-            <p className="mt-1 text-sm text-primary font-semibold">
-              BHMS · Homoeopathic Consultant
-            </p>
+            <div className="mt-8 space-y-3">
+              {loadingFaqs ? (
+                <div className="space-y-3">
+                  {[1, 2, 3].map((n) => (
+                    <div key={n} className="bg-card rounded-2xl p-5 animate-pulse h-16" />
+                  ))}
+                </div>
+              ) : faqs.length > 0 ? (
+                faqs.map((f) => (
+                  <Faq key={f._id} q={f.question} a={f.answer} />
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground italic">
+                  No FAQs currently listed. Please feel free to contact us with any questions.
+                </p>
+              )}
+            </div>
           </div>
 
-          {/* Badges */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-medium shadow-soft">
-              <Award className="h-3.5 w-3.5 text-primary" />
-              Qualified BHMS
-            </span>
+          {/* RIGHT - DOCTOR PROFILE */}
+          <div>
+            <div className="grid sm:grid-cols-[1fr_220px] gap-6 items-end">
 
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-medium shadow-soft">
-              <Users className="h-3.5 w-3.5 text-primary" />
-              5000+ Patients Treated
-            </span>
-          </div>
+              {/* Doctor Content */}
+              <div className="py-2">
+                <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+                  Meet Your Doctor
+                </p>
 
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Dr. Parth Bhargava founded MD's HOMOEOPATHY with a single belief —
-            that medicine should heal the root cause, not just mask symptoms.
-            With deep expertise in chronic conditions, he provides personalized
-            treatment with genuine care and compassion.
-          </p>
+                <h2 className="mt-2 font-display text-2xl lg:text-3xl font-bold leading-tight">
+                  Why We Started
+                  <br />
+                  MD's HOMOEOPATHY
+                </h2>
 
-          <Button
-            asChild
-            variant="hero"
-            size="sm"
-            className="mt-5"
-          >
-            <Link to="/appointment">
-              <Calendar className="h-4 w-4" />
-              Book a Consultation
-            </Link>
-          </Button>
-        </div>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Compassionate, root-cause homeopathic care led by an experienced
+                  homeopath.
+                </p>
 
-        {/* Doctor Image */}
-        <div className="relative hidden sm:flex self-stretch items-end justify-center">
-          <div className="absolute bottom-0 w-full h-[80%] bg-primary/5 rounded-t-[100px]" />
+                <div className="mt-5">
+                  <h3 className="font-display text-xl font-bold">
+                    Dr. Parth Bhargava
+                  </h3>
 
-          <img
-            src={doctorImg}
-            alt="Dr. Parth Bhargava"
-            className="
+                  <p className="mt-1 text-sm text-primary font-semibold">
+                    BHMS · Homoeopathic Consultant
+                  </p>
+                </div>
+
+                {/* Badges */}
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-medium shadow-soft">
+                    <Award className="h-3.5 w-3.5 text-primary" />
+                    Qualified BHMS
+                  </span>
+
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-xs font-medium shadow-soft">
+                    <Users className="h-3.5 w-3.5 text-primary" />
+                    5000+ Patients Treated
+                  </span>
+                </div>
+
+                <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+                  Dr. Parth Bhargava founded MD's HOMOEOPATHY with a single belief —
+                  that medicine should heal the root cause, not just mask symptoms.
+                  With deep expertise in chronic conditions, he provides personalized
+                  treatment with genuine care and compassion.
+                </p>
+
+                <Button
+                  asChild
+                  variant="hero"
+                  size="sm"
+                  className="mt-5"
+                >
+                  <Link to="/appointment">
+                    <Calendar className="h-4 w-4" />
+                    Book a Consultation
+                  </Link>
+                </Button>
+              </div>
+
+              {/* Doctor Image */}
+              <div className="relative hidden sm:flex self-stretch items-end justify-center">
+                <div className="absolute bottom-0 w-full h-[80%] bg-primary/5 rounded-t-[100px]" />
+
+                <img
+                  src={doctorImg}
+                  alt="Dr. Parth Bhargava"
+                  className="
               relative z-10
               w-full
               max-h-[430px]
               object-contain
               object-bottom
             "
-            loading="lazy"
-          />
+                  loading="lazy"
+                />
+              </div>
+
+            </div>
+
+            {/* Mobile Doctor Image */}
+            <div className="sm:hidden mt-6 flex justify-center">
+              <img
+                src={doctorImg}
+                alt="Dr. Parth Bhargava"
+                className="w-52 h-auto object-contain"
+                loading="lazy"
+              />
+            </div>
+          </div>
+
         </div>
-
-      </div>
-
-      {/* Mobile Doctor Image */}
-      <div className="sm:hidden mt-6 flex justify-center">
-        <img
-          src={doctorImg}
-          alt="Dr. Parth Bhargava"
-          className="w-52 h-auto object-contain"
-          loading="lazy"
-        />
-      </div>
-    </div>
-
-  </div>
-</Section>
+      </Section>
     </>
   );
 }
@@ -611,7 +611,7 @@ function Faq({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="bg-card rounded-2xl shadow-soft overflow-hidden">
-      <button onClick={()=>setOpen(!open)} className="w-full text-left px-5 py-4 flex items-center justify-between gap-4">
+      <button onClick={() => setOpen(!open)} className="w-full text-left px-5 py-4 flex items-center justify-between gap-4">
         <span className="font-semibold text-sm md:text-base">{q}</span>
         <ChevronDown className={`h-5 w-5 text-primary shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>

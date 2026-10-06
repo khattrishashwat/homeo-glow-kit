@@ -247,10 +247,10 @@ function ServicesPage() {
 
               <p className="mt-3 text-sm text-muted-foreground flex-1">{s.desc}</p>
 
-              {s.disclaimer && (
+              {(s as any).disclaimer && (
                 <div className="mt-3 p-3 rounded-xl bg-amber-500/10 text-amber-700 text-xs font-medium border border-amber-500/20 flex items-start gap-2">
                   <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5" />
-                  <span>{s.disclaimer}</span>
+                  <span>{(s as any).disclaimer}</span>
                 </div>
               )}
 
