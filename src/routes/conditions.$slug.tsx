@@ -219,7 +219,7 @@ function ConditionDetailPage() {
                 <Calendar /> Book Appointment
               </Link>
             </Button>
-            <Button asChild size="xl" variant="outline" className="border-card text-white hover:bg-white/10 rounded-full">
+            <Button asChild size="xl" variant="outline" className="border-card text-black hover:bg-white/10 rounded-full">
               <a href="tel:+917668610031">
                 <Phone /> Call Clinic
               </a>

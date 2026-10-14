@@ -349,7 +349,6 @@ function HomePage() {
                         src={assetUrl(p.image)}
                         alt={p.name}
                         loading="lazy"
-                      // className="h-48 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
                       <div className="flex flex-col items-center justify-center text-muted-foreground p-8">

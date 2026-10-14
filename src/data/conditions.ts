@@ -5,6 +5,15 @@ import neuroDisordersImage from "../assets/condition/neuro-disorders.jpeg";
 import osteoDisordersImage from "../assets/condition/osteo-disorders.jpeg";
 import gitDisordersImage from "../assets/condition/git-disorders.jpeg";
 
+import thyroidBanner from "../assets/conditionsbanner/thyroid.jpeg";
+import nasalDisordersBanner from "../assets/conditionsbanner/nasal-disorders.jpeg";
+import osteoDisordersBanner from "../assets/conditionsbanner/dis.jpeg";
+import gitDisordersBanner from "../assets/conditionsbanner/git-disorders.jpeg";
+
+
+
+
+
 export type ConditionVideo = {
   title: string;
   url: string;
@@ -33,8 +42,7 @@ export const conditions: Condition[] = [
       "Balance hypo & hyperthyroid naturally and restore your energy levels.",
     image: thyroidImage,
     color: "from-amber-400 to-amber-600",
-    banner:
-      "https://images.unsplash.com/photo-1559757175-5700dde675bc?auto=format&fit=crop&w=1600&q=80",
+    banner: thyroidBanner,
     detailedDescription:
       "Thyroid disorders disrupt the body's metabolism, energy and mood. Our homeopathic approach addresses the underlying glandular imbalance rather than only managing hormone numbers. Through detailed case-taking we identify the constitutional remedy that helps your thyroid function return to its natural rhythm — supporting both hypothyroid and hyperthyroid presentations safely, without dependency or side effects.",
     videoUrl: "https://www.youtube.com/embed/DrysMOa6-7E",
@@ -69,8 +77,7 @@ export const conditions: Condition[] = [
       "Lasting relief from sinusitis, allergic rhinitis and nasal polyps.",
     image: nasalDisordersImage,
     color: "from-sky-400 to-sky-600",
-    banner:
-      "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?auto=format&fit=crop&w=1600&q=80",
+    banner: nasalDisordersBanner,
     detailedDescription:
       "Chronic sinusitis, allergic rhinitis, recurrent colds and nasal polyps respond remarkably well to Homoeopathy. Instead of suppressing symptoms with decongestants, our remedies strengthen your respiratory immunity and reduce hypersensitivity to allergens, so episodes become milder and far less frequent over time.",
     videoUrl: "https://www.youtube.com/embed/RjTdB-Bs8kE",
@@ -161,8 +168,7 @@ export const conditions: Condition[] = [
       "Relief from arthritis, joint pain, back pain and bone health issues.",
     image: osteoDisordersImage,
     color: "from-orange-400 to-orange-600",
-    banner:
-      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1600&q=80",
+    banner: osteoDisordersBanner,
     detailedDescription:
       "Arthritis, joint pain, back pain, cervical spondylosis and osteoporosis can limit everyday life. Our homeopathic remedies reduce inflammation, ease stiffness and improve mobility while supporting bone and cartilage health — offering sustained relief without the long-term risks of painkillers.",
     videoUrl: "https://www.youtube.com/embed/ojPydM5NGHM",
@@ -193,8 +199,7 @@ export const conditions: Condition[] = [
       "Heal acidity, IBS, constipation and chronic digestive problems.",
     image: gitDisordersImage,
     color: "from-emerald-400 to-emerald-600",
-    banner:
-      "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?auto=format&fit=crop&w=1600&q=80",
+    banner: gitDisordersBanner,
     detailedDescription:
       "Acidity, IBS, constipation, bloating and chronic gastritis often stem from deeper digestive imbalances. Homoeopathy restores healthy gut function by treating the root cause, improving digestion and reducing recurring discomfort — paired with practical diet guidance for lasting results.",
     videoUrl: "https://www.youtube.com/embed/LQxMwBGU7SM",

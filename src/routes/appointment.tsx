@@ -9,6 +9,7 @@ import {
   Activity, Sparkles, Video, Building2, ShieldCheck, MessageCircle,
   Calendar, Clock, Phone, User, MapPin, Loader2, Stethoscope,
   HelpCircle, CreditCard, Mail, Check, RotateCcw, Truck,
+  HeartPulse, Brain, Leaf, Pill,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import heroBg from "@/assets/hero-clinic-bg.jpg";
@@ -18,6 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   appointmentsApi,
   slotsApi,
+  categoriesApi,
   formatINR,
   type Slot,
   type AppointmentBookingResponse,
@@ -65,7 +67,7 @@ const bookingSchema = z
     city: z.string().trim().min(2, "Please enter your city").max(100),
     pincode: z.string().trim().optional(),
     bookingType: z.enum(["ONLINE", "OFFLINE"]),
-    planType: z.enum(["SEVEN_DAYS", "ONE_MONTH"]).nullable().optional(),
+    planType: z.enum(["FIFTEEN_DAYS", "SEVEN_DAYS", "ONE_MONTH"]).nullable().optional(),
     day: z.string().min(1, "Please select an appointment date"),
     slot: z.string().min(1, "Please select a time slot"),
     slotId: z.string().min(1, "Please select a time slot"),
@@ -86,7 +88,7 @@ const bookingSchema = z
   .refine(
     (val) => {
       if (val.bookingType === "ONLINE") {
-        return val.planType === "SEVEN_DAYS" || val.planType === "ONE_MONTH";
+        return val.planType === "FIFTEEN_DAYS" || val.planType === "SEVEN_DAYS" || val.planType === "ONE_MONTH";
       }
       return true;
     },
@@ -129,19 +131,35 @@ export const Route = createFileRoute("/appointment")({
         content: "Book your Homoeopathy consultation in easy steps. Online subscription plans with medicines included or offline clinic visit.",
       },
       { property: "og:title", content: "Book a Homoeopathy Consultation" },
-      { property: "og:description", content: "Online 7 Days (₹500), 1 Month (₹1,000) with delivery included. Clinic Visit (₹200)." },
+      { property: "og:description", content: "Online 15 Days (₹500), 1 Month (₹1,000) with delivery included. Clinic Visit (₹200)." },
     ],
   }),
   component: AppointmentPage,
 });
 
-const problems = [
+const DEFAULT_PROBLEMS = [
   { icon: Scissors, name: "Hair Fall" },
   { icon: Flower2, name: "PCOD" },
   { icon: Activity, name: "Thyroid" },
   { icon: Sparkles, name: "Skin Issues" },
   { icon: HelpCircle, name: "Other" },
 ];
+
+const getConcernIcon = (name: string) => {
+  const lower = name.toLowerCase();
+  if (lower.includes("hair") || lower.includes("alopecia") || lower.includes("bald") || lower.includes("scalp")) return Scissors;
+  if (lower.includes("pcod") || lower.includes("pcos") || lower.includes("women") || lower.includes("period") || lower.includes("menstrual") || lower.includes("gyn") || lower.includes("fertility") || lower.includes("uter")) return Flower2;
+  if (lower.includes("thyroid") || lower.includes("goitre") || lower.includes("hormon") || lower.includes("metabol")) return Activity;
+  if (lower.includes("skin") || lower.includes("derma") || lower.includes("acne") || lower.includes("eczema") || lower.includes("psoriasis") || lower.includes("pigment") || lower.includes("rash") || lower.includes("fungal") || lower.includes("urticaria")) return Sparkles;
+  if (lower.includes("joint") || lower.includes("bone") || lower.includes("arthrit") || lower.includes("osteo") || lower.includes("pain") || lower.includes("back") || lower.includes("sciatica") || lower.includes("cervical") || lower.includes("spine")) return Activity;
+  if (lower.includes("stomach") || lower.includes("gut") || lower.includes("digest") || lower.includes("gas") || lower.includes("acid") || lower.includes("git") || lower.includes("liver") || lower.includes("ibs") || lower.includes("constipat") || lower.includes("piles") || lower.includes("fissure")) return Sparkles;
+  if (lower.includes("heart") || lower.includes("bp") || lower.includes("hypertens") || lower.includes("cardio") || lower.includes("cholesterol")) return HeartPulse;
+  if (lower.includes("brain") || lower.includes("neuro") || lower.includes("headache") || lower.includes("migraine") || lower.includes("anxiety") || lower.includes("stress") || lower.includes("depress") || lower.includes("sleep") || lower.includes("insomnia")) return Brain;
+  if (lower.includes("resp") || lower.includes("asthma") || lower.includes("cough") || lower.includes("cold") || lower.includes("sinus") || lower.includes("allergy") || lower.includes("nasal") || lower.includes("bronch") || lower.includes("tonsil") || lower.includes("breath")) return Leaf;
+  if (lower.includes("child") || lower.includes("kid") || lower.includes("pediatr") || lower.includes("growth") || lower.includes("bedwet") || lower.includes("infant") || lower.includes("dentition")) return User;
+  if (lower.includes("other") || lower.includes("custom") || lower.includes("else")) return HelpCircle;
+  return Stethoscope;
+};
 
 const getTodayIST = () =>
   new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
@@ -237,7 +255,7 @@ function AppointmentPage() {
     problem: "",
     customConcern: "",
     bookingType: "ONLINE",
-    planType: "SEVEN_DAYS",
+    planType: "FIFTEEN_DAYS",
     name: "",
     phone: "",
     email: "",
@@ -259,6 +277,29 @@ function AppointmentPage() {
   const pricing = useMemo(() => {
     return calculatePricing(data.bookingType, data.planType);
   }, [data.bookingType, data.planType]);
+
+  // Dynamic health concerns from Categories API
+  const { data: healthCategoriesData, isLoading: loadingCategories } = useQuery({
+    queryKey: ["categories", "health_concern"],
+    queryFn: () => categoriesApi.list({ type: "health_concern" }),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const problems = useMemo(() => {
+    const backendCategories = healthCategoriesData?.data || [];
+    if (backendCategories.length > 0) {
+      const mapped = backendCategories.map((c) => ({
+        name: c.name,
+        icon: getConcernIcon(c.name),
+      }));
+      const hasOther = mapped.some((m) => m.name.toLowerCase() === "other");
+      if (!hasOther) {
+        mapped.push({ name: "Other", icon: HelpCircle });
+      }
+      return mapped;
+    }
+    return DEFAULT_PROBLEMS;
+  }, [healthCategoriesData]);
 
   const consultationType = data.bookingType === "ONLINE" ? "online" : "offline";
 
@@ -309,7 +350,7 @@ function AppointmentPage() {
     setData((d) => ({
       ...d,
       bookingType: type,
-      planType: type === "ONLINE" ? (d.planType || "SEVEN_DAYS") : null,
+      planType: type === "ONLINE" ? (d.planType || "FIFTEEN_DAYS") : null,
       day: "",
       slot: "",
       slotId: "",
@@ -325,7 +366,7 @@ function AppointmentPage() {
     setData((d) => ({
       ...d,
       bookingType: type,
-      planType: type === "ONLINE" ? (d.planType || "SEVEN_DAYS") : null,
+      planType: type === "ONLINE" ? (d.planType || "FIFTEEN_DAYS") : null,
       day: "",
       slot: "",
       slotId: "",
@@ -349,7 +390,7 @@ function AppointmentPage() {
     }
     if (step === 2) {
       if (data.bookingType === "ONLINE") {
-        return data.planType === "SEVEN_DAYS" || data.planType === "ONE_MONTH";
+        return data.planType === "FIFTEEN_DAYS" || data.planType === "SEVEN_DAYS" || data.planType === "ONE_MONTH";
       }
       return data.bookingType === "OFFLINE";
     }
@@ -420,7 +461,7 @@ function AppointmentPage() {
         baseAmount: pricing.baseAmount,
         deliveryCharge: pricing.deliveryCharge,
         totalAmount: pricing.totalAmount,
-        medicineDuration: pricing.planType === "SEVEN_DAYS" ? "7_days" : (pricing.planType === "ONE_MONTH" ? "30_days" : undefined),
+        medicineDuration: (pricing.planType === "FIFTEEN_DAYS" || pricing.planType === "SEVEN_DAYS") ? "15_days" : (pricing.planType === "ONE_MONTH" ? "30_days" : undefined),
         courierCharge: 0,
         age: parsed.data.age,
         consultation_type: consultationType,
@@ -581,9 +622,9 @@ function AppointmentPage() {
                 </p>
                 <div className="p-3 rounded-xl bg-muted/50 border border-border/60 space-y-1.5">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="font-medium text-foreground">7 Days Plan:</span>
+                    <span className="font-medium text-foreground">15 Days Plan:</span>
                     <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                      {formatINR(APPOINTMENT_PRICING.ONLINE.SEVEN_DAYS.totalAmount)}
+                      {formatINR(APPOINTMENT_PRICING.ONLINE.FIFTEEN_DAYS.totalAmount)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
@@ -792,7 +833,7 @@ function AppointmentPage() {
                           problem: "",
                           customConcern: "",
                           bookingType: "ONLINE",
-                          planType: "SEVEN_DAYS",
+                          planType: "FIFTEEN_DAYS",
                           name: "",
                           phone: "",
                           email: "",
@@ -821,29 +862,36 @@ function AppointmentPage() {
                         Select a category below or choose &ldquo;Other&rdquo; to describe.
                       </p>
 
-                      <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-3">
-                        {problems.map((p) => (
-                          <button
-                            key={p.name}
-                            type="button"
-                            onClick={() => setData((d) => ({ ...d, problem: p.name }))}
-                            className={cn(
-                              "p-5 rounded-2xl border-2 text-center transition-all hover:-translate-y-1 cursor-pointer",
-                              data.problem === p.name
-                                ? "border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/40 shadow-glow"
-                                : "border-border bg-background hover:border-emerald-500/40"
-                            )}
-                          >
-                            <p.icon
+                      {loadingCategories && !healthCategoriesData ? (
+                        <div className="mt-6 flex items-center justify-center p-8 text-muted-foreground">
+                          <Loader2 className="h-6 w-6 animate-spin mr-2 text-primary" />
+                          <span>Loading health concerns...</span>
+                        </div>
+                      ) : (
+                        <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                          {problems.map((p) => (
+                            <button
+                              key={p.name}
+                              type="button"
+                              onClick={() => setData((d) => ({ ...d, problem: p.name }))}
                               className={cn(
-                                "h-7 w-7 mx-auto",
-                                data.problem === p.name ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
+                                "p-5 rounded-2xl border-2 text-center transition-all hover:-translate-y-1 cursor-pointer flex flex-col items-center justify-center min-h-[110px]",
+                                data.problem === p.name
+                                  ? "border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/40 shadow-glow"
+                                  : "border-border bg-background hover:border-emerald-500/40"
                               )}
-                            />
-                            <div className="mt-2 text-sm font-semibold">{p.name}</div>
-                          </button>
-                        ))}
-                      </div>
+                            >
+                              <p.icon
+                                className={cn(
+                                  "h-7 w-7 mx-auto",
+                                  data.problem === p.name ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
+                                )}
+                              />
+                              <div className="mt-2 text-sm font-semibold text-balance leading-snug">{p.name}</div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
 
                       {data.problem === "Other" && (
                         <div className="mt-5 p-4 rounded-2xl bg-muted/40 border border-border animate-fade-up">

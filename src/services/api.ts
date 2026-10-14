@@ -81,7 +81,7 @@ export type Category = {
    image?: string;
    image_alt?: string;
    active: boolean;
-  type: "blog" | "product" | "both";
+  type: "blog" | "product" | "both" | "health_concern";
   createdAt?: string;
   updatedAt?: string;
 };
@@ -158,7 +158,7 @@ export type AppointmentPayload = {
   city?: string;
   pincode?: string;
   bookingType: "ONLINE" | "OFFLINE";
-  planType?: "SEVEN_DAYS" | "ONE_MONTH" | null;
+  planType?: "FIFTEEN_DAYS" | "SEVEN_DAYS" | "ONE_MONTH" | null;
   planDuration?: number | null;
   baseAmount?: number;
   deliveryCharge?: number;
@@ -193,7 +193,7 @@ export type AppointmentBookingResponse = {
   paymentMethod: string;
   consultation_type: string;
   bookingType?: "ONLINE" | "OFFLINE" | string;
-  planType?: "SEVEN_DAYS" | "ONE_MONTH" | null | string;
+  planType?: "FIFTEEN_DAYS" | "SEVEN_DAYS" | "ONE_MONTH" | null | string;
   planDuration?: number | null;
   baseAmount?: number;
   deliveryCharge?: number;

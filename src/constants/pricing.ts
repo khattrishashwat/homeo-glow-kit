@@ -2,7 +2,7 @@
  * Centralized Single Source of Truth for Appointment Booking Pricing (Frontend)
  *
  * Online:
- * - 7 Days Plan: ₹500 (Delivery Included)
+ * - 15 Days Plan: ₹500 (Delivery Included)
  * - 1 Month Plan: ₹1,000 (Delivery Included)
  *
  * Offline:
@@ -10,7 +10,7 @@
  */
 
 export type BookingType = "ONLINE" | "OFFLINE";
-export type OnlinePlanType = "SEVEN_DAYS" | "ONE_MONTH";
+export type OnlinePlanType = "FIFTEEN_DAYS" | "ONE_MONTH" | "SEVEN_DAYS";
 
 export interface OnlinePlanConfig {
   id: OnlinePlanType;
@@ -37,17 +37,17 @@ export interface OfflineConfig {
 
 export const APPOINTMENT_PRICING = {
   ONLINE: {
-    SEVEN_DAYS: {
-      id: "SEVEN_DAYS" as OnlinePlanType,
-      name: "7 Days Plan",
-      duration: "7 Days",
-      durationDays: 7,
+    FIFTEEN_DAYS: {
+      id: "FIFTEEN_DAYS" as OnlinePlanType,
+      name: "15 Days Plan",
+      duration: "15 Days",
+      durationDays: 15,
       price: 500,
       deliveryCharge: 0,
       deliveryIncluded: true,
       totalAmount: 500,
       badge: "Starter Plan",
-      description: "Introductory 7-day care protocol with medicines delivered to your doorstep.",
+      description: "Introductory 15-day care protocol with medicines delivered to your doorstep.",
     },
     ONE_MONTH: {
       id: "ONE_MONTH" as OnlinePlanType,
@@ -60,6 +60,18 @@ export const APPOINTMENT_PRICING = {
       totalAmount: 1000,
       badge: "Most Popular",
       description: "Complete 30-day comprehensive care with medicines delivered to your doorstep.",
+    },
+    SEVEN_DAYS: {
+      id: "FIFTEEN_DAYS" as OnlinePlanType,
+      name: "15 Days Plan",
+      duration: "15 Days",
+      durationDays: 15,
+      price: 500,
+      deliveryCharge: 0,
+      deliveryIncluded: true,
+      totalAmount: 500,
+      badge: "Starter Plan",
+      description: "Introductory 15-day care protocol with medicines delivered to your doorstep.",
     },
   },
   OFFLINE: {
@@ -76,7 +88,7 @@ export const APPOINTMENT_PRICING = {
 } as const;
 
 export const ONLINE_PLANS: OnlinePlanConfig[] = [
-  APPOINTMENT_PRICING.ONLINE.SEVEN_DAYS,
+  APPOINTMENT_PRICING.ONLINE.FIFTEEN_DAYS,
   APPOINTMENT_PRICING.ONLINE.ONE_MONTH,
 ];
 
@@ -99,7 +111,7 @@ export function calculatePricing(
   if (bookingType === "ONLINE") {
     const selected = planType === "ONE_MONTH"
       ? APPOINTMENT_PRICING.ONLINE.ONE_MONTH
-      : APPOINTMENT_PRICING.ONLINE.SEVEN_DAYS;
+      : APPOINTMENT_PRICING.ONLINE.FIFTEEN_DAYS;
 
     return {
       bookingType: "ONLINE",

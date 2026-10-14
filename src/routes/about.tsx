@@ -162,7 +162,6 @@ const specialties = [
     icon: ShieldCheck,
     title: "14. Cancer & Supportive Care",
     sub: "Supportive homeopathic care alongside conventional treatment.",
-    disclaimer: "Homeopathy is offered as supportive care and not as a replacement for cancer treatment.",
     items: ["Symptom Relief", "Chemotherapy Support", "Radiation Therapy Support", "Pain & Fatigue Management", "Appetite Improvement", "Recovery Support", "Quality of Life Enhancement"],
   },
   {

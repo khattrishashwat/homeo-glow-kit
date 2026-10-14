@@ -56,9 +56,9 @@ export const Route = createFileRoute("/treatments")({
 // --- CLINICAL DATA DEFINITIONS ---
 
 const STATS = [
-  { label: "Patients Treated", value: "15,000+", icon: Users },
+  { label: "Patients Treated", value: "50,000+", icon: Users },
   { label: "Clinical Experience", value: "20+ Years", icon: Award },
-  { label: "Conditions Covered", value: "50+ Specialties", icon: Activity },
+  { label: "Conditions Covered", value: "25+ Specialties", icon: Activity },
   { label: "Natural & Safe", value: "100% Side-Effect Free", icon: ShieldCheck },
 ];
 
