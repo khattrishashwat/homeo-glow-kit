@@ -109,7 +109,7 @@ export const conditions: Condition[] = [
     image: obgGynImage,
     color: "from-rose-400 to-rose-600",
     banner:
-      "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1600&q=80",
+      "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1600&q=80",
     detailedDescription:
       "From PCOD/PCOS and irregular periods to menopausal complaints, women's health needs gentle, individualized care. Our homeopathic treatment works to restore natural hormonal balance, regulate cycles and ease symptoms — supporting fertility and overall wellbeing without hormonal side effects.",
     videoUrl: "https://www.youtube.com/embed/Jbd4DWAR11Y",

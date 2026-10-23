@@ -259,10 +259,64 @@ const buildUrl = (path: string, params?: Record<string, string | number | boolea
   return url.toString();
 };
 
+const S3_BUCKET = "mdshomoeopathy-patient-files-2026";
+const S3_REGION = "ap-south-1";
+const S3_BASE_URL = `https://${S3_BUCKET}.s3.${S3_REGION}.amazonaws.com`;
+
+const S3_PREFIXES = [
+  "patients/",
+  "prescriptions/",
+  "products/",
+  "blogs/",
+  "settings/",
+  "excel/",
+  "media/",
+  "videos/",
+];
+
 export const assetUrl = (path?: string) => {
   if (!path) return "";
-  if (/^https?:\/\//.test(path)) return path;
-  return `${API_URL}${path}`;
+  const trimmed = String(path).trim();
+  if (!trimmed || trimmed === "#") return "";
+
+  // Absolute URLs (HTTP, HTTPS, Data URLs, Blob URLs)
+  if (/^(?:https?:|\/\/|data:|blob:)/i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // Handle s3:// URIs
+  if (trimmed.startsWith("s3://")) {
+    const withoutScheme = trimmed.replace(/^s3:\/\//, "");
+    const slashIdx = withoutScheme.indexOf("/");
+    if (slashIdx !== -1) {
+      const bucket = withoutScheme.slice(0, slashIdx);
+      const key = withoutScheme.slice(slashIdx + 1);
+      return `https://${bucket}.s3.${S3_REGION}.amazonaws.com/${key}`;
+    }
+    return `${S3_BASE_URL}/${withoutScheme}`;
+  }
+
+  const cleanKey = trimmed.replace(/^\/+/, "");
+
+  // Check known S3 namespace prefixes
+  for (const prefix of S3_PREFIXES) {
+    if (cleanKey.startsWith(prefix)) {
+      return `${S3_BASE_URL}/${cleanKey}`;
+    }
+  }
+
+  // Check legacy uploads/ prefix
+  if (cleanKey.startsWith("uploads/")) {
+    const stripped = cleanKey.replace(/^uploads\//, "");
+    for (const prefix of S3_PREFIXES) {
+      if (stripped.startsWith(prefix)) {
+        return `${S3_BASE_URL}/${stripped}`;
+      }
+    }
+    return `${API_URL}/${cleanKey}`;
+  }
+
+  return `${API_URL}/${cleanKey}`;
 };
 
 export async function apiRequest<T>(

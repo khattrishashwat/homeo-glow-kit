@@ -230,11 +230,141 @@ const CarouselNext = React.forwardRef<HTMLButtonElement, React.ComponentProps<ty
 );
 CarouselNext.displayName = "CarouselNext";
 
+const CarouselControls = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & {
+    api?: CarouselApi;
+    previousLabel?: string;
+    nextLabel?: string;
+  }
+>(({ className, api: propApi, previousLabel = "Previous slide", nextLabel = "Next slide", ...props }, ref) => {
+  const context = React.useContext(CarouselContext);
+  const api = propApi || context?.api;
+  const [canScrollPrev, setCanScrollPrev] = React.useState(false);
+  const [canScrollNext, setCanScrollNext] = React.useState(false);
+  const [hasMultipleSnaps, setHasMultipleSnaps] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!api) return;
+
+    const onSelect = () => {
+      setCanScrollPrev(api.canScrollPrev());
+      setCanScrollNext(api.canScrollNext());
+      setHasMultipleSnaps(api.scrollSnapList().length > 1);
+    };
+
+    onSelect();
+    api.on("select", onSelect);
+    api.on("reInit", onSelect);
+
+    return () => {
+      api.off("select", onSelect);
+    };
+  }, [api]);
+
+  if (!hasMultipleSnaps) return null;
+
+  return (
+    <div ref={ref} className={cn("flex items-center gap-2", className)} {...props}>
+      <Button
+        variant="outline"
+        size="icon"
+        className="h-10 w-10 rounded-full border border-border bg-card shadow-soft hover:bg-leaf-soft hover:text-primary transition disabled:opacity-30 disabled:pointer-events-none"
+        disabled={!canScrollPrev}
+        onClick={() => api?.scrollPrev()}
+        aria-label={previousLabel}
+      >
+        <ArrowLeft className="h-5 w-5" />
+        <span className="sr-only">{previousLabel}</span>
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        className="h-10 w-10 rounded-full border border-border bg-card shadow-soft hover:bg-leaf-soft hover:text-primary transition disabled:opacity-30 disabled:pointer-events-none"
+        disabled={!canScrollNext}
+        onClick={() => api?.scrollNext()}
+        aria-label={nextLabel}
+      >
+        <ArrowRight className="h-5 w-5" />
+        <span className="sr-only">{nextLabel}</span>
+      </Button>
+    </div>
+  );
+});
+CarouselControls.displayName = "CarouselControls";
+
+const CarouselDots = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & {
+    api?: CarouselApi;
+  }
+>(({ className, api: propApi, ...props }, ref) => {
+  const context = React.useContext(CarouselContext);
+  const api = propApi || context?.api;
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([]);
+
+  React.useEffect(() => {
+    if (!api) return;
+
+    const onSelect = () => {
+      setSelectedIndex(api.selectedScrollSnap());
+    };
+
+    setScrollSnaps(api.scrollSnapList());
+    onSelect();
+
+    api.on("select", onSelect);
+    api.on("reInit", () => {
+      setScrollSnaps(api.scrollSnapList());
+      onSelect();
+    });
+
+    return () => {
+      api.off("select", onSelect);
+    };
+  }, [api]);
+
+  if (scrollSnaps.length <= 1) return null;
+
+  return (
+    <div
+      ref={ref}
+      className={cn("flex items-center justify-center gap-2 pt-6", className)}
+      role="tablist"
+      aria-label="Carousel pagination"
+      {...props}
+    >
+      {scrollSnaps.map((_, index) => (
+        <button
+          key={index}
+          type="button"
+          role="tab"
+          aria-selected={selectedIndex === index}
+          aria-label={`Go to slide ${index + 1}`}
+          onClick={() => api?.scrollTo(index)}
+          className={cn(
+            "h-2.5 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+            selectedIndex === index
+              ? "w-8 bg-primary"
+              : "w-2.5 bg-muted-foreground/30 hover:bg-muted-foreground/50",
+          )}
+        />
+      ))}
+    </div>
+  );
+});
+CarouselDots.displayName = "CarouselDots";
+
 export {
   type CarouselApi,
+  useCarousel,
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselControls,
+  CarouselDots,
 };
+

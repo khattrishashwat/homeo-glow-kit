@@ -20,6 +20,13 @@ import { useBlogs } from "@/hooks/useBlogs";
 import { assetUrl, formatINR, productMrp, productSummary, faqsApi } from "@/services/api";
 import { conditions } from "@/data/conditions";
 import { FeaturedProducts } from "@/components/site/FeaturedProducts";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselControls,
+  CarouselDots,
+} from "@/components/ui/carousel";
 
 const formatBlogDate = (dateStr?: string) => {
   if (!dateStr) return "";
@@ -79,14 +86,14 @@ const getPlainTextExcerpt = (html: string, maxLength: number = 120): string => {
 };
 
 function HomePage() {
-  const { data: recResponse, isLoading: loadingRec } = useProducts({ recommended: true, limit: 4 });
-  const { data: allProductsResponse, isLoading: loadingAll } = useProducts({ limit: 4 });
+  const { data: recResponse, isLoading: loadingRec } = useProducts({ recommended: true, limit: 8 });
+  const { data: allProductsResponse, isLoading: loadingAll } = useProducts({ limit: 8 });
   const recProducts = recResponse?.data || [];
   const allProducts = allProductsResponse?.data || [];
   const products = recProducts.length > 0 ? recProducts : allProducts;
   const loadingProducts = loadingRec && loadingAll;
 
-  const { data: blogResponse, isLoading: loadingBlogs } = useBlogs({ limit: 3 });
+  const { data: blogResponse, isLoading: loadingBlogs } = useBlogs({ limit: 6 });
   const blogs = blogResponse?.data || [];
 
   const { data: faqsResponse, isLoading: loadingFaqs } = useQuery({
@@ -311,81 +318,112 @@ function HomePage() {
         </div>
       </Section>
 
-      {/* FEATURED PRODUCT HIGHLIGHTS */}
-      <FeaturedProducts />
-
       {/* PRODUCTS */}
       <Section>
-        <SectionHeader
-          eyebrow="Shop"
-          title="Recommended MD's Homoeopathy Products"
-          subtitle="Doctor-formulated remedies for common conditions."
-        />
-
-        {loadingProducts ? (
-          <div className="mt-12 grid sm:grid-cols-2 gap-6">
-            {[1, 2].map((i) => (
-              <div key={i} className="animate-pulse rounded-3xl border border-border bg-card p-6">
-                <div className="h-48 rounded-2xl bg-muted" />
-                <div className="mt-4 h-6 w-1/2 rounded bg-muted" />
-                <div className="mt-2 h-4 w-3/4 rounded bg-muted" />
-              </div>
-            ))}
+        <Carousel
+          opts={{ align: "start", loop: false }}
+          className="w-full"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 md:mb-10">
+            <SectionHeader
+              eyebrow="Shop"
+              title="Recommended MD's Homoeopathy Products"
+              subtitle="Doctor-formulated remedies for common conditions."
+              center={false}
+            />
+            {!loadingProducts && products.length > 0 && (
+              <CarouselControls
+                className="self-start sm:self-end shrink-0"
+                previousLabel="Previous products"
+                nextLabel="Next products"
+              />
+            )}
           </div>
-        ) : products.length > 0 ? (
-          <div className="mt-12 grid sm:grid-cols-2 gap-6">
-            {products.map((p) => {
-              const fullSummary = productSummary(p);
-              const plainTextExcerpt = getPlainTextExcerpt(fullSummary, 120);
 
-              return (
-                <div key={p.slug || p._id} className="group relative flex h-full flex-col overflow-hidden rounded-3xl border-2 border-primary/20 bg-gradient-to-br from-leaf-soft/60 to-card p-6 shadow-soft transition hover:shadow-glow">
-                  <span className="inline-flex w-fit items-center gap-1 rounded-full bg-success px-3 py-1 text-xs font-bold text-white shadow-soft">
-                    <Sparkles className="h-3 w-3" /> {p.recommended ? "Doctor Recommended" : "Top Formulation"}
-                  </span>
-                  <div className="mt-4 grid place-items-center overflow-hidden rounded-2xl bg-white p-4 aspect-[4/3]">
-                    {p.image ? (
-                      <img
-                        src={assetUrl(p.image)}
-                        alt={p.name}
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="flex flex-col items-center justify-center text-muted-foreground p-8">
-                        <Package className="h-12 w-12 stroke-[1.5] mb-2" />
-                        <span className="text-xs">Product formulation</span>
-                      </div>
-                    )}
-                  </div>
-                  <h3 className="mt-4 font-display text-2xl font-bold text-foreground">{p.name}</h3>
-                  <p className="mt-2 flex-1 text-sm text-muted-foreground">
-                    {p.short_description || plainTextExcerpt || "Doctor formulated natural remedy"}
-                  </p>
-                  <div className="mt-3 flex items-baseline gap-2">
-                    <span className="font-display text-2xl font-bold text-primary">{formatINR(p.price)}</span>
-                    {p.compare_price && p.compare_price > p.price && (
-                      <span className="text-sm text-muted-foreground line-through">
-                        {formatINR(p.compare_price)}
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    <Button asChild variant="hero" className="rounded-full">
-                      <Link to="/shop/$slug" params={{ slug: p.slug }}>View Product</Link>
-                    </Button>
-                    <Button asChild variant="outline" className="rounded-full">
-                      <Link to="/appointment">Consult First</Link>
-                    </Button>
+          {loadingProducts ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="animate-pulse rounded-3xl border-2 border-primary/10 bg-card p-6">
+                  <div className="h-6 w-28 rounded-full bg-muted" />
+                  <div className="mt-4 aspect-[4/3] rounded-2xl bg-muted" />
+                  <div className="mt-4 h-6 w-3/4 rounded bg-muted" />
+                  <div className="mt-2 h-4 w-full rounded bg-muted" />
+                  <div className="mt-4 h-7 w-1/3 rounded bg-muted" />
+                  <div className="mt-5 flex gap-2">
+                    <div className="h-10 w-28 rounded-full bg-muted" />
+                    <div className="h-10 w-28 rounded-full bg-muted" />
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="mt-12 text-center py-12 rounded-3xl bg-card border border-border/50 max-w-lg mx-auto p-6">
-            <p className="text-sm text-muted-foreground">Products will be available shortly.</p>
-          </div>
-        )}
+              ))}
+            </div>
+          ) : products.length > 0 ? (
+            <>
+              <CarouselContent className="-ml-4 sm:-ml-6 items-stretch">
+                {products.map((p) => {
+                  const fullSummary = productSummary(p);
+                  const plainTextExcerpt = getPlainTextExcerpt(fullSummary, 120);
+
+                  return (
+                    <CarouselItem
+                      key={p.slug || p._id}
+                      className="basis-full sm:basis-1/2 lg:basis-1/3 pl-4 sm:pl-6 flex"
+                    >
+                      <div className="group relative flex h-full w-full flex-col justify-between overflow-hidden rounded-3xl border-2 border-primary/20 bg-gradient-to-br from-leaf-soft/60 to-card p-6 shadow-soft transition hover:shadow-glow">
+                        <div>
+                          <span className="inline-flex w-fit items-center gap-1 rounded-full bg-success px-3 py-1 text-xs font-bold text-white shadow-soft">
+                            <Sparkles className="h-3 w-3" /> {p.recommended ? "Doctor Recommended" : "Top Formulation"}
+                          </span>
+                          <div className="mt-4 grid place-items-center overflow-hidden rounded-2xl bg-white p-4 aspect-[4/3]">
+                            {p.image ? (
+                              <img
+                                src={assetUrl(p.image)}
+                                alt={p.name}
+                                loading="lazy"
+                                className="h-full w-full object-contain"
+                              />
+                            ) : (
+                              <div className="flex flex-col items-center justify-center text-muted-foreground p-8">
+                                <Package className="h-12 w-12 stroke-[1.5] mb-2" />
+                                <span className="text-xs">Product formulation</span>
+                              </div>
+                            )}
+                          </div>
+                          <h3 className="mt-4 font-display text-2xl font-bold text-foreground line-clamp-1">{p.name}</h3>
+                          <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                            {p.short_description || plainTextExcerpt || "Doctor formulated natural remedy"}
+                          </p>
+                        </div>
+                        <div className="mt-4">
+                          <div className="flex items-baseline gap-2">
+                            <span className="font-display text-2xl font-bold text-primary">{formatINR(p.price)}</span>
+                            {p.compare_price && p.compare_price > p.price && (
+                              <span className="text-sm text-muted-foreground line-through">
+                                {formatINR(p.compare_price)}
+                              </span>
+                            )}
+                          </div>
+                          <div className="mt-5 flex flex-wrap gap-2">
+                            <Button asChild variant="hero" className="rounded-full">
+                              <Link to="/shop/$slug" params={{ slug: p.slug }}>View Product</Link>
+                            </Button>
+                            <Button asChild variant="outline" className="rounded-full">
+                              <Link to="/appointment">Consult First</Link>
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  );
+                })}
+              </CarouselContent>
+              <CarouselDots className="mt-6" />
+            </>
+          ) : (
+            <div className="text-center py-12 rounded-3xl bg-card border border-border/50 max-w-lg mx-auto p-6">
+              <p className="text-sm text-muted-foreground">Products will be available shortly.</p>
+            </div>
+          )}
+        </Carousel>
       </Section>
 
       {/* TESTIMONIALS */}
@@ -403,47 +441,88 @@ function HomePage() {
 
       {/* BLOG PREVIEW */}
       <Section>
-        <SectionHeader eyebrow="Learn" title="From Our Health Journal" subtitle="Insights from our doctors on healing, naturally." />
-        {loadingBlogs ? (
-          <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="animate-pulse rounded-3xl bg-card p-5 border border-border">
-                <div className="aspect-[16/10] rounded-2xl bg-muted" />
-                <div className="mt-4 h-5 w-3/4 rounded bg-muted" />
-                <div className="mt-2 h-4 w-full rounded bg-muted" />
-              </div>
-            ))}
+        <Carousel
+          opts={{ align: "start", loop: false }}
+          className="w-full"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 md:mb-10">
+            <SectionHeader
+              eyebrow="Learn"
+              title="From Our Health Journal"
+              subtitle="Insights from our doctors on healing, naturally."
+              center={false}
+            />
+            {!loadingBlogs && blogs.length > 0 && (
+              <CarouselControls
+                className="self-start sm:self-end shrink-0"
+                previousLabel="Previous articles"
+                nextLabel="Next articles"
+              />
+            )}
           </div>
-        ) : blogs.length > 0 ? (
-          <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {blogs.map((b) => (
-              <Link key={b.slug} to="/blog/$slug" params={{ slug: b.slug }} className="group bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition hover:-translate-y-1">
-                <div className="aspect-[16/10] overflow-hidden relative bg-leaf-soft">
-                  {b.featured_image ? (
-                    <img src={assetUrl(b.featured_image)} alt={b.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-primary/40">
-                      <Leaf className="h-10 w-10" />
-                    </div>
-                  )}
-                  <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-card/90 text-xs font-semibold text-primary shadow-soft backdrop-blur">
-                    {typeof b.category === "object" && b.category ? b.category.name : (b.category as string) || "Health"}
-                  </span>
+
+          {loadingBlogs ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="animate-pulse rounded-3xl bg-card p-5 border border-border">
+                  <div className="aspect-[16/10] rounded-2xl bg-muted" />
+                  <div className="mt-4 h-5 w-3/4 rounded bg-muted" />
+                  <div className="mt-2 h-4 w-full rounded bg-muted" />
                 </div>
-                <div className="p-5">
-                  <div className="text-xs text-muted-foreground">{formatBlogDate(b.published_at || b.createdAt)}</div>
-                  <h3 className="mt-2 font-semibold text-base group-hover:text-primary transition line-clamp-2">{b.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{b.excerpt}</p>
-                  <div className="mt-3 text-xs font-semibold text-primary inline-flex items-center gap-1">Read More <ArrowRight className="h-3 w-3" /></div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <div className="mt-12 text-center py-12 rounded-3xl bg-card border border-border/50 max-w-lg mx-auto p-6">
-            <p className="text-sm text-muted-foreground">Articles will be published shortly. Check back soon!</p>
-          </div>
-        )}
+              ))}
+            </div>
+          ) : blogs.length > 0 ? (
+            <>
+              <CarouselContent className="-ml-4 sm:-ml-6 items-stretch">
+                {blogs.map((b) => (
+                  <CarouselItem
+                    key={b.slug}
+                    className="basis-full sm:basis-1/2 lg:basis-1/3 pl-4 sm:pl-6 flex"
+                  >
+                    <Link
+                      to="/blog/$slug"
+                      params={{ slug: b.slug }}
+                      className="group flex flex-col h-full w-full bg-card rounded-3xl overflow-hidden shadow-soft hover:shadow-card transition hover:-translate-y-1 border border-border/40"
+                    >
+                      <div className="aspect-[16/10] overflow-hidden relative bg-leaf-soft shrink-0">
+                        {b.featured_image ? (
+                          <img
+                            src={assetUrl(b.featured_image)}
+                            alt={b.title}
+                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-primary/40">
+                            <Leaf className="h-10 w-10" />
+                          </div>
+                        )}
+                        <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-card/90 text-xs font-semibold text-primary shadow-soft backdrop-blur">
+                          {typeof b.category === "object" && b.category ? b.category.name : (b.category as string) || "Health"}
+                        </span>
+                      </div>
+                      <div className="p-5 flex flex-col flex-1 justify-between">
+                        <div>
+                          <div className="text-xs text-muted-foreground">{formatBlogDate(b.published_at || b.createdAt)}</div>
+                          <h3 className="mt-2 font-semibold text-base group-hover:text-primary transition line-clamp-2">{b.title}</h3>
+                          <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{b.excerpt}</p>
+                        </div>
+                        <div className="mt-4 pt-2 text-xs font-semibold text-primary inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                          Read More <ArrowRight className="h-3 w-3" />
+                        </div>
+                      </div>
+                    </Link>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselDots className="mt-6" />
+            </>
+          ) : (
+            <div className="text-center py-12 rounded-3xl bg-card border border-border/50 max-w-lg mx-auto p-6">
+              <p className="text-sm text-muted-foreground">Articles will be published shortly. Check back soon!</p>
+            </div>
+          )}
+        </Carousel>
       </Section>
 
       {/* FAQ + DOCTOR PROFILE */}

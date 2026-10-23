@@ -53,8 +53,17 @@ const leadershipTeam = [
     color: "from-blue-600 to-indigo-700",
   },
 ];
+type Specialty = {
+  id: number;
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  sub: string;
+  items?: string[];
+  sections?: { name: string; list: string[] }[];
+  disclaimer?: string;
+};
 
-const specialties = [
+const specialties: Specialty[] = [
   {
     id: 1,
     icon: Stethoscope,
