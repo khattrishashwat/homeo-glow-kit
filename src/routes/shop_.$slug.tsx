@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { productReviewsApi, reviewSummary } from "@/services/reviews";
 import { Helmet } from "react-helmet-async";
 import {
   Award,
@@ -400,6 +402,16 @@ function ProductDetailPage() {
 
   const p = data?.data;
 
+  // Fetch real customer reviews
+  const { data: reviewsData = [] } = useQuery({
+    queryKey: ["product-reviews", slug],
+    queryFn: () => productReviewsApi.list(slug),
+  });
+  const { total: totalReviews, average: averageRating } = useMemo(
+    () => reviewSummary(reviewsData),
+    [reviewsData]
+  );
+
   useEffect(() => {
     if (!p) return;
     setSelectedImageIndex(0);
@@ -450,8 +462,9 @@ function ProductDetailPage() {
   const off = discountPercent(mrp, p.price);
   const previewImage = gallery[selectedImageIndex] || mainImage;
   const categoryName = typeof p.category === "string" ? p.category : p.category?.name || "Uncategorized";
-  const rating = p.average_rating ?? 4.9;
-  const reviews = p.total_reviews ?? 1240;
+  // Genuine ratings derived directly from customer reviews
+  const rating = totalReviews > 0 ? averageRating : 0;
+  const reviews = totalReviews;
   const related = (relatedData?.data || []).filter((x) => x.slug !== p.slug).slice(0, 4);
   
   // Safely access attributes with fallbacks

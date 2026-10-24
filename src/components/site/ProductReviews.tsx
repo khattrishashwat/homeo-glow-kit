@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import { Loader2, MessageSquare, Star } from "lucide-react";
+import { Loader2, MessageSquare, Star, CheckCircle2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,27 +20,39 @@ const reviewSchema = z.object({
     .trim()
     .min(2, { message: "Please enter your name (min 2 characters)." })
     .max(80, { message: "Name must be under 80 characters." }),
+  email: z
+    .string()
+    .trim()
+    .email({ message: "Please enter a valid email address." })
+    .optional()
+    .or(z.literal("")),
   rating: z
     .number()
-    .min(1, { message: "Please select a star rating." })
+    .min(1, { message: "Please select a star rating between 1 and 5." })
     .max(5),
   message: z
     .string()
     .trim()
-    .min(5, { message: "Please write at least 5 characters." })
-    .max(1000, { message: "Review must be under 1000 characters." }),
+    .min(5, { message: "Please write at least 5 characters in your review." })
+    .max(2000, { message: "Review must be under 2000 characters." }),
 });
 
-const formatReviewDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+const formatReviewDate = (iso: string) => {
+  try {
+    return new Date(iso).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return "";
+  }
+};
 
 export function ProductReviews({ productSlug }: { productSlug: string }) {
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [rating, setRating] = useState(0);
   const [message, setMessage] = useState("");
 
@@ -51,65 +63,88 @@ export function ProductReviews({ productSlug }: { productSlug: string }) {
 
   const { mutate, isPending } = useMutation({
     mutationFn: productReviewsApi.create,
-    onSuccess: () => {
+    onSuccess: (res: any) => {
       queryClient.invalidateQueries({ queryKey: ["product-reviews", productSlug] });
-      toast.success("Thank you! Your review has been submitted.");
+      toast.success(
+        res?.message ||
+          "Thank you! Your review has been submitted for moderation and will appear once approved."
+      );
       setName("");
+      setEmail("");
       setRating(0);
       setMessage("");
     },
-    onError: () => toast.error("Something went wrong. Please try again."),
+    onError: (err: any) =>
+      toast.error(err?.message || "Something went wrong submitting your review. Please try again."),
   });
 
   const { total, average } = reviewSummary(reviews);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = reviewSchema.safeParse({ name, rating, message });
+    const parsed = reviewSchema.safeParse({ name, email, rating, message });
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0]?.message ?? "Please check your input.");
+      toast.error(parsed.error.issues[0]?.message ?? "Please check your review input.");
       return;
     }
-    mutate({ productSlug, ...parsed.data });
+    mutate({
+      productSlug,
+      name: parsed.data.name,
+      email: parsed.data.email || undefined,
+      rating: parsed.data.rating,
+      message: parsed.data.message,
+    });
   };
 
   return (
-    <section aria-labelledby="reviews-heading" className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+    <section id="reviews-section" aria-labelledby="reviews-heading" className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
       {/* Reviews list */}
       <div className="rounded-[2rem] border border-border bg-card p-6 md:p-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h2 id="reviews-heading" className="font-display text-2xl font-bold">
-            Customer Reviews
-          </h2>
-          <div className="flex items-center gap-3 rounded-2xl bg-leaf-soft px-4 py-2">
-            <span className="text-3xl font-bold text-foreground">{average.toFixed(1)}</span>
-            <div>
-              <StarRating value={average} size="sm" />
-              <div className="text-xs text-muted-foreground">
-                {total} {total === 1 ? "review" : "reviews"}
+          <div>
+            <h2 id="reviews-heading" className="font-display text-2xl font-bold">
+              Customer Reviews
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Verified customer feedback and clinical experience
+            </p>
+          </div>
+
+          {total > 0 ? (
+            <div className="flex items-center gap-3 rounded-2xl bg-leaf-soft px-4 py-2 border border-border/60">
+              <span className="text-3xl font-bold text-foreground">{average.toFixed(1)}</span>
+              <div>
+                <StarRating value={average} size="sm" />
+                <div className="text-xs text-muted-foreground">
+                  {total} {total === 1 ? "review" : "reviews"}
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="rounded-2xl bg-leaf-soft px-3 py-1.5 text-xs font-medium text-muted-foreground border border-border/50">
+              0 Reviews
+            </div>
+          )}
         </div>
 
         <div className="mt-6 space-y-4">
           {isLoading ? (
             <div className="flex items-center justify-center gap-2 py-10 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" /> Loading reviews...
+              <Loader2 className="h-4 w-4 animate-spin text-primary" /> Loading customer reviews...
             </div>
           ) : reviews.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border py-12 text-center">
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border py-12 text-center bg-card/50">
               <MessageSquare className="h-8 w-8 text-muted-foreground/50" />
-              <p className="mt-3 text-sm font-medium text-foreground">No reviews yet</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Be the first to share your experience.
+              <p className="mt-3 text-sm font-semibold text-foreground">No customer reviews yet</p>
+              <p className="mt-1 text-sm text-muted-foreground max-w-xs">
+                Be the first to share your experience with this homeopathic remedy.
               </p>
             </div>
           ) : (
             reviews.map((review: ProductReview) => (
               <article
                 key={review.id}
-                className="rounded-2xl border border-border/70 bg-background p-5 transition hover:shadow-soft"
+                className="rounded-2xl border border-border/70 bg-background p-5 transition hover:shadow-soft space-y-2.5"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
@@ -117,7 +152,14 @@ export function ProductReviews({ productSlug }: { productSlug: string }) {
                       {review.name.trim().charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <div className="text-sm font-semibold text-foreground">{review.name}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-foreground">{review.name}</span>
+                        {review.verifiedPurchase && (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-100 dark:bg-emerald-950/40 dark:text-emerald-300 px-2 py-0.5 rounded-full">
+                            <CheckCircle2 className="h-3 w-3" /> Verified Buyer
+                          </span>
+                        )}
+                      </div>
                       <div className="text-xs text-muted-foreground">
                         {formatReviewDate(review.date)}
                       </div>
@@ -125,7 +167,7 @@ export function ProductReviews({ productSlug }: { productSlug: string }) {
                   </div>
                   <StarRating value={review.rating} size="sm" />
                 </div>
-                <p className="mt-3 text-sm leading-6 text-foreground/90">{review.message}</p>
+                <p className="text-sm leading-6 text-foreground/90 pt-1">{review.message}</p>
               </article>
             ))
           )}
@@ -134,13 +176,13 @@ export function ProductReviews({ productSlug }: { productSlug: string }) {
 
       {/* Submit form */}
       <div className="rounded-[2rem] border border-border bg-card p-6 md:p-8 lg:sticky lg:top-24 lg:self-start">
-        <h3 className="font-display text-xl font-bold">Write a Review</h3>
+        <h3 className="font-display text-xl font-bold">Write a Customer Review</h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          Share your experience to help others.
+          Help others understand how this remedy supported your health journey.
         </p>
         <form onSubmit={handleSubmit} className="mt-5 space-y-4" noValidate>
           <div className="space-y-1.5">
-            <Label htmlFor="review-name">Your Name</Label>
+            <Label htmlFor="review-name">Your Full Name *</Label>
             <Input
               id="review-name"
               value={name}
@@ -150,27 +192,52 @@ export function ProductReviews({ productSlug }: { productSlug: string }) {
               required
             />
           </div>
+
           <div className="space-y-1.5">
-            <Label>Your Rating</Label>
+            <Label htmlFor="review-email">Email Address (Optional)</Label>
+            <Input
+              id="review-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="e.g. ramesh@example.com"
+              maxLength={100}
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Your email will remain private and won't be shown publicly.
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>Your Rating (1 to 5 Stars) *</Label>
             <div className="flex items-center gap-2">
               <StarRating value={rating} onChange={setRating} size="lg" label="Select a rating" />
               {rating > 0 && (
-                <span className="text-sm text-muted-foreground">{rating}/5</span>
+                <span className="text-sm font-semibold text-primary">{rating} / 5</span>
               )}
             </div>
           </div>
+
           <div className="space-y-1.5">
-            <Label htmlFor="review-message">Your Review</Label>
+            <Label htmlFor="review-message">Your Review *</Label>
             <Textarea
               id="review-message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Tell us about your experience with this product..."
+              placeholder="Describe your health situation, how long you used the remedy, and the results..."
               rows={4}
-              maxLength={1000}
+              maxLength={2000}
               required
             />
           </div>
+
+          <div className="rounded-xl bg-leaf-soft p-3 text-xs text-muted-foreground flex items-start gap-2">
+            <ShieldCheck className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+            <span>
+              All submissions are moderated to ensure genuine, transparent patient and customer experiences.
+            </span>
+          </div>
+
           <Button type="submit" variant="hero" className="w-full" disabled={isPending}>
             {isPending ? (
               <>

@@ -26,6 +26,8 @@ import { Section } from "@/components/site/Section";
 import { useState, useEffect, useMemo } from "react";
 import { BlogComments } from "@/components/site/BlogComments";
 import { useBlogBySlug, useBlogs } from "@/hooks/useBlogs";
+import { useProducts } from "@/hooks/useProducts";
+import { formatINR } from "@/services/api";
 import { assetUrl } from "@/services/api";
 
 const formatBlogDate = (dateStr?: string) => {
@@ -45,6 +47,8 @@ export default function BlogDetailPage() {
   const { slug } = Route.useParams();
   const { data: blogResponse, isLoading } = useBlogBySlug(slug);
   const { data: allBlogsResponse } = useBlogs({ limit: 12 });
+  const { data: remediesResponse } = useProducts({ limit: 4 });
+  const remedies = remediesResponse?.data || [];
 
   const blog = useMemo(() => {
     if (blogResponse?.data) {
