@@ -24,6 +24,7 @@ function PaymentPage() {
   const [draft, setDraft] = useState(loadDraft());
   const [method, setMethod] = useState<typeof METHODS[number]["id"]>("UPI");
   const [processing, setProcessing] = useState(false);
+  const [pendingOrder, setPendingOrder] = useState<any>(null);
   const [orderId] = useState(() => "MDH-" + Math.random().toString(36).slice(2, 8).toUpperCase());
   const { data: productData } = useProductBySlug(draft?.productSlug);
 
@@ -88,7 +89,15 @@ function PaymentPage() {
     };
 
     try {
-      const res = await ordersApi.create(payload);
+      let res: any;
+      if (pendingOrder && pendingOrder._id) {
+        res = await ordersApi.retryPayment(pendingOrder._id);
+      } else {
+        res = await ordersApi.create(payload);
+        if (res?.data) {
+          setPendingOrder(res.data);
+        }
+      }
       const order = res.data;
       const razorpayOrder = (res as any).razorpayOrder;
 
@@ -129,9 +138,9 @@ function PaymentPage() {
               toast.loading("Verifying payment...", { id: "order-verify" });
               await ordersApi.verifyPayment({
                 orderId: order._id,
-                razorpay_order_id: resp.razorpay_order_id || razorpayOrder?.orderId || "direct_pay",
+                razorpay_order_id: resp.razorpay_order_id || razorpayOrder?.orderId || "",
                 razorpay_payment_id: resp.razorpay_payment_id,
-                razorpay_signature: resp.razorpay_signature || "signature_dev_verified",
+                razorpay_signature: resp.razorpay_signature || "",
               });
               toast.dismiss("order-verify");
               toast.success("Payment verified! Order placed successfully.");

@@ -187,7 +187,7 @@ const formatDay = (value: string) => {
 };
 
 const formatTime = (value: string) =>
-  new Intl.DateTimeFormat("en-IN", { hour: "numeric", minute: "2-digit", hour12: true }).format(new Date(value));
+  new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", hour: "numeric", minute: "2-digit", hour12: true }).format(new Date(value));
 
 function Field({
   icon: Ic,
@@ -507,7 +507,7 @@ function AppointmentPage() {
                   appointmentId: booking._id,
                   razorpay_order_id: resp.razorpay_order_id || razorpayOrder.orderId,
                   razorpay_payment_id: resp.razorpay_payment_id,
-                  razorpay_signature: resp.razorpay_signature || "signature_verified",
+                  razorpay_signature: resp.razorpay_signature || "",
                 });
                 toast.dismiss("rzp-verify");
                 toast.success("Payment verified! Appointment confirmed.");

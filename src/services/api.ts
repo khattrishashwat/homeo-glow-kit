@@ -430,6 +430,10 @@ export const ordersApi = {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+  retryPayment: (orderId: string) =>
+    apiRequest<{ _id: string; order_number: string } & { razorpayOrder?: RazorpayOrderInfo }>(`/api/web/orders/${orderId}/retry-payment`, {
+      method: "POST",
+    }) as Promise<ApiResponse<{ _id: string; order_number: string }> & { razorpayOrder?: RazorpayOrderInfo }>,
   track: (orderNumber: string, phone?: string) =>
     apiRequest<Record<string, unknown>>(`/api/web/orders/track/${orderNumber}`, {}, { phone }),
 };
